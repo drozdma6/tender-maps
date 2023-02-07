@@ -21,6 +21,17 @@ public class Procurement implements DomainEntity<Long>{
     @ManyToOne
     private ContractorAuthority contractorAuthority;
 
+    public Procurement(){
+    }
+
+    public Procurement(String name, Set<Offer> offers, Company supplier,
+                       ContractorAuthority contractorAuthority){
+        this.name = name;
+        this.offers = offers;
+        this.supplier = supplier;
+        this.contractorAuthority = contractorAuthority;
+    }
+
     public String getName(){
         return name;
     }

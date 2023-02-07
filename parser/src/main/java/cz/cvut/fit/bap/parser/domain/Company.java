@@ -22,6 +22,15 @@ public class Company implements DomainEntity<Long>{
     @OneToMany
     private Set<Offer> offers = new HashSet<>();
 
+    public Company(){
+    }
+
+    public Company(String name, Set<Procurement> suppliedProcurements, Set<Offer> offers){
+        this.name = name;
+        this.suppliedProcurements = suppliedProcurements;
+        this.offers = offers;
+    }
+
     public Set<Procurement> getSuppliedProcurements(){
         return suppliedProcurements;
     }

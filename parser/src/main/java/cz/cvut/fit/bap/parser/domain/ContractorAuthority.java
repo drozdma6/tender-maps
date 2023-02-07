@@ -1,10 +1,7 @@
 package cz.cvut.fit.bap.parser.domain;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,11 +9,20 @@ import java.util.Set;
 @Entity
 public class ContractorAuthority implements DomainEntity<Long>{
     @Id
+    @GeneratedValue
     private Long id;
     @Column
     private String name;
     @OneToMany
     private Set<Procurement> procurements = new HashSet<>();
+
+    public ContractorAuthority(String name, Set<Procurement> procurements){
+        this.name = name;
+        this.procurements = procurements;
+    }
+
+    public ContractorAuthority(){
+    }
 
     public Set<Procurement> getProcurements(){
         return procurements;
