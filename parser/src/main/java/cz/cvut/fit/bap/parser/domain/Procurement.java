@@ -8,26 +8,27 @@ import java.util.Set;
 @Entity
 public class Procurement implements DomainEntity<Long>{
     @Id
+    @GeneratedValue
     private Long id;
-    @Column
+    @Column(name = "procurement_name")
     private String name;
 
-    @OneToMany
+    @OneToMany(mappedBy = "procurement")
     private Set<Offer> offers = new HashSet<>();
 
     @ManyToOne
+    @JoinColumn(name = "supplier_id")
     private Company supplier;
 
     @ManyToOne
+    @JoinColumn(name = "contractor_authority_id")
     private ContractorAuthority contractorAuthority;
 
     public Procurement(){
     }
 
-    public Procurement(String name, Set<Offer> offers, Company supplier,
-                       ContractorAuthority contractorAuthority){
+    public Procurement(String name, Company supplier, ContractorAuthority contractorAuthority){
         this.name = name;
-        this.offers = offers;
         this.supplier = supplier;
         this.contractorAuthority = contractorAuthority;
     }

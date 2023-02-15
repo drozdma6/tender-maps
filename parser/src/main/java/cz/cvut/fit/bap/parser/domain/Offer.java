@@ -13,10 +13,12 @@ public class Offer implements DomainEntity<OfferId>{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("procurementId")
+    @JoinColumn(name = "procurement_id")
     private Procurement procurement;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("procurementId")
+    @MapsId("companyId")
+    @JoinColumn(name = "company_id")
     private Company company;
 
     public Offer(){

@@ -1,9 +1,6 @@
 package cz.cvut.fit.bap.parser.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,24 +8,23 @@ import java.util.Set;
 @Entity
 public class Company implements DomainEntity<Long>{
     @Id
+    @GeneratedValue
     private Long id;
 
-    @Column
+    @Column(name = "company_name", unique = true)
     private String name;
 
-    @OneToMany
+    @OneToMany(mappedBy = "supplier")
     private Set<Procurement> suppliedProcurements = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "company")
     private Set<Offer> offers = new HashSet<>();
 
     public Company(){
     }
 
-    public Company(String name, Set<Procurement> suppliedProcurements, Set<Offer> offers){
+    public Company(String name){
         this.name = name;
-        this.suppliedProcurements = suppliedProcurements;
-        this.offers = offers;
     }
 
     public Set<Procurement> getSuppliedProcurements(){

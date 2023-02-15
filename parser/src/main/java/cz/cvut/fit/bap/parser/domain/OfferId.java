@@ -7,7 +7,7 @@ import java.io.Serializable;
 @Embeddable
 public class OfferId implements Serializable{
     private Long procurementId;
-    private Long CompanyId;
+    private Long companyId;
 
     public Long getProcurementId(){
         return procurementId;
@@ -18,10 +18,10 @@ public class OfferId implements Serializable{
     }
 
     public Long getCompanyId(){
-        return CompanyId;
+        return companyId;
     }
 
     public void setCompanyId(Long companyId){
-        CompanyId = companyId;
+        companyId = companyId;
     }
 }
