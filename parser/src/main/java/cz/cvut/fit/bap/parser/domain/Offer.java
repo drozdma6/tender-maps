@@ -3,13 +3,15 @@ package cz.cvut.fit.bap.parser.domain;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 public class Offer implements DomainEntity<OfferId>{
     @EmbeddedId
     private OfferId id;
 
-    @Column
-    private Long price;
+    @Column(precision = 14, scale = 2)
+    private BigDecimal price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("procurementId")
@@ -24,8 +26,15 @@ public class Offer implements DomainEntity<OfferId>{
     public Offer(){
     }
 
-    public Offer(Long price, Procurement procurement, Company company){
+    public Offer(OfferId id, BigDecimal price, Procurement procurement, Company company){
+        this.id = id;
         this.price = price;
+        this.procurement = procurement;
+        this.company = company;
+    }
+
+    public Offer(OfferId id, Procurement procurement, Company company){
+        this.id = id;
         this.procurement = procurement;
         this.company = company;
     }
@@ -46,11 +55,11 @@ public class Offer implements DomainEntity<OfferId>{
         this.company = company;
     }
 
-    public Long getPrice(){
+    public BigDecimal getPrice(){
         return price;
     }
 
-    public void setPrice(Long price){
+    public void setPrice(BigDecimal price){
         this.price = price;
     }
 
@@ -71,5 +80,11 @@ public class Offer implements DomainEntity<OfferId>{
     @Override
     public OfferId getId(){
         return id;
+    }
+
+    @Override
+    public String toString(){
+        return "Offer{" + "id=" + id + ", price=" + price + ", procurement=" + procurement +
+               ", company=" + company + '}';
     }
 }

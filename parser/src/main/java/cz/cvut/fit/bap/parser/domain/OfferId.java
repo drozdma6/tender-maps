@@ -9,6 +9,14 @@ public class OfferId implements Serializable{
     private Long procurementId;
     private Long companyId;
 
+    public OfferId(Long procurementId, Long companyId){
+        this.procurementId = procurementId;
+        this.companyId = companyId;
+    }
+
+    public OfferId(){
+    }
+
     public Long getProcurementId(){
         return procurementId;
     }
@@ -22,6 +30,6 @@ public class OfferId implements Serializable{
     }
 
     public void setCompanyId(Long companyId){
-        companyId = companyId;
+        this.companyId = companyId;
     }
 }

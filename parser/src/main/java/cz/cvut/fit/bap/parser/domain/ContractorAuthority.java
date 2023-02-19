@@ -11,7 +11,7 @@ public class ContractorAuthority implements DomainEntity<Long>{
     @Id
     @GeneratedValue
     private Long id;
-    @Column(name = "contractor_authority_name")
+    @Column(name = "contractor_authority_name", unique = true)
     private String name;
     @OneToMany(mappedBy = "contractorAuthority")
     private Set<Procurement> procurements = new HashSet<>();

@@ -2,6 +2,7 @@ package cz.cvut.fit.bap.parser.domain;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,13 +25,19 @@ public class Procurement implements DomainEntity<Long>{
     @JoinColumn(name = "contractor_authority_id")
     private ContractorAuthority contractorAuthority;
 
+    @Column(name = "contract_price", precision = 14, scale = 2)
+    private BigDecimal contractPrice;
+
     public Procurement(){
     }
 
-    public Procurement(String name, Company supplier, ContractorAuthority contractorAuthority){
+
+    public Procurement(String name, Company supplier, ContractorAuthority contractorAuthority,
+                       BigDecimal contractPrice){
         this.name = name;
         this.supplier = supplier;
         this.contractorAuthority = contractorAuthority;
+        this.contractPrice = contractPrice;
     }
 
     public String getName(){
@@ -47,6 +54,22 @@ public class Procurement implements DomainEntity<Long>{
 
     public void setOffers(Set<Offer> offers){
         this.offers = offers;
+    }
+
+    public Company getSupplier(){
+        return supplier;
+    }
+
+    public void setSupplier(Company supplier){
+        this.supplier = supplier;
+    }
+
+    public BigDecimal getContractPrice(){
+        return contractPrice;
+    }
+
+    public void setContractPrice(BigDecimal contractPrice){
+        this.contractPrice = contractPrice;
     }
 
     @Override
