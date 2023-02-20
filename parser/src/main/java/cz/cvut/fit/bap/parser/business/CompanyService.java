@@ -14,8 +14,11 @@ public class CompanyService extends AbstractCreateService<Company, Long>{
 
     @Override
     public Company create(Company entity){
-        Optional<Company> company = ((CompanyJpaRepository) repository).findCompanyByName(
-                entity.getName());
+        Optional<Company> company = readByName(entity.getName());
         return company.orElseGet(() -> super.create(entity));
+    }
+
+    public Optional<Company> readByName(String name){
+        return ((CompanyJpaRepository) repository).findCompanyByName(name);
     }
 }
