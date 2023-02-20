@@ -16,11 +16,23 @@ public class ContractorAuthority implements DomainEntity<Long>{
     @OneToMany(mappedBy = "contractorAuthority")
     private Set<Procurement> procurements = new HashSet<>();
 
-    public ContractorAuthority(String name){
+    @Column(name = "contractor_authority_profile", unique = true)
+    private String profile;
+
+    public ContractorAuthority(String name, String profile){
         this.name = name;
+        this.profile = profile;
     }
 
     public ContractorAuthority(){
+    }
+
+    public String getProfile(){
+        return profile;
+    }
+
+    public void setProfile(String profile){
+        this.profile = profile;
     }
 
     public Set<Procurement> getProcurements(){
