@@ -20,11 +20,24 @@ public class Company implements DomainEntity<Long>{
     @OneToMany(mappedBy = "company")
     private Set<Offer> offers = new HashSet<>();
 
+    @OneToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
+
+    public Address getAddress(){
+        return address;
+    }
+
+    public void setAddress(Address address){
+        this.address = address;
+    }
+
     public Company(){
     }
 
-    public Company(String name){
+    public Company(String name, Address address){
         this.name = name;
+        this.address = address;
     }
 
     public Set<Procurement> getSuppliedProcurements(){

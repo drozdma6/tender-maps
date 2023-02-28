@@ -19,9 +19,22 @@ public class ContractorAuthority implements DomainEntity<Long>{
     @Column(name = "contractor_authority_profile", unique = true)
     private String profile;
 
-    public ContractorAuthority(String name, String profile){
+    @OneToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
+
+    public Address getAddress(){
+        return address;
+    }
+
+    public void setAddress(Address address){
+        this.address = address;
+    }
+
+    public ContractorAuthority(String name, String profile, Address address){
         this.name = name;
         this.profile = profile;
+        this.address = address;
     }
 
     public ContractorAuthority(){
