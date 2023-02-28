@@ -6,7 +6,11 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 
 public interface IFetcher{
-    Document getProfile(String profile) throws IOException;
+    Document getContractorDetail(String profile) throws IOException;
 
-    Document getDetail(String procurement) throws IOException;
+    Document getContractorCompleted(String profile) throws IOException;
+
+    Document getProcurementResult(String procurement) throws IOException;
+
+    Document getCompanyDetail(String uri) throws IOException;
 }

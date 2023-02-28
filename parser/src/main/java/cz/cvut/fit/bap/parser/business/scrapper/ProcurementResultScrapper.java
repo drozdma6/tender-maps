@@ -1,6 +1,5 @@
 package cz.cvut.fit.bap.parser.business.scrapper;
 
-import cz.cvut.fit.bap.parser.business.CompanyService;
 import cz.cvut.fit.bap.parser.business.OfferService;
 import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.business.fetcher.IFetcher;
@@ -15,41 +14,39 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @Component
-public class DetailScrapper{
+public class ProcurementResultScrapper{
     private final ProcurementService procurementService;
-    private final CompanyService companyService;
     private final OfferService offerService;
     private final IFetcher fetcher;
+    private final CompanyDetailScrapper companyDetailScrapper;
     private Document document;
 
-    public DetailScrapper(ProcurementService procurementService, CompanyService companyService,
-                          OfferService offerService, IFetcher fetcher){
+    public ProcurementResultScrapper(ProcurementService procurementService,
+                                     OfferService offerService, IFetcher fetcher,
+                                     CompanyDetailScrapper companyDetailScrapper){
         this.procurementService = procurementService;
-        this.companyService = companyService;
         this.offerService = offerService;
         this.fetcher = fetcher;
+        this.companyDetailScrapper = companyDetailScrapper;
         this.document = null;
     }
 
     public void scrapeDetail(String detailUrl, ContractorAuthority authority) throws IOException{
-        document = fetcher.getDetail(detailUrl);
+        document = fetcher.getProcurementResult(detailUrl);
         Procurement procurement = saveProcurement(authority);
         saveParticipants(procurement);
-    }
-
-    private Procurement saveProcurement(ContractorAuthority authority){
-        return procurementService.create(getProcurement(authority));
     }
 
     /*
         Saves participant companies as well as their offers to provided procurement
      */
-    private void saveParticipants(Procurement procurement){
+    private void saveParticipants(Procurement procurement) throws IOException{
         Elements participants = document.select("[title=\"List of participants\"] .gov-table__row");
         for (Element participantRow : participants){
-            String participantName = participantRow.select(
-                    ".gov-table__cell--second.gov-table__cell").text();
-            Company participant = companyService.create(new Company(participantName));
+            //only the addition to base url
+            String companyDetailHref = participantRow.select("a").attr("href");
+
+            Company participant = companyDetailScrapper.saveCompany(companyDetailHref);
             String strPrice = parsePrice(Objects.requireNonNull(
                     participantRow.select("[data-title=\"Bid price excl. VAT\"]").first()));
             saveOffers(strPrice, procurement, participant);
@@ -67,22 +64,24 @@ public class DetailScrapper{
         offerService.create(offer);
     }
 
-    private String parsePrice(Element element){
-        return element.text().replaceAll("\\s", "").replace(',', '.');
-    }
-
-    private Procurement getProcurement(ContractorAuthority authority){
+    private Procurement saveProcurement(ContractorAuthority authority) throws IOException{
         String procurementName = Objects.requireNonNull(document.select("h1").first()).text();
 
         String strPrice = parsePrice(Objects.requireNonNull(
                 document.select("td.gov-table__cell:nth-of-type(6)").first()));
-        return new Procurement(procurementName, saveSupplier(), authority,
-                               new BigDecimal(strPrice));
+        Company supplier = saveSupplier();
+        return procurementService.create(
+                new Procurement(procurementName, supplier, authority, new BigDecimal(strPrice)));
     }
 
-    private Company saveSupplier(){
-        String supplierName = Objects.requireNonNull(
-                document.select("td.gov-table__cell:nth-of-type(4)").first()).text();
-        return companyService.create(new Company(supplierName));
+    private Company saveSupplier() throws IOException{
+        //only the addition to base url
+        String companyDetailHref = Objects.requireNonNull(
+                document.select("td.gov-table__cell:nth-of-type(1) a").first()).attr("href");
+        return companyDetailScrapper.saveCompany(companyDetailHref);
+    }
+
+    private String parsePrice(Element element){
+        return element.text().replaceAll("\\s", "").replace(',', '.');
     }
 }
