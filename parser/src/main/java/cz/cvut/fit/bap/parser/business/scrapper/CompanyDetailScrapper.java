@@ -1,10 +1,13 @@
 package cz.cvut.fit.bap.parser.business.scrapper;
 
+import com.google.maps.model.GeocodingResult;
 import cz.cvut.fit.bap.parser.business.AddressService;
 import cz.cvut.fit.bap.parser.business.CompanyService;
+import cz.cvut.fit.bap.parser.business.GeoLocationService;
 import cz.cvut.fit.bap.parser.business.fetcher.IFetcher;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.Company;
+import cz.cvut.fit.bap.parser.domain.GeoLocation;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
@@ -14,16 +17,19 @@ import java.io.IOException;
 public class CompanyDetailScrapper{
     private final IFetcher fetcher;
     private final CompanyService companyService;
-    private final RestCountriesClient restCountriesClient;
     private final AddressService addressService;
+    private final GeocodingApiClient geocodingApiClient;
+    private final GeoLocationService geoLocationService;
 
     public CompanyDetailScrapper(IFetcher fetcher, CompanyService companyService,
-                                 RestCountriesClient restCountriesClient,
-                                 AddressService addressService){
+                                 AddressService addressService,
+                                 GeocodingApiClient geocodingApiClient,
+                                 GeoLocationService geoLocationService){
         this.fetcher = fetcher;
         this.companyService = companyService;
-        this.restCountriesClient = restCountriesClient;
         this.addressService = addressService;
+        this.geocodingApiClient = geocodingApiClient;
+        this.geoLocationService = geoLocationService;
     }
 
     public Company saveCompany(String detailUri) throws IOException{
@@ -35,10 +41,18 @@ public class CompanyDetailScrapper{
         String countryOfficialName = document.select("[title=\"State\"] p").text();
         String buildingNumber = document.select("[title=\"building number\"] p").text();
 
-        //Database stores 2 letter country codes
-        String countryCode = restCountriesClient.getCountryShortcut(countryOfficialName);
+        GeocodingResult[] geocodingResults = geocodingApiClient.geocode(buildingNumber, street,
+                                                                        city, countryOfficialName,
+                                                                        postalCode);
+        //Database stores 2 letters country codes not officialName
+        String countryCode = geocodingApiClient.getCountryShortName(geocodingResults);
+
         Address address = addressService.create(
                 new Address(countryCode, city, postalCode, street, buildingNumber));
+
+        geoLocationService.create(new GeoLocation(geocodingApiClient.getLat(geocodingResults),
+                                                  geocodingApiClient.getLng(geocodingResults),
+                                                  address));
         return companyService.create(new Company(officialName, address));
     }
 }
