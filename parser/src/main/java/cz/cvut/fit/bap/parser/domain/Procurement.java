@@ -11,6 +11,7 @@ public class Procurement implements DomainEntity<Long>{
     @Id
     @GeneratedValue
     private Long id;
+
     @Column(name = "procurement_name")
     private String name;
 
@@ -28,16 +29,27 @@ public class Procurement implements DomainEntity<Long>{
     @Column(name = "contract_price", precision = 14, scale = 2)
     private BigDecimal contractPrice;
 
+    @Column(name = "place_of_performance")
+    private String placeOfPerformance;
+
     public Procurement(){
     }
 
-
     public Procurement(String name, Company supplier, ContractorAuthority contractorAuthority,
-                       BigDecimal contractPrice){
+                       BigDecimal contractPrice, String placeOfPerformance){
         this.name = name;
         this.supplier = supplier;
         this.contractorAuthority = contractorAuthority;
         this.contractPrice = contractPrice;
+        this.placeOfPerformance = placeOfPerformance;
+    }
+
+    public String getPlaceOfPerformance(){
+        return placeOfPerformance;
+    }
+
+    public void setPlaceOfPerformance(String placeOfPerformance){
+        this.placeOfPerformance = placeOfPerformance;
     }
 
     public String getName(){

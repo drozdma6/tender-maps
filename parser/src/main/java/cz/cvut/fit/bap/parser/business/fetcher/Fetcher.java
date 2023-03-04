@@ -32,4 +32,9 @@ public class Fetcher implements IFetcher{
     public Document getCompanyDetail(String detailUrl) throws IOException{
         return Jsoup.connect(baseUrl + detailUrl).get();
     }
+
+    @Override
+    public Document getProcurementDetail(String detailUrl) throws IOException{
+        return Jsoup.connect(baseUrl + detailUrl).get();
+    }
 }

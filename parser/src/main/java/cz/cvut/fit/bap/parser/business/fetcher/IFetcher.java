@@ -13,4 +13,6 @@ public interface IFetcher{
     Document getProcurementResult(String procurement) throws IOException;
 
     Document getCompanyDetail(String uri) throws IOException;
+
+    Document getProcurementDetail(String procurement) throws IOException;
 }

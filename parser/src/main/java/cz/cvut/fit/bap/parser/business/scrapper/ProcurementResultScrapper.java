@@ -19,21 +19,27 @@ public class ProcurementResultScrapper{
     private final OfferService offerService;
     private final IFetcher fetcher;
     private final CompanyDetailScrapper companyDetailScrapper;
+    private final ProcurementDetailScrapper procurementDetailScrapper;
     private Document document;
 
     public ProcurementResultScrapper(ProcurementService procurementService,
                                      OfferService offerService, IFetcher fetcher,
-                                     CompanyDetailScrapper companyDetailScrapper){
+                                     CompanyDetailScrapper companyDetailScrapper,
+                                     ProcurementDetailScrapper procurementDetailScrapper){
         this.procurementService = procurementService;
         this.offerService = offerService;
         this.fetcher = fetcher;
         this.companyDetailScrapper = companyDetailScrapper;
+        this.procurementDetailScrapper = procurementDetailScrapper;
         this.document = null;
     }
 
-    public void scrapeDetail(String detailUrl, ContractorAuthority authority) throws IOException{
+    public void scrapeProcurementResult(String detailUrl, ContractorAuthority authority)
+            throws IOException{
         document = fetcher.getProcurementResult(detailUrl);
-        Procurement procurement = saveProcurement(authority);
+        String placeOfPerformance = procurementDetailScrapper.getProcurementPlaceOfPerformance(
+                detailUrl);
+        Procurement procurement = saveProcurement(authority, placeOfPerformance);
         saveParticipants(procurement);
     }
 
@@ -64,14 +70,16 @@ public class ProcurementResultScrapper{
         offerService.create(offer);
     }
 
-    private Procurement saveProcurement(ContractorAuthority authority) throws IOException{
+    private Procurement saveProcurement(ContractorAuthority authority, String placeOfPerformance)
+            throws IOException{
         String procurementName = Objects.requireNonNull(document.select("h1").first()).text();
 
         String strPrice = parsePrice(Objects.requireNonNull(
                 document.select("td.gov-table__cell:nth-of-type(6)").first()));
         Company supplier = saveSupplier();
         return procurementService.create(
-                new Procurement(procurementName, supplier, authority, new BigDecimal(strPrice)));
+                new Procurement(procurementName, supplier, authority, new BigDecimal(strPrice),
+                                placeOfPerformance));
     }
 
     private Company saveSupplier() throws IOException{

@@ -35,7 +35,7 @@ public class ContractorCompletedScrapper{
             }
             String link = procurementRow.select("a").attr("href");
 
-            procurementResultScrapper.scrapeDetail(link, authority);
+            procurementResultScrapper.scrapeProcurementResult(link, authority);
             i++;
             if (i > 2){
                 break;
