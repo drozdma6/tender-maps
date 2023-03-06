@@ -9,4 +9,9 @@ public class ProcurementService extends AbstractCreateService<Procurement, Long>
     public ProcurementService(ProcurementJpaRepository repository){
         super(repository);
     }
+
+    public boolean existsBySystemNumber(String systemNumber){
+        return ((ProcurementJpaRepository) repository).existsProcurementBySystemNumber(
+                systemNumber);
+    }
 }

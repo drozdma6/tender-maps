@@ -3,6 +3,7 @@ package cz.cvut.fit.bap.parser.domain;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,16 +33,41 @@ public class Procurement implements DomainEntity<Long>{
     @Column(name = "place_of_performance")
     private String placeOfPerformance;
 
+    @Column(name = "date_of_publication")
+    private LocalDate dateOfPublication;
+
+    @Column(name = "system_number", unique = true)
+    private String systemNumber;
+
     public Procurement(){
     }
 
     public Procurement(String name, Company supplier, ContractorAuthority contractorAuthority,
-                       BigDecimal contractPrice, String placeOfPerformance){
+                       BigDecimal contractPrice, String placeOfPerformance,
+                       LocalDate dateOfPublication, String systemNumber){
         this.name = name;
         this.supplier = supplier;
         this.contractorAuthority = contractorAuthority;
         this.contractPrice = contractPrice;
         this.placeOfPerformance = placeOfPerformance;
+        this.dateOfPublication = dateOfPublication;
+        this.systemNumber = systemNumber;
+    }
+
+    public String getSystemNumber(){
+        return systemNumber;
+    }
+
+    public void setSystemNumber(String systemNumber){
+        this.systemNumber = systemNumber;
+    }
+
+    public LocalDate getDateOfPublication(){
+        return dateOfPublication;
+    }
+
+    public void setDateOfPublication(LocalDate dateOfPublication){
+        this.dateOfPublication = dateOfPublication;
     }
 
     public String getPlaceOfPerformance(){

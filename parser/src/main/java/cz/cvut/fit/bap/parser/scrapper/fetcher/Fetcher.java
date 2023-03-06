@@ -1,4 +1,4 @@
-package cz.cvut.fit.bap.parser.business.fetcher;
+package cz.cvut.fit.bap.parser.scrapper.fetcher;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

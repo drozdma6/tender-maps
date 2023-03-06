@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProcurementJpaRepository extends JpaRepository<Procurement, Long>{
+    boolean existsProcurementBySystemNumber(String systemNumber);
 }

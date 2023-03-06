@@ -1,13 +1,13 @@
-package cz.cvut.fit.bap.parser.business.scrapper;
+package cz.cvut.fit.bap.parser.scrapper;
 
 import com.google.maps.model.GeocodingResult;
 import cz.cvut.fit.bap.parser.business.AddressService;
 import cz.cvut.fit.bap.parser.business.ContractorAuthorityService;
 import cz.cvut.fit.bap.parser.business.GeoLocationService;
-import cz.cvut.fit.bap.parser.business.fetcher.IFetcher;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import cz.cvut.fit.bap.parser.domain.GeoLocation;
+import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
@@ -32,10 +32,9 @@ public class ContractorDetailScrapper{
         this.addressService = addressService;
         this.geocodingApiClient = geocodingApiClient;
         this.geoLocationService = geoLocationService;
-        this.document = null;
     }
 
-    public ContractorAuthority saveContractorAuthority(String profile) throws IOException{
+    public ContractorAuthority scrape(String profile) throws IOException{
         document = fetcher.getContractorDetail(profile);
         String contractorName = document.select("[title=\"Official name\"] p").text();
         Address authorityAddress = saveAddress();

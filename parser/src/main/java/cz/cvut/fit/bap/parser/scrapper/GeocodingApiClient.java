@@ -1,4 +1,4 @@
-package cz.cvut.fit.bap.parser.business.scrapper;
+package cz.cvut.fit.bap.parser.scrapper;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
