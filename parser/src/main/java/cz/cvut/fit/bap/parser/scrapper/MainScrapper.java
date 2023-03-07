@@ -2,11 +2,13 @@ package cz.cvut.fit.bap.parser.scrapper;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class MainScrapper{
@@ -22,6 +24,7 @@ public class MainScrapper{
     /*
           Scrapes all profiles from profiles.txt file -> each profile on separate line
        */
+    @Scheduled(fixedRate = 14, timeUnit = TimeUnit.DAYS)
     public void scrape() throws IOException{
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(profilesPath.getInputStream()));

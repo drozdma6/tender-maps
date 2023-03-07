@@ -26,6 +26,9 @@ dependencies {
 	//Google geocoding API
 	implementation 'com.google.maps:google-maps-services:2.1.2'
 	implementation 'org.slf4j:slf4j-simple:1.7.25'
+
+	//Schedule running
+	testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
 }
 
 test {
