@@ -12,12 +12,6 @@ public class ContractorAuthorityService extends AbstractCreateService<Contractor
         super(repository);
     }
 
-    @Override
-    public ContractorAuthority create(ContractorAuthority entity){
-        Optional<ContractorAuthority> contractorAuthority = readByName(entity.getName());
-        return contractorAuthority.orElseGet(() -> super.create(entity));
-    }
-
     public Optional<ContractorAuthority> readByName(String name){
         return ((ContractorAuthorityJpaRepository) repository).findContractorAuthorityByName(name);
     }
