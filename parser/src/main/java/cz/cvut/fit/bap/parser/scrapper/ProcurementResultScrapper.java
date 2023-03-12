@@ -3,7 +3,6 @@ package cz.cvut.fit.bap.parser.scrapper;
 import cz.cvut.fit.bap.parser.business.OfferService;
 import cz.cvut.fit.bap.parser.domain.*;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
@@ -17,18 +16,16 @@ import java.math.BigDecimal;
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/MVCR/uzavrene-zakazky/detail-zakazky/N006-23-V00005185/vysledek">procurement result page</a>
  */
 @Component
-public class ProcurementResultScrapper{
+public class ProcurementResultScrapper extends AbstractScrapper{
     private final OfferService offerService;
-    private final IFetcher fetcher;
     private final CompanyDetailScrapper companyDetailScrapper;
     private final ProcurementDetailScrapper procurementDetailScrapper;
-    private Document document;
 
     public ProcurementResultScrapper(OfferService offerService, IFetcher fetcher,
                                      CompanyDetailScrapper companyDetailScrapper,
                                      ProcurementDetailScrapper procurementDetailScrapper){
+        super(fetcher);
         this.offerService = offerService;
-        this.fetcher = fetcher;
         this.companyDetailScrapper = companyDetailScrapper;
         this.procurementDetailScrapper = procurementDetailScrapper;
     }

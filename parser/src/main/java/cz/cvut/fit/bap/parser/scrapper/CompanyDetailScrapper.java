@@ -5,7 +5,6 @@ import cz.cvut.fit.bap.parser.business.CompanyService;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.Company;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,15 +16,13 @@ import java.util.Optional;
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/p:pzp:query=finan/detail-profilu/mfcr/uzavrene-zakazky/detail-zakazky/N006-23-V00004206/vysledek/detail-uverejneni/1596619559">Company detail page</a>
  */
 @Component
-public class CompanyDetailScrapper{
-    private final IFetcher fetcher;
+public class CompanyDetailScrapper extends AbstractScrapper{
     private final CompanyService companyService;
     private final AddressService addressService;
-    private Document document;
 
     public CompanyDetailScrapper(IFetcher fetcher, CompanyService companyService,
                                  AddressService addressService){
-        this.fetcher = fetcher;
+        super(fetcher);
         this.companyService = companyService;
         this.addressService = addressService;
     }

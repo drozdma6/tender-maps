@@ -3,7 +3,6 @@ package cz.cvut.fit.bap.parser.scrapper;
 import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
@@ -16,15 +15,14 @@ import java.io.IOException;
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/MVCR/uzavrene-zakazky">contractor authority completed page</a>
  */
 @Component
-public class ContractorCompletedScrapper{
-    private final IFetcher fetcher;
+public class ContractorCompletedScrapper extends AbstractScrapper{
     private final ProcurementResultScrapper procurementResultScrapper;
     private final ProcurementService procurementService;
 
     public ContractorCompletedScrapper(IFetcher fetcher,
                                        ProcurementResultScrapper procurementResultScrapper,
                                        ProcurementService procurementService){
-        this.fetcher = fetcher;
+        super(fetcher);
         this.procurementResultScrapper = procurementResultScrapper;
         this.procurementService = procurementService;
     }
@@ -36,7 +34,7 @@ public class ContractorCompletedScrapper{
      * @throws IOException if wrong profile was given
      */
     public void scrape(ContractorAuthority authority) throws IOException{
-        Document document = fetcher.getContractorCompleted(authority.getProfile());
+        document = fetcher.getContractorCompleted(authority.getProfile());
         Elements procurementRows = document.select(
                 ".gov-table.gov-table--tablet-block.gov-sortable-table .gov-table__row");
         for (Element procurementRow : procurementRows){

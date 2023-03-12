@@ -5,7 +5,6 @@ import cz.cvut.fit.bap.parser.domain.Company;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import cz.cvut.fit.bap.parser.domain.Procurement;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,14 +20,12 @@ import java.util.regex.Pattern;
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/mfcr/uzavrene-zakazky/detail-zakazky/N006-23-V00004206">Procurement detail page</a>
  */
 @Component
-public class ProcurementDetailScrapper{
-    private final IFetcher fetcher;
-    private Document document;
+public class ProcurementDetailScrapper extends AbstractScrapper{
     private final ProcurementService procurementService;
 
 
     public ProcurementDetailScrapper(IFetcher fetcher, ProcurementService procurementService){
-        this.fetcher = fetcher;
+        super(fetcher);
         this.procurementService = procurementService;
     }
 

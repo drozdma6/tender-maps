@@ -5,7 +5,6 @@ import cz.cvut.fit.bap.parser.business.ContractorAuthorityService;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,16 +16,14 @@ import java.util.Optional;
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/mfcr">Contractor authority detail page</a>
  */
 @Component
-public class ContractorDetailScrapper{
-    private final IFetcher fetcher;
+public class ContractorDetailScrapper extends AbstractScrapper{
     private final ContractorAuthorityService contractorAuthorityService;
     private final AddressService addressService;
-    private Document document;
 
     public ContractorDetailScrapper(IFetcher fetcher,
                                     ContractorAuthorityService contractorAuthorityService,
                                     AddressService addressService){
-        this.fetcher = fetcher;
+        super(fetcher);
         this.contractorAuthorityService = contractorAuthorityService;
         this.addressService = addressService;
     }
