@@ -11,6 +11,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+/**
+ * Class for scrapping procurement result page
+ *
+ * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/MVCR/uzavrene-zakazky/detail-zakazky/N006-23-V00005185/vysledek">procurement result page</a>
+ */
 @Component
 public class ProcurementResultScrapper{
     private final OfferService offerService;
@@ -28,35 +33,78 @@ public class ProcurementResultScrapper{
         this.procurementDetailScrapper = procurementDetailScrapper;
     }
 
+    /**
+     * Scrapes procurement result page - saves procurement, companies that participated and their offers
+     *
+     * @param url          to procurement result
+     * @param authority    procurement's contractor authority
+     * @param systemNumber procurement's system number
+     * @throws IOException if wrong url was provided
+     */
     public void scrape(String url, ContractorAuthority authority, String systemNumber)
             throws IOException{
         document = fetcher.getProcurementResult(url);
         Procurement procurement = procurementDetailScrapper.scrape(url, saveSupplier(),
                                                                    getContractPrice(), authority,
                                                                    systemNumber);
+        if (!hasSingleSupplier()){
+            throw new RuntimeException("Found procurement which has several suppliers: " +
+                                       procurement.getSystemNumber());
+        }
         saveParticipants(procurement);
     }
 
-    private BigDecimal getContractPrice(){
-        String strPrice = parsePrice(
-                document.select("[data-title=\"Contractual price excl. VAT\"]").text());
-        if (strPrice.isEmpty()){
+    /**
+     * Checks if procurement has a single company as supplier
+     *
+     * @return true if procurement has single company as supplier, false otherwise
+     */
+    private boolean hasSingleSupplier(){
+        Elements supplier = document.select(
+                "[title=\"Supplier with Whom the Contract Has Been Entered into\"] td");
+        Elements supplierCompanyNames = supplier.select("[data-title=\"Official name\"]");
+        if (supplierCompanyNames.isEmpty()){
             throw new MissingHtmlElementException();
         }
-        return new BigDecimal(strPrice);
+        for (Element supplierCompanyName : supplierCompanyNames){
+            if (!supplierCompanyName.text().equals(supplierCompanyNames.first().text())){
+                return false;
+            }
+        }
+        return true;
     }
 
-    /*
-        Saves participant companies as well as their offers to provided procurement
+    /**
+     * Parse supplier's contract price, if more contracts were made with supplier makes a sum
+     *
+     * @return sum of all contract prices with supplier
+     */
+    private BigDecimal getContractPrice(){
+        Elements priceElements = document.select("[data-title=\"Contractual price excl. VAT\"]");
+        BigDecimal contractPriceSum = new BigDecimal(0);
+        if (priceElements.isEmpty()){
+            throw new MissingHtmlElementException();
+        }
+        for (Element elemPrice : priceElements){
+            String strPrice = formatPrice(elemPrice.text());
+            contractPriceSum = new BigDecimal(strPrice).add(contractPriceSum);
+        }
+        return contractPriceSum;
+    }
+
+    /**
+     * Saves participant companies as well as their offers to provided procurement
+     *
+     * @param procurement for which companies make offers
+     * @throws IOException if wrong company detail link was found
      */
     private void saveParticipants(Procurement procurement) throws IOException{
         Elements participants = document.select("[title=\"List of participants\"] .gov-table__row");
         for (Element participantRow : participants){
             //only the addition to base url
             String companyDetailHref = participantRow.select("a").attr("href");
-
             Company participant = companyDetailScrapper.scrape(companyDetailHref);
-            String strPrice = parsePrice(
+            String strPrice = formatPrice(
                     participantRow.select("[data-title=\"Bid price excl. VAT\"]").text());
             saveOffers(strPrice, procurement, participant);
         }
@@ -73,6 +121,12 @@ public class ProcurementResultScrapper{
         offerService.create(offer);
     }
 
+    /**
+     * Saves supplier.
+     *
+     * @return supplier company
+     * @throws IOException if wrong company detail link was found
+     */
     private Company saveSupplier() throws IOException{
         Elements supplier = document.select(
                 "[title=\"Supplier with Whom the Contract Has Been Entered into\"] td");
@@ -85,7 +139,13 @@ public class ProcurementResultScrapper{
         return companyDetailScrapper.scrape(companyDetailHref);
     }
 
-    private String parsePrice(String strPrice){
+    /**
+     * Format string price into format accepted by BigDecimal
+     *
+     * @param strPrice price which is supposed to by formatted
+     * @return formatted price
+     */
+    private String formatPrice(String strPrice){
         return strPrice.replaceAll("\\s", "").replace(',', '.');
     }
 }
