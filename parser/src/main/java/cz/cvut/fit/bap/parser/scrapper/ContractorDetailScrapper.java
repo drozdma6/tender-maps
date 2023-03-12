@@ -31,6 +31,13 @@ public class ContractorDetailScrapper{
         this.addressService = addressService;
     }
 
+    /**
+     * Scrapes contractor detail page
+     *
+     * @param profile of contractor authority
+     * @return saved contractor authority
+     * @throws IOException if wrong profile was provided
+     */
     public ContractorAuthority scrape(String profile) throws IOException{
         document = fetcher.getContractorDetail(profile);
         String contractorName = document.select("[title=\"Official name\"] p").text();
@@ -40,6 +47,11 @@ public class ContractorDetailScrapper{
                 new ContractorAuthority(contractorName, profile, saveAddress())));
     }
 
+    /**
+     * Scrapes contractor authority's address from detail page
+     *
+     * @return contractor authority's address
+     */
     private Address saveAddress(){
         String city = document.select("[title=\"Municipality\"] p").text();
         String street = document.select("[title=\"street\"] p").text();

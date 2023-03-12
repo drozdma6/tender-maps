@@ -1,5 +1,8 @@
 package cz.cvut.fit.bap.parser.scrapper;
 
+/**
+ * Unchecked exception signalizing missing html element
+ */
 public class MissingHtmlElementException extends RuntimeException{
     public MissingHtmlElementException(){
     }

@@ -10,26 +10,33 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * Class for scrapping authority's completed list of procurements
+ *
+ * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/MVCR/uzavrene-zakazky">contractor authority completed page</a>
+ */
 @Component
 public class ContractorCompletedScrapper{
     private final IFetcher fetcher;
     private final ProcurementResultScrapper procurementResultScrapper;
-    private final ContractorDetailScrapper contractorDetailScrapper;
     private final ProcurementService procurementService;
 
     public ContractorCompletedScrapper(IFetcher fetcher,
                                        ProcurementResultScrapper procurementResultScrapper,
-                                       ContractorDetailScrapper contractorDetailScrapper,
                                        ProcurementService procurementService){
         this.fetcher = fetcher;
         this.procurementResultScrapper = procurementResultScrapper;
-        this.contractorDetailScrapper = contractorDetailScrapper;
         this.procurementService = procurementService;
     }
 
-    public void scrape(String profile) throws IOException{
-        Document document = fetcher.getContractorCompleted(profile);
-        ContractorAuthority authority = contractorDetailScrapper.scrape(profile);
+    /**
+     * Scrapes contractor authority completed procurements page
+     *
+     * @param authority which profile is supposed to get scrapped
+     * @throws IOException if wrong profile was given
+     */
+    public void scrape(ContractorAuthority authority) throws IOException{
+        Document document = fetcher.getContractorCompleted(authority.getProfile());
         Elements procurementRows = document.select(
                 ".gov-table.gov-table--tablet-block.gov-sortable-table .gov-table__row");
         for (Element procurementRow : procurementRows){
