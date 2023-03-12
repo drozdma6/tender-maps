@@ -1,45 +1,43 @@
 package cz.cvut.fit.bap.parser.scrapper;
 
-import com.google.maps.model.GeocodingResult;
 import cz.cvut.fit.bap.parser.business.AddressService;
 import cz.cvut.fit.bap.parser.business.ContractorAuthorityService;
-import cz.cvut.fit.bap.parser.business.GeoLocationService;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
-import cz.cvut.fit.bap.parser.domain.GeoLocation;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Optional;
 
+/**
+ * Class for scrapping contractor authority detail page.
+ *
+ * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/mfcr">Contractor authority detail page</a>
+ */
 @Component
 public class ContractorDetailScrapper{
     private final IFetcher fetcher;
     private final ContractorAuthorityService contractorAuthorityService;
     private final AddressService addressService;
-    private final GeocodingApiClient geocodingApiClient;
-    private final GeoLocationService geoLocationService;
     private Document document;
 
     public ContractorDetailScrapper(IFetcher fetcher,
                                     ContractorAuthorityService contractorAuthorityService,
-                                    AddressService addressService,
-                                    GeocodingApiClient geocodingApiClient,
-                                    GeoLocationService geoLocationService){
+                                    AddressService addressService){
         this.fetcher = fetcher;
         this.contractorAuthorityService = contractorAuthorityService;
         this.addressService = addressService;
-        this.geocodingApiClient = geocodingApiClient;
-        this.geoLocationService = geoLocationService;
     }
 
     public ContractorAuthority scrape(String profile) throws IOException{
         document = fetcher.getContractorDetail(profile);
         String contractorName = document.select("[title=\"Official name\"] p").text();
-        Address authorityAddress = saveAddress();
-        return contractorAuthorityService.create(
-                new ContractorAuthority(contractorName, profile, authorityAddress));
+        Optional<ContractorAuthority> optionalAuthority = contractorAuthorityService.readByName(
+                contractorName);
+        return optionalAuthority.orElseGet(() -> contractorAuthorityService.create(
+                new ContractorAuthority(contractorName, profile, saveAddress())));
     }
 
     private Address saveAddress(){
@@ -48,13 +46,7 @@ public class ContractorDetailScrapper{
         String postalCode = document.select("[title=\"postal code\"] p").text();
         String countryCode = document.select("[title=\"country - code\"] p").text();
         String buildingNumber = document.select("[title=\"building number\"] p").text();
-        GeocodingResult[] results = geocodingApiClient.geocode(buildingNumber, street, city,
-                                                               countryCode, postalCode);
-        Address address = addressService.create(
+        return addressService.create(
                 new Address(countryCode, city, postalCode, street, buildingNumber));
-
-        geoLocationService.create(new GeoLocation(geocodingApiClient.getLat(results),
-                                                  geocodingApiClient.getLng(results), address));
-        return address;
     }
 }

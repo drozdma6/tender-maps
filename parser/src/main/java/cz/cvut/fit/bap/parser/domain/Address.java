@@ -3,8 +3,7 @@ package cz.cvut.fit.bap.parser.domain;
 import jakarta.persistence.*;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(
-        columnNames = {"building_number", "city", "street", "country_code", "postal_code"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"latitude", "longitude"})})
 public class Address implements DomainEntity<Long>{
     @Id
     @GeneratedValue
@@ -19,6 +18,10 @@ public class Address implements DomainEntity<Long>{
     private String countryCode;
     @Column(name = "postal_code")
     private String postalCode;
+    @Column
+    private Double latitude;
+    @Column
+    private Double longitude;
 
 
     public Address(){
@@ -31,6 +34,33 @@ public class Address implements DomainEntity<Long>{
         this.street = street;
         this.countryCode = countryCode;
         this.postalCode = postalCode;
+    }
+
+    public Address(String buildingNumber, String city, String street, String countryCode,
+                   String postalCode, Double latitude, Double longitude){
+        this.buildingNumber = buildingNumber;
+        this.city = city;
+        this.street = street;
+        this.countryCode = countryCode;
+        this.postalCode = postalCode;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public Double getLatitude(){
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude){
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude(){
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude){
+        this.longitude = longitude;
     }
 
     public String getPostalCode(){

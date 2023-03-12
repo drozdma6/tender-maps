@@ -1,10 +1,11 @@
-package cz.cvut.fit.bap.parser.scrapper;
+package cz.cvut.fit.bap.parser.business;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.AddressComponent;
 import com.google.maps.model.GeocodingResult;
+import cz.cvut.fit.bap.parser.domain.Address;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Class for handling communication with Google's geocoding api.
+ */
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class GeocodingApiClient implements AutoCloseable{
@@ -27,12 +31,18 @@ public class GeocodingApiClient implements AutoCloseable{
     }
 
 
-    public GeocodingResult[] geocode(String buildingNumber, String street, String city,
-                                     String state, String postalCode){
-        String address =
-                buildingNumber + ' ' + street + ' ' + city + ' ' + state + ' ' + postalCode;
+    /**
+     * Send request to google's geocoding api with certain address
+     *
+     * @param address which is supposed to be geocoded
+     * @return apis response
+     */
+    public GeocodingResult[] geocode(Address address){
+        String addressStr =
+                address.getBuildingNumber() + ' ' + address.getStreet() + ' ' + address.getCity() +
+                ' ' + address.getCountryCode() + ' ' + address.getPostalCode();
         try{
-            return GeocodingApi.geocode(context, address).await();
+            return GeocodingApi.geocode(context, addressStr).await();
         } catch (ApiException | InterruptedException | IOException e){
             throw new RuntimeException(e);
         }
@@ -57,14 +67,29 @@ public class GeocodingApiClient implements AutoCloseable{
         return "";
     }
 
+    /**
+     * Gets latitude from geocoding api result of address initialized by geocode methode
+     *
+     * @param results of geocoding api response
+     * @return latitude
+     */
     public double getLat(GeocodingResult[] results){
         return results[0].geometry.location.lat;
     }
 
+    /**
+     * Gets longitude from geocoding api result of certain address initialized by geocode methode
+     *
+     * @param results of geocoding api response
+     * @return longitude
+     */
     public double getLng(GeocodingResult[] results){
         return results[0].geometry.location.lng;
     }
 
+    /**
+     * Shuts down geocoding api context after all request were sent
+     */
     @Override
     public void close(){
         context.shutdown();
