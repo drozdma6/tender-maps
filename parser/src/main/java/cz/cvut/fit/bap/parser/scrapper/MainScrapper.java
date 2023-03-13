@@ -19,7 +19,7 @@ public class MainScrapper{
     private final ContractorCompletedScrapper contractorCompletedScrapper;
     private final ContractorDetailScrapper contractorDetailScrapper;
 
-    @Value("${authority.profile.file.path}")
+    @Value("classpath:profiles.txt")
     private Resource profilesPath;
 
     public MainScrapper(ContractorCompletedScrapper contractorCompletedScrapper,
@@ -36,12 +36,13 @@ public class MainScrapper{
      */
     @Scheduled(fixedRate = 14, timeUnit = TimeUnit.DAYS)
     public void scrape() throws IOException{
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(profilesPath.getInputStream()));
-
-        for (String profile : reader.lines().toList()){
-            ContractorAuthority authority = contractorDetailScrapper.scrape(profile);
-            contractorCompletedScrapper.scrape(authority);
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(profilesPath.getInputStream()))){
+            String profile;
+            while ((profile = reader.readLine()) != null){
+                ContractorAuthority authority = contractorDetailScrapper.scrape(profile);
+                contractorCompletedScrapper.scrape(authority);
+            }
         }
     }
 }
