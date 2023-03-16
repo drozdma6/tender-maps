@@ -33,15 +33,13 @@ public class ProcurementResultScrapper extends AbstractScrapper{
     /**
      * Scrapes procurement result page - saves procurement, companies that participated and their offers
      *
-     * @param url          to procurement result
      * @param authority    procurement's contractor authority
      * @param systemNumber procurement's system number
      * @throws IOException if wrong url was provided
      */
-    public void scrape(String url, ContractorAuthority authority, String systemNumber)
-            throws IOException{
-        document = fetcher.getProcurementResult(url);
-        Procurement procurement = procurementDetailScrapper.scrape(url, saveSupplier(),
+    public void scrape(ContractorAuthority authority, String systemNumber) throws IOException{
+        document = fetcher.getProcurementResult(systemNumber);
+        Procurement procurement = procurementDetailScrapper.scrape(saveSupplier(),
                                                                    getContractPrice(), authority,
                                                                    systemNumber);
         if (!hasSingleSupplier()){

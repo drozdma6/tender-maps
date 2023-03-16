@@ -29,6 +29,9 @@ dependencies {
 
 	//Schedule running
 	testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
+
+	//For uriUtils
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 test {

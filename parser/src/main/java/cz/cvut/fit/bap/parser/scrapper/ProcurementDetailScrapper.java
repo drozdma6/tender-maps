@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.time.format.DateTimeParseException;
 
 /**
  * Class for scrapping procurement detail page
@@ -32,7 +31,6 @@ public class ProcurementDetailScrapper extends AbstractScrapper{
     /**
      * Scrapes procurement detail page
      *
-     * @param url                 of procurement detail page
      * @param supplier            procurement's supplier
      * @param contractPrice       procurement's price
      * @param contractorAuthority procurement's authority
@@ -40,10 +38,10 @@ public class ProcurementDetailScrapper extends AbstractScrapper{
      * @return saved procurement
      * @throws IOException if wrong url was provided
      */
-    public Procurement scrape(String url, Company supplier, BigDecimal contractPrice,
+    public Procurement scrape(Company supplier, BigDecimal contractPrice,
                               ContractorAuthority contractorAuthority, String systemNumber)
             throws IOException{
-        this.document = fetcher.getProcurementDetail(url);
+        document = fetcher.getProcurementDetail(systemNumber);
         return procurementService.create(
                 new Procurement(getProcurementName(), supplier, contractorAuthority, contractPrice,
                                 getProcurementPlaceOfPerformance(),
@@ -69,20 +67,19 @@ public class ProcurementDetailScrapper extends AbstractScrapper{
     }
 
     /**
-     * Gets procurement date of publication
+     * Gets procurement date of publication. Function accepts date in format 16. 03. 2023 11:21).
      *
-     * @return date in format dd.mm.yyy or null
+     * @return date or null
      */
     private LocalDate getProcurementDateOfPublication(){
-        String scrappedDate = document.select(
-                "[title=\"Date of publication of the tender procedure in the profile\"]").text();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.MM.yyyy");
-        Pattern pattern = Pattern.compile("\\d{2}\\. \\d{2}\\. \\d{4}");
-        Matcher matcher = pattern.matcher(scrappedDate);
-        if (!matcher.find()){
+        String scrappedData = document.select(
+                "[title=\"Date of publication of the tender procedure in the profile\"] p").text();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. MM. yyyy [HH:mm]");
+        try{
+            return LocalDate.parse(scrappedData, formatter);
+        } catch (DateTimeParseException e){
             return null;
         }
-        String date = matcher.group().replaceAll("\\s", "");
-        return LocalDate.parse(date, formatter);
     }
 }
