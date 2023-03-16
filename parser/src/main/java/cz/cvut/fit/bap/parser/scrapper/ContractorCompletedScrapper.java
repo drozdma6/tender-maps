@@ -34,7 +34,7 @@ public class ContractorCompletedScrapper extends AbstractScrapper{
      * @throws IOException if wrong profile was given
      */
     public void scrape(ContractorAuthority authority) throws IOException{
-        document = fetcher.getContractorCompleted(authority.getProfile());
+        document = fetcher.getContractorCompleted(authority.getProfile(), authority.getName());
         Elements procurementRows = document.select(
                 ".gov-table.gov-table--tablet-block.gov-sortable-table .gov-table__row");
         for (Element procurementRow : procurementRows){
@@ -44,14 +44,9 @@ public class ContractorCompletedScrapper extends AbstractScrapper{
             if (procurementService.existsBySystemNumber(procurementSystemNumber)){
                 break;
             }
-            //scrape only awarded procurements
-            if (!procurementRow.select("[data-title=\"Status\"]").text().equals("Awarded")){
-                continue;
-            }
-            String link = procurementRow.select("a").attr("href");
             try{
                 //skip procurements with insufficient information
-                procurementResultScrapper.scrape(link, authority, procurementSystemNumber);
+                procurementResultScrapper.scrape(authority, procurementSystemNumber);
             } catch (MissingHtmlElementException e){
                 continue;
             }
