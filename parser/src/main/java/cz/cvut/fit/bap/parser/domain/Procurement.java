@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -126,5 +127,19 @@ public class Procurement implements DomainEntity<Long>{
 
     public void setContractorAuthority(ContractorAuthority contractorAuthority){
         this.contractorAuthority = contractorAuthority;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if (this == o)
+            return true;
+        if (!(o instanceof Procurement that))
+            return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(id);
     }
 }

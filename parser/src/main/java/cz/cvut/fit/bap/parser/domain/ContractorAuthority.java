@@ -4,6 +4,7 @@ package cz.cvut.fit.bap.parser.domain;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -72,5 +73,19 @@ public class ContractorAuthority implements DomainEntity<Long>{
     @Override
     public Long getId(){
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if (this == o)
+            return true;
+        if (!(o instanceof ContractorAuthority that))
+            return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(id);
     }
 }

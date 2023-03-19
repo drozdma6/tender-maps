@@ -2,6 +2,8 @@ package cz.cvut.fit.bap.parser.domain;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"latitude", "longitude"})})
 public class Address implements DomainEntity<Long>{
@@ -111,5 +113,19 @@ public class Address implements DomainEntity<Long>{
     @Override
     public void setId(Long id){
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if (this == o)
+            return true;
+        if (!(o instanceof Address address))
+            return false;
+        return Objects.equals(id, address.id);
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(id);
     }
 }

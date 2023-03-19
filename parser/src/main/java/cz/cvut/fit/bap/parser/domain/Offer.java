@@ -4,6 +4,7 @@ package cz.cvut.fit.bap.parser.domain;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 public class Offer implements DomainEntity<OfferId>{
@@ -83,8 +84,16 @@ public class Offer implements DomainEntity<OfferId>{
     }
 
     @Override
-    public String toString(){
-        return "Offer{" + "id=" + id + ", price=" + price + ", procurement=" + procurement +
-               ", company=" + company + '}';
+    public boolean equals(Object o){
+        if (this == o)
+            return true;
+        if (!(o instanceof Offer offer))
+            return false;
+        return Objects.equals(id, offer.id);
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(id);
     }
 }

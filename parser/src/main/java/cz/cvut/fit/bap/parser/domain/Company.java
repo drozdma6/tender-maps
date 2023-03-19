@@ -3,6 +3,7 @@ package cz.cvut.fit.bap.parser.domain;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -72,5 +73,25 @@ public class Company implements DomainEntity<Long>{
 
     public void setName(String name){
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if (this == o)
+            return true;
+        if (!(o instanceof Company company))
+            return false;
+        return Objects.equals(id, company.id);
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString(){
+        return "Company{" + "id=" + id + ", name='" + name + '\'' + ", suppliedProcurements=" +
+               suppliedProcurements + ", offers=" + offers + ", address=" + address + '}';
     }
 }
