@@ -14,8 +14,8 @@ import java.util.Optional;
 public class AddressService extends AbstractCreateService<Address, Long>{
     private final GeocodingApiClient geocodingApiClient;
 
-    protected AddressService(AddressJpaRepository addressJpaRepository,
-                             GeocodingApiClient geocodingApiClient){
+    public AddressService(AddressJpaRepository addressJpaRepository,
+                          GeocodingApiClient geocodingApiClient){
         super(addressJpaRepository);
         this.geocodingApiClient = geocodingApiClient;
     }
