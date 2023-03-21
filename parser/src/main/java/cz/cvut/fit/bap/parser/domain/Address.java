@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"latitude", "longitude"})})
+@Table(uniqueConstraints = {@UniqueConstraint(
+        columnNames = {"building_number", "city", "street", "country_code", "postal_code"})})
 public class Address implements DomainEntity<Long>{
     @Id
     @GeneratedValue
