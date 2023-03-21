@@ -6,13 +6,12 @@ import com.google.maps.errors.ApiException;
 import com.google.maps.model.AddressComponent;
 import com.google.maps.model.GeocodingResult;
 import cz.cvut.fit.bap.parser.domain.Address;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Class for handling communication with Google's geocoding api.
@@ -22,14 +21,9 @@ import java.util.Properties;
 public class GeocodingApiClient implements AutoCloseable{
     private final GeoApiContext context;
 
-
-    public GeocodingApiClient() throws IOException{
-        Properties properties = new Properties();
-        properties.load(new FileReader("googleMapsApiKey.properties"));
-        String apiKey = properties.getProperty("API_KEY");
+    public GeocodingApiClient(@Value("${apiKey}") final String apiKey){
         this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
     }
-
 
     /**
      * Send request to google's geocoding api with certain address
