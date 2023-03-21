@@ -90,7 +90,7 @@ class ProcurementResultScrapperTest{
         String expectedSupplierDetailHref = "/en/profily-zadavatelu-platne/detail-profilu/BSMV/uzavrene-zakazky/detail-zakazky/N006-22-V00010946/vysledek/detail-uverejneni/1371846408";
         ArgumentCaptor<BigDecimal> argumentCaptor = ArgumentCaptor.forClass(BigDecimal.class);
 
-        procurementResultScrapper.scrape(null, systemNumber);
+        procurementResultScrapper.scrape(new ContractorAuthority(), systemNumber);
 
         verify(fetcher, times(1)).getProcurementResult(systemNumber);
         verify(companyDetailScrapper, times(1)).scrape(expectedSupplierDetailHref);

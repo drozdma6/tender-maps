@@ -1,5 +1,6 @@
 package cz.cvut.fit.bap.parser.scrapper;
 
+import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,12 +27,14 @@ class MainScrapperTest{
     @MockBean
     private ContractorCompletedScrapper contractorCompletedScrapper;
 
+    final Address testAddress = new Address("sk", "Bratislava", "16000", "Bratislavska", "65");
+
     String[] expectedProfiles = {"MVCR", "MPSV", "mmr"};
     ContractorAuthority[] expectedContractorAuthorities = {new ContractorAuthority(
-            "Ministerstvo vnitra", expectedProfiles[0], null), new ContractorAuthority(
+            "Ministerstvo vnitra", expectedProfiles[0], testAddress), new ContractorAuthority(
             "Ministerstvo práce a sociálních věcí", expectedProfiles[1],
-            null), new ContractorAuthority("Ministerstvo pro místní rozvoj", expectedProfiles[2],
-                                           null)};
+            testAddress), new ContractorAuthority("Ministerstvo pro místní rozvoj",
+                                                  expectedProfiles[2], testAddress)};
 
     @BeforeEach
     void setUp() throws IOException{
