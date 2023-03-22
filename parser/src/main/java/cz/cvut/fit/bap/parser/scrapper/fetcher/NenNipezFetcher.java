@@ -2,6 +2,7 @@ package cz.cvut.fit.bap.parser.scrapper.fetcher;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriUtils;
 
@@ -14,6 +15,12 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class NenNipezFetcher implements IFetcher{
     private final String baseUrl = "https://nen.nipez.cz";
+    @Value("${procurement.first.date.of.publication}")
+    private String firstDateOfPublication;
+
+    @Value("${procurement.scrapped.pages.limit}")
+    private String maximumPageLimit;
+
 
     /**
      * Fetches contractor detail site.
@@ -30,7 +37,8 @@ public class NenNipezFetcher implements IFetcher{
 
     /**
      * Fetches document containing list of completed procurements by provided authority profile.
-     * Filters only awarded procurements.
+     * Filters only awarded procurements created by given contracting authority and created later
+     * than firstDateOfPublication. Fetches only pages from 1 to maximumPageLimit  (each page contains 50 procurements)
      *
      * @param profile                 of contracting authority
      * @param contractorAuthorityName name of contracting authority
@@ -41,8 +49,13 @@ public class NenNipezFetcher implements IFetcher{
     public Document getContractorCompleted(String profile, String contractorAuthorityName)
             throws IOException{
         final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" + profile +
-                           "/uzavrene-zakazky/p:puvz:stavZP=zadana&zadavatelNazev=" +
-                           UriUtils.encode(contractorAuthorityName, StandardCharsets.UTF_8);
+                           "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=1-" +
+                           UriUtils.encode(maximumPageLimit, StandardCharsets.UTF_8) +
+                           "&zadavatelNazev=" +
+                           UriUtils.encode(contractorAuthorityName, StandardCharsets.UTF_8) +
+                           "&datumPrvniUver=" +
+                           UriUtils.encode(firstDateOfPublication, StandardCharsets.UTF_8) + ",";
+
         return Jsoup.connect(url).get();
     }
 
