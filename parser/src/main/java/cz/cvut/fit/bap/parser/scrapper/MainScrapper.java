@@ -2,6 +2,7 @@ package cz.cvut.fit.bap.parser.scrapper;
 
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Class for handling scrappers
  */
+@ConditionalOnProperty(value = "app.scheduling.enable", havingValue = "true", matchIfMissing = true)
 @Component
 public class MainScrapper{
     private final ContractorCompletedScrapper contractorCompletedScrapper;
