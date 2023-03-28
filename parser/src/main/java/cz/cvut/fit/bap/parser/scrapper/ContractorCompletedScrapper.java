@@ -28,28 +28,38 @@ public class ContractorCompletedScrapper extends AbstractScrapper{
     }
 
     /**
-     * Scrapes contractor authority completed procurements page
+     * Scrapes contractor authority completed procurements page. Ends scrapping when first already saved
+     * procurement is found.
      *
      * @param authority which profile is supposed to get scrapped
      * @throws IOException if wrong profile was given
      */
     public void scrape(ContractorAuthority authority) throws IOException{
-        document = fetcher.getContractorCompleted(authority.getProfile(), authority.getName());
-        Elements procurementRows = document.select(
-                ".gov-table.gov-table--tablet-block.gov-sortable-table .gov-table__row");
-        for (Element procurementRow : procurementRows){
-            String procurementSystemNumber = procurementRow.select(
-                    "[data-title=\"NEN system number\"]").text();
-            //stop scrapping when first already saved procurement is found
-            if (procurementService.existsBySystemNumber(procurementSystemNumber)){
-                break;
+        int counter = 1; //counts iterations, used for loading certain pages in fetcher
+
+        document = fetcher.getContractorCompleted(authority.getProfile(), authority.getName(),
+                                                  counter);
+        //end scrapping once document with .table-empty-message is found - solves paging
+        while (document.select(".table-empty-message").isEmpty()){
+            Elements procurementRows = document.select(
+                    ".gov-table.gov-table--tablet-block.gov-sortable-table .gov-table__row");
+            for (Element procurementRow : procurementRows){
+                String procurementSystemNumber = procurementRow.select(
+                        "[data-title=\"NEN system number\"]").text();
+                //stop scrapping when first already saved procurement is found
+                if (procurementService.existsBySystemNumber(procurementSystemNumber)){
+                    return;
+                }
+                try{
+                    //skip procurements with insufficient information
+                    procurementResultScrapper.scrape(authority, procurementSystemNumber);
+                } catch (MissingHtmlElementException e){
+                    continue;
+                }
             }
-            try{
-                //skip procurements with insufficient information
-                procurementResultScrapper.scrape(authority, procurementSystemNumber);
-            } catch (MissingHtmlElementException e){
-                continue;
-            }
+            counter++;
+            document = fetcher.getContractorCompleted(authority.getProfile(), authority.getName(),
+                                                      counter);
         }
     }
 }
