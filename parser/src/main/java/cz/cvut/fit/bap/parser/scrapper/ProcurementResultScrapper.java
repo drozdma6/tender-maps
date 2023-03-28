@@ -3,12 +3,14 @@ package cz.cvut.fit.bap.parser.scrapper;
 import cz.cvut.fit.bap.parser.business.OfferService;
 import cz.cvut.fit.bap.parser.domain.*;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
+import kotlin.Pair;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashMap;
 
 /**
  * Class for scrapping procurement result page
@@ -39,52 +41,51 @@ public class ProcurementResultScrapper extends AbstractScrapper{
      */
     public void scrape(ContractorAuthority authority, String systemNumber) throws IOException{
         document = fetcher.getProcurementResult(systemNumber);
-        Procurement procurement = procurementDetailScrapper.scrape(saveSupplier(),
-                                                                   getContractPrice(), authority,
-                                                                   systemNumber);
-        if (!hasSingleSupplier()){
-            throw new RuntimeException("Found procurement which has several suppliers: " +
-                                       procurement.getSystemNumber());
-        }
-        saveParticipants(procurement);
-    }
-
-    /**
-     * Checks if procurement has a single company as supplier
-     *
-     * @return true if procurement has single company as supplier, false otherwise
-     */
-    private boolean hasSingleSupplier(){
-        Elements supplier = document.select(
-                "[title=\"Supplier with Whom the Contract Has Been Entered into\"] td");
-        Elements supplierCompanyNames = supplier.select("[data-title=\"Official name\"]");
-        if (supplierCompanyNames.isEmpty()){
-            throw new MissingHtmlElementException();
-        }
-        for (Element supplierCompanyName : supplierCompanyNames){
-            if (!supplierCompanyName.text().equals(supplierCompanyNames.first().text())){
-                return false;
+        getSupplierMap().forEach((k, v) -> {
+            try{
+                Company supplier = companyDetailScrapper.scrape(v.getSecond(), k);
+                Procurement procurement = procurementDetailScrapper.scrape(supplier, v.getFirst(),
+                                                                           authority, systemNumber);
+                saveParticipants(procurement);
+            } catch (IOException e){
+                throw new RuntimeException(e);
             }
-        }
-        return true;
+        });
     }
 
     /**
-     * Parse supplier's contract price, if more contracts were made with supplier makes a sum
+     * Puts suppliers in map. Creates a new map element for each new supplier's company name. Values in map
+     * are link to company detail and contract price(if there are more rows with similar company makes
+     * a sum of their contract price)
      *
-     * @return sum of all contract prices with supplier
+     * @return map containing company name as key and contract price and detail link as values
      */
-    private BigDecimal getContractPrice(){
-        Elements priceElements = document.select("[data-title=\"Contractual price excl. VAT\"]");
-        BigDecimal contractPriceSum = new BigDecimal(0);
-        if (priceElements.isEmpty()){
+    private HashMap<String, Pair<BigDecimal, String>> getSupplierMap(){
+        //storing company name as key, its contract price and detailHref as values
+        HashMap<String, Pair<BigDecimal, String>> suppliersMap = new HashMap<>();
+        Elements suppliersRows = document.select(
+                "[title=\"Supplier with Whom the Contract Has Been Entered into\"] .gov-table__row");
+        if (suppliersRows.isEmpty()){
             throw new MissingHtmlElementException();
         }
-        for (Element elemPrice : priceElements){
-            String strPrice = formatPrice(elemPrice.text());
-            contractPriceSum = new BigDecimal(strPrice).add(contractPriceSum);
+        for (Element supplierRow : suppliersRows){
+            Elements nameElem = supplierRow.select("[data-title=\"Official name\"]");
+            Elements priceElem = supplierRow.select("[data-title=\"Contractual price excl. VAT\"]");
+            Elements detailLinkElem = supplierRow.select(".gov-link.gov-link--has-arrow");
+            //if any information is missing, do not proceed with saving procurement
+            if (nameElem.isEmpty() || priceElem.isEmpty() || detailLinkElem.isEmpty()){
+                throw new MissingHtmlElementException();
+            }
+
+            // Parse the contract price as a BigDecimal and add it to the supplier's existing total,
+            // or create a new entry for the supplier, if new supplier was found.
+            BigDecimal price = new BigDecimal(formatPrice(priceElem.text()));
+            suppliersMap.merge(nameElem.text(), new Pair<>(price, detailLinkElem.attr("href")),
+                               (oldValue, newValue) -> new Pair<>(
+                                       oldValue.getFirst().add(newValue.getFirst()),
+                                       oldValue.getSecond()));
         }
-        return contractPriceSum;
+        return suppliersMap;
     }
 
     /**
@@ -98,13 +99,21 @@ public class ProcurementResultScrapper extends AbstractScrapper{
         for (Element participantRow : participants){
             //only the addition to base url
             String companyDetailHref = participantRow.select("a").attr("href");
-            Company participant = companyDetailScrapper.scrape(companyDetailHref);
+            String participantName = participantRow.select("[data-title=\"Official name\"]").text();
+            Company participant = companyDetailScrapper.scrape(companyDetailHref, participantName);
             String strPrice = formatPrice(
                     participantRow.select("[data-title=\"Bid price excl. VAT\"]").text());
             saveOffers(strPrice, procurement, participant);
         }
     }
 
+    /**
+     * Saves offers.
+     *
+     * @param strPrice    offer price
+     * @param procurement on which offer was created
+     * @param company     which created offer
+     */
     private void saveOffers(String strPrice, Procurement procurement, Company company){
         OfferId offerId = new OfferId(procurement.getId(), company.getId());
         Offer offer;
@@ -114,24 +123,6 @@ public class ProcurementResultScrapper extends AbstractScrapper{
             offer = new Offer(offerId, procurement, company);
         }
         offerService.create(offer);
-    }
-
-    /**
-     * Saves supplier.
-     *
-     * @return supplier company
-     * @throws IOException if wrong company detail link was found
-     */
-    private Company saveSupplier() throws IOException{
-        Elements supplier = document.select(
-                "[title=\"Supplier with Whom the Contract Has Been Entered into\"] td");
-        //only the addition to base url
-        String companyDetailHref = supplier.select("td.gov-table__cell:nth-of-type(1) a")
-                .attr("href");
-        if (companyDetailHref.isEmpty()){
-            throw new MissingHtmlElementException();
-        }
-        return companyDetailScrapper.scrape(companyDetailHref);
     }
 
     /**

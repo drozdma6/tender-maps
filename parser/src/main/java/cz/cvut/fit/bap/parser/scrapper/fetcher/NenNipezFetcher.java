@@ -15,12 +15,12 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class NenNipezFetcher implements IFetcher{
     private final String baseUrl = "https://nen.nipez.cz";
+
+    @Value("${procurement.pages.per.fetch}")
+    private int procurementPagesPerFetch;  //number of fetched pages per document
+
     @Value("${procurement.first.date.of.publication}")
-    private String firstDateOfPublication;
-
-    @Value("${procurement.scrapped.pages.limit}")
-    private String maximumPageLimit;
-
+    private String firstDateOfPublication; //since when should procurements be scrapped
 
     /**
      * Fetches contractor detail site.
@@ -38,19 +38,22 @@ public class NenNipezFetcher implements IFetcher{
     /**
      * Fetches document containing list of completed procurements by provided authority profile.
      * Filters only awarded procurements created by given contracting authority and created later
-     * than firstDateOfPublication. Fetches only pages from 1 to maximumPageLimit  (each page contains 50 procurements)
+     * than firstDateOfPublication.
      *
      * @param profile                 of contracting authority
      * @param contractorAuthorityName name of contracting authority
+     * @param pagingIteration         used to determine which pages are supposed to get fetched
      * @return document containing contractor completed site
      * @throws IOException if unable to connect
      */
     @Override
-    public Document getContractorCompleted(String profile, String contractorAuthorityName)
-            throws IOException{
+    public Document getContractorCompleted(String profile, String contractorAuthorityName,
+                                           int pagingIteration) throws IOException{
+        int rangeEnd = pagingIteration * procurementPagesPerFetch;
+        int rangeStart = rangeEnd - (procurementPagesPerFetch - 1);
+        String pageRange = rangeStart + "-" + rangeEnd;
         final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" + profile +
-                           "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=1-" +
-                           UriUtils.encode(maximumPageLimit, StandardCharsets.UTF_8) +
+                           "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=" + pageRange +
                            "&zadavatelNazev=" +
                            UriUtils.encode(contractorAuthorityName, StandardCharsets.UTF_8) +
                            "&datumPrvniUver=" +
@@ -58,7 +61,6 @@ public class NenNipezFetcher implements IFetcher{
 
         return Jsoup.connect(url).get();
     }
-
 
     /**
      * Fetches procurement result site.
@@ -70,8 +72,8 @@ public class NenNipezFetcher implements IFetcher{
     @Override
     public Document getProcurementResult(String systemNumber) throws IOException{
         String systemNumberHyphen = systemNumber.replace('/', '-');
-        final String url =
-                baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen + "/vysledek";
+        final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
+                           "/vysledek/p:vys:page=1-100;uca:page=1-100"; //show all participants and suppliers without paging
         return Jsoup.connect(url).get();
     }
 
@@ -102,4 +104,6 @@ public class NenNipezFetcher implements IFetcher{
         final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen;
         return Jsoup.connect(url).get();
     }
+
+
 }

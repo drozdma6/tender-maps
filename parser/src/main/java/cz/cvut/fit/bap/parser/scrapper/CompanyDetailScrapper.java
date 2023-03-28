@@ -30,13 +30,13 @@ public class CompanyDetailScrapper extends AbstractScrapper{
     /**
      * Scrape company detail page and save company
      *
-     * @param url of company detail page
+     * @param url          of company detail page
+     * @param officialName of company
      * @return newly saved company or company which was already saved before
      * @throws IOException if wrong url was provided
      */
-    public Company scrape(String url) throws IOException{
+    public Company scrape(String url, String officialName) throws IOException{
         document = fetcher.getCompanyDetail(url);
-        String officialName = document.select("[title=\"Official name\"] p").text();
         Optional<Company> optionalCompany = companyService.readByName(officialName);
         return optionalCompany.orElseGet(
                 () -> companyService.create(new Company(officialName, saveCompanyAddress())));

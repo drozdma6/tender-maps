@@ -37,7 +37,7 @@ public class Procurement implements DomainEntity<Long>{
     @Column(name = "date_of_publication")
     private LocalDate dateOfPublication;
 
-    @Column(name = "system_number", unique = true)
+    @Column(name = "system_number")
     private String systemNumber;
 
     public Procurement(){
