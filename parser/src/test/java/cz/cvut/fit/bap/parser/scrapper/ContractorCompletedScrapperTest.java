@@ -34,22 +34,36 @@ class ContractorCompletedScrapperTest{
     @MockBean
     private IFetcher fetcher;
 
-    private final Address contractorAddress = new Address("CZ", "Praha", "17000", "Nad štolou",
-                                                          "3");
-    private final ContractorAuthority contractorAuthority = new ContractorAuthority(
-            "Ministerstvo vnitra", "MVCR", contractorAddress);
 
-    private final String[] expectedSystemNumbers = {"N006/20/V00022104", "N006/22/V00017426", "N006/22/V00031753", "N006/23/V00006632"};
+    private final HtmlFileCreator htmlFileCreator = new HtmlFileCreator();
+    private final Address contractorAddress = new Address("CZ", "Praha", "11800", "Letenská", "15");
+    private final ContractorAuthority contractorAuthority = new ContractorAuthority(
+            "Ministerstvo financí", "mfcr", contractorAddress);
+
+    private final String[] expectedSystemNumbers = {"N006/23/V00004206", "N006/23/V00005110", "N006/23/V00004922"};
+
 
     @BeforeEach
     void setUp() throws IOException{
-        final String url = "https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/MVCR/uzavrene-zakazky";
-        HtmlFileCreator htmlFileCreator = new HtmlFileCreator();
-        Document document = Jsoup.parse(
-                htmlFileCreator.ensureCreatedHtmlFile(url, "ContractorCompleted.html"));
+        final String urlFirstPage = "https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/mfcr/uzavrene-zakazky/p:puvz:zadavatelNazev=Ministerstvo%20financ%C3%AD&datumPrvniUver=2023-02-01,2023-03-27&stavZP=zadana&page=1";
+        final String urlSecondPage = "https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/mfcr/uzavrene-zakazky/p:puvz:zadavatelNazev=Ministerstvo%20financ%C3%AD&datumPrvniUver=2023-02-01,2023-03-27&stavZP=zadana&page=2";
+
+        Document documentFirstPage = Jsoup.parse(
+                htmlFileCreator.ensureCreatedHtmlFile(urlFirstPage, "ContractorCompleted.html"));
+        Document documentSecondPage = Jsoup.parse(
+                htmlFileCreator.ensureCreatedHtmlFile(urlSecondPage, "ContractorCompleted2.html"));
+
+
         when(fetcher.getContractorCompleted(contractorAuthority.getProfile(),
-                                            contractorAuthority.getName())).thenReturn(document);
+                                            contractorAuthority.getName(), 1)).thenReturn(
+                documentFirstPage);
+
+        when(fetcher.getContractorCompleted(contractorAuthority.getProfile(),
+                                            contractorAuthority.getName(), 2)).thenReturn(
+                documentSecondPage);
+
     }
+
 
     @Test
     void scrape() throws IOException{
@@ -64,24 +78,23 @@ class ContractorCompletedScrapperTest{
                 .scrape(contractorAuthority, expectedSystemNumbers[1]);
         inOrder.verify(procurementResultScrapper, times(1))
                 .scrape(contractorAuthority, expectedSystemNumbers[2]);
-        inOrder.verify(procurementResultScrapper, times(1))
-                .scrape(contractorAuthority, expectedSystemNumbers[3]);
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    void endScrapping() throws IOException{
-        when(procurementService.existsBySystemNumber(expectedSystemNumbers[2])).thenReturn(true);
+    void endScrappingAlreadySavedProc() throws IOException{
+        when(procurementService.existsBySystemNumber(expectedSystemNumbers[0])).thenReturn(false);
+        when(procurementService.existsBySystemNumber(expectedSystemNumbers[1])).thenReturn(true);
 
         contractorCompletedScrapper.scrape(contractorAuthority);
 
         InOrder inOrder = Mockito.inOrder(procurementResultScrapper);
         inOrder.verify(procurementResultScrapper, times(1))
                 .scrape(contractorAuthority, expectedSystemNumbers[0]);
-        inOrder.verify(procurementResultScrapper, times(1))
+        inOrder.verify(procurementResultScrapper, never())
                 .scrape(contractorAuthority, expectedSystemNumbers[1]);
         inOrder.verify(procurementResultScrapper, never())
                 .scrape(contractorAuthority, expectedSystemNumbers[2]);
-        inOrder.verify(procurementResultScrapper, never())
-                .scrape(contractorAuthority, expectedSystemNumbers[3]);
+        inOrder.verifyNoMoreInteractions();
     }
 }

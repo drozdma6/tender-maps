@@ -56,7 +56,7 @@ public class CompanyDetailScrapperTest{
         when(addressService.create(any(Address.class))).thenAnswer(i -> i.getArgument(0));
         when(companyService.create(any(Company.class))).thenAnswer(i -> i.getArgument(0));
 
-        Company actualCompany = companyDetailScrapper.scrape(url);
+        Company actualCompany = companyDetailScrapper.scrape(url, officialName);
         verify(fetcher, times(1)).getCompanyDetail(url);
         verify(companyService, times(1)).readByName(officialName);
         verify(companyService, times(1)).create(expectedCompany);
@@ -79,7 +79,7 @@ public class CompanyDetailScrapperTest{
         when(addressService.create(any(Address.class))).thenAnswer(i -> i.getArgument(0));
         when(companyService.create(any(Company.class))).thenAnswer(i -> i.getArgument(0));
 
-        Company actualCompany = companyDetailScrapper.scrape(url);
+        Company actualCompany = companyDetailScrapper.scrape(url, officialName);
         verify(fetcher, times(1)).getCompanyDetail(url);
         verify(companyService, times(1)).readByName(officialName);
         verify(companyService, never()).create(expectedCompany);
