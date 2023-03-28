@@ -5,7 +5,7 @@ import cz.cvut.fit.bap.parser.business.ContractorAuthorityService;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
+import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
@@ -27,7 +27,7 @@ class ContractorDetailScrapperTest{
     private ContractorDetailScrapper contractorDetailScrapper;
 
     @MockBean
-    private IFetcher fetcher;
+    private AbstractFetcher fetcher;
 
     @MockBean
     private ContractorAuthorityService contractorAuthorityService;

@@ -2,7 +2,7 @@ package cz.cvut.fit.bap.parser.scrapper;
 
 import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
+import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class ContractorCompletedScrapper extends AbstractScrapper{
     private final ProcurementResultScrapper procurementResultScrapper;
     private final ProcurementService procurementService;
 
-    public ContractorCompletedScrapper(IFetcher fetcher,
+    public ContractorCompletedScrapper(AbstractFetcher fetcher,
                                        ProcurementResultScrapper procurementResultScrapper,
                                        ProcurementService procurementService){
         super(fetcher);

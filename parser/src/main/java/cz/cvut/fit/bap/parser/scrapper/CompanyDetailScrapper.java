@@ -4,7 +4,7 @@ import cz.cvut.fit.bap.parser.business.AddressService;
 import cz.cvut.fit.bap.parser.business.CompanyService;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.Company;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
+import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class CompanyDetailScrapper extends AbstractScrapper{
     private final CompanyService companyService;
     private final AddressService addressService;
 
-    public CompanyDetailScrapper(IFetcher fetcher, CompanyService companyService,
+    public CompanyDetailScrapper(AbstractFetcher fetcher, CompanyService companyService,
                                  AddressService addressService){
         super(fetcher);
         this.companyService = companyService;

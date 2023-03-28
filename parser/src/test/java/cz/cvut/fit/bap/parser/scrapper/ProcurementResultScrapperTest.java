@@ -7,7 +7,7 @@ import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import cz.cvut.fit.bap.parser.domain.Offer;
 import cz.cvut.fit.bap.parser.domain.Procurement;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
+import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
@@ -41,7 +41,7 @@ class ProcurementResultScrapperTest{
     private ProcurementDetailScrapper procurementDetailScrapper;
 
     @MockBean
-    private IFetcher fetcher;
+    private AbstractFetcher fetcher;
 
     private final String systemNumber = "testSystemNumber";
     private final HtmlFileCreator htmlFileCreator = new HtmlFileCreator();

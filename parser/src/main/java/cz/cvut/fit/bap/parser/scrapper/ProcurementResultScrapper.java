@@ -2,7 +2,7 @@ package cz.cvut.fit.bap.parser.scrapper;
 
 import cz.cvut.fit.bap.parser.business.OfferService;
 import cz.cvut.fit.bap.parser.domain.*;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
+import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import kotlin.Pair;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -23,7 +23,7 @@ public class ProcurementResultScrapper extends AbstractScrapper{
     private final CompanyDetailScrapper companyDetailScrapper;
     private final ProcurementDetailScrapper procurementDetailScrapper;
 
-    public ProcurementResultScrapper(OfferService offerService, IFetcher fetcher,
+    public ProcurementResultScrapper(OfferService offerService, AbstractFetcher fetcher,
                                      CompanyDetailScrapper companyDetailScrapper,
                                      ProcurementDetailScrapper procurementDetailScrapper){
         super(fetcher);

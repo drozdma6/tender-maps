@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Implementation of IFetcher, used for fetching "<a href="https://nen.nipez.cz">nen.nipez</a>"
+ * Implementation of abstract fetcher, used for fetching "<a href="https://nen.nipez.cz">nen.nipez</a>"
  */
 @Component
-public class NenNipezFetcher implements IFetcher{
+public class NenNipezFetcher extends AbstractFetcher{
     private final String baseUrl = "https://nen.nipez.cz";
 
     @Value("${procurement.pages.per.fetch}")

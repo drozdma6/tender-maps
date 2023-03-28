@@ -4,7 +4,7 @@ import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.domain.Company;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import cz.cvut.fit.bap.parser.domain.Procurement;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.IFetcher;
+import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,7 +23,8 @@ public class ProcurementDetailScrapper extends AbstractScrapper{
     private final ProcurementService procurementService;
 
 
-    public ProcurementDetailScrapper(IFetcher fetcher, ProcurementService procurementService){
+    public ProcurementDetailScrapper(AbstractFetcher fetcher,
+                                     ProcurementService procurementService){
         super(fetcher);
         this.procurementService = procurementService;
     }
