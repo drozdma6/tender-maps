@@ -5,6 +5,7 @@ import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -18,6 +19,9 @@ import java.io.IOException;
 public class ContractorCompletedScrapper extends AbstractScrapper{
     private final ProcurementResultScrapper procurementResultScrapper;
     private final ProcurementService procurementService;
+
+    @Value("${procurement.scrape.all:false}") //default value is false
+    private Boolean scrapeAll;
 
     public ContractorCompletedScrapper(AbstractFetcher fetcher,
                                        ProcurementResultScrapper procurementResultScrapper,
@@ -35,10 +39,10 @@ public class ContractorCompletedScrapper extends AbstractScrapper{
      * @throws IOException if wrong profile was given
      */
     public void scrape(ContractorAuthority authority) throws IOException{
-        int counter = 1; //counts iterations, used for loading certain pages in fetcher
+        int iterationCounter = 1; //counts iterations, used for loading certain pages in fetcher
 
         document = fetcher.getContractorCompleted(authority.getProfile(), authority.getName(),
-                                                  counter);
+                                                  iterationCounter);
         //end scrapping once document with .table-empty-message is found - solves paging
         while (document.select(".table-empty-message").isEmpty()){
             Elements procurementRows = document.select(
@@ -46,8 +50,12 @@ public class ContractorCompletedScrapper extends AbstractScrapper{
             for (Element procurementRow : procurementRows){
                 String procurementSystemNumber = procurementRow.select(
                         "[data-title=\"NEN system number\"]").text();
-                //stop scrapping when first already saved procurement is found
                 if (procurementService.existsBySystemNumber(procurementSystemNumber)){
+                    //continue scrapping next procurement
+                    if (scrapeAll){
+                        continue;
+                    }
+                    //stop scrapping this authority when first already saved procurement is found
                     return;
                 }
                 try{
@@ -57,9 +65,9 @@ public class ContractorCompletedScrapper extends AbstractScrapper{
                     continue;
                 }
             }
-            counter++;
+            iterationCounter++;
             document = fetcher.getContractorCompleted(authority.getProfile(), authority.getName(),
-                                                      counter);
+                                                      iterationCounter);
         }
     }
 }

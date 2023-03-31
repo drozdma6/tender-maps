@@ -16,10 +16,10 @@ import java.nio.charset.StandardCharsets;
 public class NenNipezFetcher extends AbstractFetcher{
     private final String baseUrl = "https://nen.nipez.cz";
 
-    @Value("${procurement.pages.per.fetch}")
+    @Value("${procurement.pages.per.fetch:5}") //default value is 5
     private int procurementPagesPerFetch;  //number of fetched pages per document
 
-    @Value("${procurement.first.date.of.publication}")
+    @Value("${procurement.first.date.of.publication:2022-01-01}") //default value is 2022-01-01
     private String firstDateOfPublication; //since when should procurements be scrapped
 
     /**
@@ -31,7 +31,8 @@ public class NenNipezFetcher extends AbstractFetcher{
      */
     @Override
     public Document getContractorDetail(String profile) throws IOException{
-        final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" + profile;
+        final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" +
+                           UriUtils.encode(profile, StandardCharsets.UTF_8);
         return Jsoup.connect(url).get();
     }
 
@@ -52,7 +53,8 @@ public class NenNipezFetcher extends AbstractFetcher{
         int rangeEnd = pagingIteration * procurementPagesPerFetch;
         int rangeStart = rangeEnd - (procurementPagesPerFetch - 1);
         String pageRange = rangeStart + "-" + rangeEnd;
-        final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" + profile +
+        final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" +
+                           UriUtils.encode(profile, StandardCharsets.UTF_8) +
                            "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=" + pageRange +
                            "&zadavatelNazev=" +
                            UriUtils.encode(contractorAuthorityName, StandardCharsets.UTF_8) +
