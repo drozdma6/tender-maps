@@ -7,8 +7,6 @@ import com.google.maps.model.AddressComponent;
 import com.google.maps.model.GeocodingResult;
 import cz.cvut.fit.bap.parser.domain.Address;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,7 +15,6 @@ import java.io.IOException;
  * Class for handling communication with Google's geocoding api.
  */
 @Component
-@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class GeocodingApiClient implements AutoCloseable{
     private final GeoApiContext context;
 
