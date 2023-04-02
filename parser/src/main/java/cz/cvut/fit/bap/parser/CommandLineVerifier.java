@@ -10,22 +10,27 @@ import java.time.format.DateTimeParseException;
 
 @Component
 class CommandLineVerifier implements CommandLineRunner{
+
+    private final String pagesPerFetchArg = "--procurement.pages.per.fetch=";
+    private final String scrapeAllArg = "--procurement.scrape.all=";
+    private final String firstDateOfPublicationArg = "--procurement.first.date.of.publication=";
+
     @Override
     public void run(String... args){
         // Check and process each command line argument
         for (String arg : args){
-            if (arg.startsWith("--procurement.pages.per.fetch=")){
+            if (arg.startsWith(pagesPerFetchArg)){
                 processPagesPerFetchArgument(arg);
-            } else if (arg.startsWith("--procurement.scrape.all=")){
+            } else if (arg.startsWith(scrapeAllArg)){
                 processScrapeAllArgument(arg);
-            } else if (arg.startsWith("--procurement.first.date.of.publication=")){
+            } else if (arg.startsWith(firstDateOfPublicationArg)){
                 processFirstDateOfPublicationArgument(arg);
             }
         }
     }
 
     private void processPagesPerFetchArgument(String arg){
-        String value = arg.substring("--procurement.pages.per.fetch=".length());
+        String value = arg.substring(pagesPerFetchArg.length());
         try{
             if (Integer.parseInt(value) <= 0){
                 throw new IllegalArgumentException(
@@ -39,7 +44,7 @@ class CommandLineVerifier implements CommandLineRunner{
     }
 
     private void processScrapeAllArgument(String arg){
-        String value = arg.substring("--procurement.scrape.all=".length());
+        String value = arg.substring(scrapeAllArg.length());
         if (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")){
             throw new IllegalArgumentException(
                     "The procurement.scrape.all value is not a valid boolean: " + value);
@@ -47,7 +52,7 @@ class CommandLineVerifier implements CommandLineRunner{
     }
 
     private void processFirstDateOfPublicationArgument(String arg){
-        String value = arg.substring("--procurement.first.date.of.publication=".length());
+        String value = arg.substring(firstDateOfPublicationArg.length());
         try{
             LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE);
         } catch (DateTimeParseException e){
