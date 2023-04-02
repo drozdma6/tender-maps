@@ -18,7 +18,7 @@ import java.io.IOException;
 public class GeocodingApiClient implements AutoCloseable{
     private final GeoApiContext context;
 
-    public GeocodingApiClient(@Value("${apiKey}") final String apiKey){
+    public GeocodingApiClient(@Value("${apiKey:}") final String apiKey){
         this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
     }
 
