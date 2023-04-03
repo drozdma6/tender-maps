@@ -12,7 +12,6 @@ import java.util.Optional;
 public interface AddressJpaRepository extends JpaRepository<Address, Long>{
     @Query(value = "SELECT * FROM address WHERE building_number=:#{#address.buildingNumber} " +
                    "AND city=:#{#address.city} " + "AND street=:#{#address.street} " +
-                   "AND country_code=:#{#address.countryCode} " +
                    "AND postal_code=:#{#address.postalCode}", nativeQuery = true)
     Optional<Address> readAddress(@Param("address") Address address);
 }
