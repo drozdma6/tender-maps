@@ -1,6 +1,7 @@
 package cz.cvut.fit.bap.parser.dao;
 
 import cz.cvut.fit.bap.parser.domain.Address;
+import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +20,22 @@ class AddressJpaRepositoryTest{
 
     @Test
     void testReadAddressEmpty(){
-        final Address address = new Address("cz", "Praha", "16017", "Chaloupeckého", "1915");
-
-        Optional<Address> returnedAddress = addressJpaRepository.readAddress(address);
+        final AddressDto addressDto = new AddressDto("SK", "65", "Bratislava", "Bratislavska",
+                                                     "16000");
+        Optional<Address> returnedAddress = addressJpaRepository.readAddress(addressDto);
         assertTrue(returnedAddress.isEmpty());
     }
 
     @Test
     void testReadAddress(){
-        final Address address = new Address("cz", "Praha", "16017", "Chaloupeckého", "1915");
+        final AddressDto addressDto = new AddressDto("SK", "Bratislava", "16000", "Bratislavska",
+                                                     "65");
+
+        final Address address = new Address("SK", "Bratislava", "16000", "Bratislavska", "65");
 
         addressJpaRepository.save(address);
 
-        Optional<Address> returnedAddress = addressJpaRepository.readAddress(address);
+        Optional<Address> returnedAddress = addressJpaRepository.readAddress(addressDto);
         assertTrue(returnedAddress.isPresent());
 
         Assertions.assertEquals(address.getCountryCode(), returnedAddress.get().getCountryCode());
