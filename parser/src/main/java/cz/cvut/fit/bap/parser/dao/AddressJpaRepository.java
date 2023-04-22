@@ -11,8 +11,17 @@ import java.util.Optional;
 
 @Repository
 public interface AddressJpaRepository extends JpaRepository<Address, Long>{
-    @Query(value = "SELECT * FROM address WHERE building_number=:#{#address.buildingNumber} " +
-                   "AND city=:#{#address.city} " + "AND street=:#{#address.street} " +
-                   "AND postal_code=:#{#address.postalCode}", nativeQuery = true)
+    /**
+     * Finds matching address, comparing two null values as equal with IS NOT DISTINCT FROM
+     *
+     * @param address which supposed to be found
+     * @return optional of address
+     */
+    @Query(value = "SELECT * FROM address WHERE " +
+                   "building_number IS NOT DISTINCT FROM :#{#address.buildingNumber} " +
+                   "AND city IS NOT DISTINCT FROM :#{#address.city} " +
+                   "AND street IS NOT DISTINCT FROM :#{#address.street} " +
+                   "AND postal_code IS NOT DISTINCT FROM :#{#address.postalCode}",
+           nativeQuery = true)
     Optional<Address> readAddress(@Param("address") AddressDto address);
 }
