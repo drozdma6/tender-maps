@@ -17,23 +17,19 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'org.postgresql:postgresql'
-	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.jsoup:jsoup:1.15.3'
 	testImplementation 'junit:junit:4.13.1'
-
-	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
-
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	//Google geocoding API
 	implementation 'com.google.maps:google-maps-services:2.1.2'
 	implementation 'org.slf4j:slf4j-simple:1.7.25'
-
 	//Schedule running
 	testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
-
-	//For uriUtils
-	implementation 'org.springframework.boot:spring-boot-starter-web'
 	//testing db
 	testRuntimeOnly 'com.h2database:h2'
+	//parsing JSON
+	implementation 'org.json:json:20230227'
 }
 
 test {
