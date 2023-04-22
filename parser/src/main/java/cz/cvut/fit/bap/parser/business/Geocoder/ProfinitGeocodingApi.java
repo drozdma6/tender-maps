@@ -75,6 +75,11 @@ public class ProfinitGeocodingApi implements Geocoder{
         }
         JSONObject firstResult = results.getJSONObject(0);
         JSONObject ruian = firstResult.getJSONObject("ruian");
-        return new Pair<>(ruian.getDouble("wgs_x"), ruian.getDouble("wgs_y"));
+        try{
+            return new Pair<>(ruian.getDouble("wgs_x"), ruian.getDouble("wgs_y"));
+        } catch (NumberFormatException e){
+            //if wgs_x or wgs_y is null
+            return new Pair<>(null, null);
+        }
     }
 }
