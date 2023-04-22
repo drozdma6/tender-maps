@@ -11,4 +11,11 @@ public abstract class AbstractScrapper{
     public AbstractScrapper(AbstractFetcher fetcher){
         this.fetcher = fetcher;
     }
+
+    protected String getNullIfEmpty(String str){
+        if (str == null || str.isEmpty()){
+            return null;
+        }
+        return str;
+    }
 }

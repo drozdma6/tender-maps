@@ -64,7 +64,7 @@ public class ProcurementDetailScrapper extends AbstractScrapper{
      * @return place of performance
      */
     private String getProcurementPlaceOfPerformance(){
-        return document.select("[data-title=\"Place of performance\"]").text();
+        return getNullIfEmpty(document.select("[data-title=\"Place of performance\"]").text());
     }
 
     /**

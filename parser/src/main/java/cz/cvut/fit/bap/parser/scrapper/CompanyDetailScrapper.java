@@ -4,6 +4,7 @@ import cz.cvut.fit.bap.parser.business.AddressService;
 import cz.cvut.fit.bap.parser.business.CompanyService;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.Company;
+import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import org.springframework.stereotype.Component;
 
@@ -48,13 +49,14 @@ public class CompanyDetailScrapper extends AbstractScrapper{
      * @return scraped address
      */
     private Address saveCompanyAddress(){
-        String city = document.select("[title=\"Municipality\"] p").text();
-        String street = document.select("[title=\"street\"] p").text();
-        String postalCode = document.select("[title=\"postal code\"] p").text();
-        String countryOfficialName = document.select("[title=\"State\"] p").text();
-        String buildingNumber = document.select("[title=\"building number\"] p").text();
-
-        return addressService.create(
-                new Address(countryOfficialName, city, postalCode, street, buildingNumber));
+        String city = getNullIfEmpty(document.select("[title=\"Municipality\"] p").text());
+        String street = getNullIfEmpty(document.select("[title=\"street\"] p").text());
+        String postalCode = getNullIfEmpty(document.select("[title=\"postal code\"] p").text());
+        String countryOfficialName = getNullIfEmpty(document.select("[title=\"State\"] p").text());
+        String buildingNumber = getNullIfEmpty(
+                document.select("[title=\"building number\"] p").text());
+        AddressDto addressDto = new AddressDto(countryOfficialName, city, postalCode, street,
+                                               buildingNumber);
+        return addressService.create(addressDto);
     }
 }
