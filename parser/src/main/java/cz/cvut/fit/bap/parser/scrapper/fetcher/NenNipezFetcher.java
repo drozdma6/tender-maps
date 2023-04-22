@@ -8,6 +8,7 @@ import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of abstract fetcher, used for fetching "<a href="https://nen.nipez.cz">nen.nipez</a>"
@@ -27,13 +28,12 @@ public class NenNipezFetcher extends AbstractFetcher{
      *
      * @param profile of contractor
      * @return Document containing contractor detail site
-     * @throws IOException if unable to connect
      */
     @Override
-    public Document getContractorDetail(String profile) throws IOException{
+    public Document getContractorDetail(String profile){
         final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" +
                            UriUtils.encode(profile, StandardCharsets.UTF_8);
-        return Jsoup.connect(url).get();
+        return getDocumentWithRetry(url);
     }
 
     /**
@@ -45,11 +45,10 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @param contractorAuthorityName name of contracting authority
      * @param pagingIteration         used to determine which pages are supposed to get fetched
      * @return document containing contractor completed site
-     * @throws IOException if unable to connect
      */
     @Override
     public Document getContractorCompleted(String profile, String contractorAuthorityName,
-                                           int pagingIteration) throws IOException{
+                                           int pagingIteration){
         int rangeEnd = pagingIteration * procurementPagesPerFetch;
         int rangeStart = rangeEnd - (procurementPagesPerFetch - 1);
         String pageRange = rangeStart + "-" + rangeEnd;
@@ -61,7 +60,7 @@ public class NenNipezFetcher extends AbstractFetcher{
                            "&datumPrvniUver=" +
                            UriUtils.encode(firstDateOfPublication, StandardCharsets.UTF_8) + ",";
 
-        return Jsoup.connect(url).get();
+        return getDocumentWithRetry(url);
     }
 
     /**
@@ -69,27 +68,28 @@ public class NenNipezFetcher extends AbstractFetcher{
      *
      * @param systemNumber of procurement
      * @return Document containing procurement result site
-     * @throws IOException if unable to connect
      */
     @Override
-    public Document getProcurementResult(String systemNumber) throws IOException{
+    public Document getProcurementResult(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
-                           "/vysledek/p:vys:page=1-100;uca:page=1-100"; //show all participants and suppliers without paging
-        return Jsoup.connect(url).get();
+                           "/vysledek/p:vys:page=1-10;uca:page=1-10"; //show all participants and suppliers without paging
+        return getDocumentWithRetry(url);
     }
 
 
     /**
-     * Fetches company detail site.
+     * Fetches company detail site
      *
      * @param detailUrl addition to base url for desired company
      * @return Document containing company detail site
-     * @throws IOException if unable to connect
      */
     @Override
-    public Document getCompanyDetail(String detailUrl) throws IOException{
-        return Jsoup.connect(baseUrl + detailUrl).get();
+    public Document getCompanyDetail(String detailUrl){
+        //removes redundant information from url to increase performance
+        String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
+        String url = baseUrl + detailUrl.replaceFirst(pattern, "/");
+        return getDocumentWithRetry(url);
     }
 
 
@@ -98,14 +98,36 @@ public class NenNipezFetcher extends AbstractFetcher{
      *
      * @param systemNumber procurement
      * @return Document containing procurement detail site
-     * @throws IOException if unable to connect
      */
     @Override
-    public Document getProcurementDetail(String systemNumber) throws IOException{
+    public Document getProcurementDetail(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen;
-        return Jsoup.connect(url).get();
+        return getDocumentWithRetry(url);
     }
 
+    /**
+     * Fetches document from url with exponential backoff
+     *
+     * @param url which is supposed to be fetched
+     * @return document
+     */
+    private Document getDocumentWithRetry(String url){
+        int backoffSeconds = 1; //initial backoff time
+        int maxRetries = 8;
 
+        for (int i = 0; i < maxRetries; i++){
+            try{
+                return Jsoup.connect(url).get();
+            } catch (IOException e){
+                try{
+                    TimeUnit.SECONDS.sleep(backoffSeconds);
+                    backoffSeconds = backoffSeconds * 2;
+                } catch (InterruptedException ex){
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        throw new RuntimeException("Failed to retrieve document after " + maxRetries + " tries");
+    }
 }
