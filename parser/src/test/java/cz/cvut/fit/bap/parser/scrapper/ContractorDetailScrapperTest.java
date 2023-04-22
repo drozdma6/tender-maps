@@ -5,6 +5,7 @@ import cz.cvut.fit.bap.parser.business.ContractorAuthorityService;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
+import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -52,7 +53,7 @@ class ContractorDetailScrapperTest{
                                                               expectedAddress);
         when(contractorAuthorityService.create(any(ContractorAuthority.class))).thenAnswer(
                 i -> i.getArgument(0));
-        when(addressService.create(any(Address.class))).thenAnswer(i -> i.getArgument(0));
+        when(addressService.create(any(AddressDto.class))).thenReturn(expectedAddress);
     }
 
     @Test

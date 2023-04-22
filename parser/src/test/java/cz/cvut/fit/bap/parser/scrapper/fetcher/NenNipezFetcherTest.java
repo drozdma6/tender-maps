@@ -60,7 +60,7 @@ class NenNipezFetcherTest{
     @Test
     void getProcurementResult() throws IOException{
         String testSystemNumber = "testSystemNumber";
-        String expectedUrl = "https://nen.nipez.cz/en/verejne-zakazky/detail-zakazky/testSystemNumber/vysledek/p:vys:page=1-100;uca:page=1-100";
+        String expectedUrl = "https://nen.nipez.cz/en/verejne-zakazky/detail-zakazky/testSystemNumber/vysledek/p:vys:page=1-10;uca:page=1-10";
         Document expectedDoc = new Document(expectedUrl);
 
         when(connection.get()).thenReturn(expectedDoc);

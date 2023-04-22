@@ -1,5 +1,6 @@
-package cz.cvut.fit.bap.parser.business.Geocoder;
+package cz.cvut.fit.bap.parser.business.Integration.Geocoder;
 
+import cz.cvut.fit.bap.parser.business.Geocoder.ProfinitGeocodingApi;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +21,7 @@ class ProfinitGeocoderApiTest{
     public void test(){
         //Čechova 225/10, 17000, Praha 7
         AddressDto addressDto = new AddressDto("CZ", "Praha", "17000", "Čechova", "10");
-        Address expectedAddress = new Address("10", "Praha", "Čechova", "CZ", "17000",
+        Address expectedAddress = new Address("CZ", "Praha", "17000", "Čechova", "10",
                                               50.10070427864861, 14.42151999409848);
         Address actualAddress = profinitGeocoderApi.geocode(addressDto);
 
@@ -30,7 +31,10 @@ class ProfinitGeocoderApiTest{
         Assertions.assertEquals(expectedAddress.getStreet(), actualAddress.getStreet());
         Assertions.assertEquals(expectedAddress.getBuildingNumber(),
                                 actualAddress.getBuildingNumber());
-        Assertions.assertEquals(expectedAddress.getLatitude(), actualAddress.getLatitude());
-        Assertions.assertEquals(expectedAddress.getLongitude(), actualAddress.getLongitude());
+        double epsilon = 0.00001;
+        Assertions.assertEquals(expectedAddress.getLongitude(), actualAddress.getLongitude(),
+                                epsilon);
+        Assertions.assertEquals(expectedAddress.getLatitude(), actualAddress.getLatitude(),
+                                epsilon);
     }
 }

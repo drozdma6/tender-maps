@@ -5,6 +5,7 @@ import cz.cvut.fit.bap.parser.business.CompanyService;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.Company;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
+import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
 import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,65 +35,60 @@ public class CompanyDetailScrapperTest{
     @MockBean
     private CompanyService companyService;
 
-    private Address expectedAddress;
-    private Company expectedCompany;
     private final String officialName = "CES EA s.r.o.";
+    private final Address address = new Address("cz", "Praha", "10000", "Vinohradská", "230");
+    ;
+    private final Company expectedCompany = new Company(officialName, address);
     private final String url = "https://nen.nipez.cz/en/verejne-zakazky/p:vz:sort-stavZP=none/detail-zakazky/N006-23-V00002372/vysledek/detail-uverejneni/1590322705";
-
 
     @BeforeEach
     public void setUp() throws IOException{
         HtmlFileCreator htmlFileCreator = new HtmlFileCreator();
         Document document = Jsoup.parse(
                 htmlFileCreator.ensureCreatedHtmlFile(url, "CompanyDetail.html"));
-        expectedAddress = new Address("Česká republika", "Praha", "10000", "Vinohradská", "230");
-        expectedCompany = new Company(officialName, expectedAddress);
         when(fetcher.getCompanyDetail(url)).thenReturn(document);
     }
 
     @Test
     void testNewCompany() throws IOException{
         when(companyService.readByName(officialName)).thenReturn(Optional.empty());
-        when(addressService.create(any(Address.class))).thenAnswer(i -> i.getArgument(0));
+        when(addressService.create(any(AddressDto.class))).thenReturn(address);
         when(companyService.create(any(Company.class))).thenAnswer(i -> i.getArgument(0));
 
         Company actualCompany = companyDetailScrapper.scrape(url, officialName);
         verify(fetcher, times(1)).getCompanyDetail(url);
         verify(companyService, times(1)).readByName(officialName);
         verify(companyService, times(1)).create(expectedCompany);
-        verify(addressService, times(1)).create(expectedAddress);
+        verify(addressService, times(1)).create(any(AddressDto.class));
         Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
-        Assertions.assertEquals(expectedAddress.getCountryCode(),
+        Assertions.assertEquals(address.getCountryCode(),
                                 actualCompany.getAddress().getCountryCode());
-        Assertions.assertEquals(expectedAddress.getCity(), actualCompany.getAddress().getCity());
-        Assertions.assertEquals(expectedAddress.getPostalCode(),
+        Assertions.assertEquals(address.getCity(), actualCompany.getAddress().getCity());
+        Assertions.assertEquals(address.getPostalCode(),
                                 actualCompany.getAddress().getPostalCode());
-        Assertions.assertEquals(expectedAddress.getStreet(),
-                                actualCompany.getAddress().getStreet());
-        Assertions.assertEquals(expectedAddress.getBuildingNumber(),
+        Assertions.assertEquals(address.getStreet(), actualCompany.getAddress().getStreet());
+        Assertions.assertEquals(address.getBuildingNumber(),
                                 actualCompany.getAddress().getBuildingNumber());
     }
 
     @Test
     void testExistingCompany() throws IOException{
         when(companyService.readByName(officialName)).thenReturn(Optional.of(expectedCompany));
-        when(addressService.create(any(Address.class))).thenAnswer(i -> i.getArgument(0));
         when(companyService.create(any(Company.class))).thenAnswer(i -> i.getArgument(0));
 
         Company actualCompany = companyDetailScrapper.scrape(url, officialName);
         verify(fetcher, times(1)).getCompanyDetail(url);
         verify(companyService, times(1)).readByName(officialName);
         verify(companyService, never()).create(expectedCompany);
-        verify(addressService, never()).create(expectedAddress);
+        verify(addressService, never()).create(address);
         Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
-        Assertions.assertEquals(expectedAddress.getCountryCode(),
+        Assertions.assertEquals(address.getCountryCode(),
                                 actualCompany.getAddress().getCountryCode());
-        Assertions.assertEquals(expectedAddress.getCity(), actualCompany.getAddress().getCity());
-        Assertions.assertEquals(expectedAddress.getPostalCode(),
+        Assertions.assertEquals(address.getCity(), actualCompany.getAddress().getCity());
+        Assertions.assertEquals(address.getPostalCode(),
                                 actualCompany.getAddress().getPostalCode());
-        Assertions.assertEquals(expectedAddress.getStreet(),
-                                actualCompany.getAddress().getStreet());
-        Assertions.assertEquals(expectedAddress.getBuildingNumber(),
+        Assertions.assertEquals(address.getStreet(), actualCompany.getAddress().getStreet());
+        Assertions.assertEquals(address.getBuildingNumber(),
                                 actualCompany.getAddress().getBuildingNumber());
     }
 }

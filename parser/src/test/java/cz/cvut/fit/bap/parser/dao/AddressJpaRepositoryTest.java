@@ -45,4 +45,31 @@ class AddressJpaRepositoryTest{
         Assertions.assertEquals(address.getBuildingNumber(),
                                 returnedAddress.get().getBuildingNumber());
     }
+
+    @Test
+    void nullValuesInAddressExisting(){
+        final AddressDto addressDto = new AddressDto("SK", null, null, "Bratislavska", "65");
+
+        final Address address = new Address("SK", null, null, "Bratislavska", "65");
+
+        addressJpaRepository.save(address);
+
+        Optional<Address> returnedAddress = addressJpaRepository.readAddress(addressDto);
+        assertTrue(returnedAddress.isPresent());
+
+        Assertions.assertEquals(address.getCountryCode(), returnedAddress.get().getCountryCode());
+        Assertions.assertEquals(address.getCity(), returnedAddress.get().getCity());
+        Assertions.assertEquals(address.getPostalCode(), returnedAddress.get().getPostalCode());
+        Assertions.assertEquals(address.getStreet(), returnedAddress.get().getStreet());
+        Assertions.assertEquals(address.getBuildingNumber(),
+                                returnedAddress.get().getBuildingNumber());
+    }
+
+    @Test
+    void nullValuesInAddressNonExisting(){
+        final AddressDto addressDto = new AddressDto("SK", null, null, "Bratislavska", "65");
+
+        Optional<Address> returnedAddress = addressJpaRepository.readAddress(addressDto);
+        assertTrue(returnedAddress.isEmpty());
+    }
 }
