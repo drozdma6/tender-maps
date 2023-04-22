@@ -1,10 +1,14 @@
 package cz.cvut.fit.bap.parser.business;
 
-import com.google.maps.model.GeocodingResult;
+import cz.cvut.fit.bap.parser.business.Geocoder.GoogleGeocodingApi;
+import cz.cvut.fit.bap.parser.business.Geocoder.ProfinitGeocodingApi;
 import cz.cvut.fit.bap.parser.dao.AddressJpaRepository;
 import cz.cvut.fit.bap.parser.domain.Address;
+import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
+import cz.cvut.fit.bap.parser.scrapper.dto.converter.AddressDtoToAddress;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -12,31 +16,51 @@ import java.util.Optional;
  */
 @Service
 public class AddressService extends AbstractCreateService<Address, Long>{
-    private final GeocodingApiClient geocodingApiClient;
+    private final GoogleGeocodingApi googleGeocoder;
+    private final ProfinitGeocodingApi profinitGeocoder;
+
+    private final AddressDtoToAddress addressDtoToAddress;
 
     public AddressService(AddressJpaRepository addressJpaRepository,
-                          GeocodingApiClient geocodingApiClient){
+                          GoogleGeocodingApi googleGeocoder, ProfinitGeocodingApi profinitGeocoder,
+                          AddressDtoToAddress addressDtoToAddress){
         super(addressJpaRepository);
-        this.geocodingApiClient = geocodingApiClient;
+        this.googleGeocoder = googleGeocoder;
+        this.profinitGeocoder = profinitGeocoder;
+        this.addressDtoToAddress = addressDtoToAddress;
     }
 
-    /**
-     * Creates new address entity, sets country state in short format, sets latitude and longitude
-     *
-     * @param entity which is supposed to be stored
-     * @return entity which is supposed to be stored
+    /*
+        Forbids creating entity from Address
      */
     @Override
     public Address create(Address entity){
-        Optional<Address> addressOptional = readAddress(entity);
+        throw new UnsupportedOperationException("Unsupported operation create in address");
+    }
+
+    /**
+     * Creates new address entity from addressDto by setting country code, latitude and longitude
+     *
+     * @param addressDto which is supposed to be stored
+     * @return address from database
+     */
+    public Address create(AddressDto addressDto){
+        Optional<Address> addressOptional = readAddress(addressDto);
         if (addressOptional.isPresent()){
             return addressOptional.get();
         }
-        GeocodingResult[] geocodingResult = geocodingApiClient.geocode(entity);
-        entity.setLatitude(geocodingApiClient.getLat(geocodingResult));
-        entity.setLongitude(geocodingApiClient.getLng(geocodingResult));
-        entity.setCountryCode(geocodingApiClient.getCountryShortName(geocodingResult));
-        return super.create(entity);
+        if (dtoIsIncomplete(addressDto)){
+            return super.create(addressDtoToAddress.apply(addressDto));
+        }
+        Address address;
+        String country = addressDto.getCountry().toLowerCase();
+        if (Objects.equals(country, "cz") || Objects.equals(country, "česká republika")){
+            //profinit geocoder for czech places
+            address = profinitGeocoder.geocode(addressDto);
+        } else{
+            address = googleGeocoder.geocode(addressDto);
+        }
+        return super.create(address);
     }
 
     /**
@@ -45,8 +69,14 @@ public class AddressService extends AbstractCreateService<Address, Long>{
      * @param address which is supposed to be found
      * @return optional of address
      */
-    public Optional<Address> readAddress(Address address){
+    public Optional<Address> readAddress(AddressDto address){
         return ((AddressJpaRepository) repository).readAddress(address);
+    }
+
+    private boolean dtoIsIncomplete(AddressDto addressDto){
+        return addressDto.getCountry() == null || addressDto.getBuildingNumber() == null ||
+               addressDto.getCity() == null || addressDto.getStreet() == null ||
+               addressDto.getPostalCode() == null;
     }
 }
 
