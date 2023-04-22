@@ -54,7 +54,7 @@ public class AddressService extends AbstractCreateService<Address, Long>{
         }
         Address address;
         String country = addressDto.getCountry().toLowerCase();
-        if (Objects.equals(country, "cz") || Objects.equals(country, "česká republika")){
+        if (Objects.equals(country, "cz")){
             //profinit geocoder for czech places
             address = profinitGeocoder.geocode(addressDto);
         } else{

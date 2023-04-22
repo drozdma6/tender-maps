@@ -9,6 +9,7 @@ import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -55,8 +56,11 @@ public class CompanyDetailScrapper extends AbstractScrapper{
         String countryOfficialName = getNullIfEmpty(document.select("[title=\"State\"] p").text());
         String buildingNumber = getNullIfEmpty(
                 document.select("[title=\"building number\"] p").text());
-        AddressDto addressDto = new AddressDto(countryOfficialName, city, postalCode, street,
-                                               buildingNumber);
-        return addressService.create(addressDto);
+        if (Objects.equals(countryOfficialName.toLowerCase(), "česká republika")){
+            return addressService.create(
+                    new AddressDto("CZ", city, postalCode, street, buildingNumber));
+        }
+        return addressService.create(
+                new AddressDto(countryOfficialName, city, postalCode, street, buildingNumber));
     }
 }
