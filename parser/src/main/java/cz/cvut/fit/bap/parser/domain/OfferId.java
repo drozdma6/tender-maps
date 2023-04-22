@@ -5,6 +5,9 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+/*
+    Class representing id for Offer entity
+ */
 @Embeddable
 public class OfferId implements Serializable{
     private Long procurementId;
@@ -40,8 +43,7 @@ public class OfferId implements Serializable{
             return true;
         if (!(o instanceof OfferId offerId))
             return false;
-        return Objects.equals(procurementId, offerId.procurementId) &&
-               Objects.equals(companyId, offerId.companyId);
+        return Objects.equals(procurementId, offerId.procurementId) && Objects.equals(companyId, offerId.companyId);
     }
 
     @Override

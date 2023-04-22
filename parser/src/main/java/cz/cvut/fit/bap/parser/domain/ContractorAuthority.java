@@ -7,6 +7,10 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+
+/*
+    Class represents contractor authority table
+ */
 @Entity
 public class ContractorAuthority implements DomainEntity<Long>{
     @Id

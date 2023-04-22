@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/*
+    Class represents procurement table
+ */
 @Entity
 public class Procurement implements DomainEntity<Long>{
     @Id
@@ -44,8 +47,7 @@ public class Procurement implements DomainEntity<Long>{
     }
 
     public Procurement(String name, Company supplier, ContractorAuthority contractorAuthority,
-                       BigDecimal contractPrice, String placeOfPerformance,
-                       LocalDate dateOfPublication, String systemNumber){
+                       BigDecimal contractPrice, String placeOfPerformance, LocalDate dateOfPublication, String systemNumber){
         this.name = name;
         this.supplier = supplier;
         this.contractorAuthority = contractorAuthority;

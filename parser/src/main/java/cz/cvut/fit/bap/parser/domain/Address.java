@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 
 import java.util.Objects;
 
+/*
+    Class represents address table
+ */
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(
-        columnNames = {"building_number", "city", "street", "country_code", "postal_code"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"building_number", "city", "street", "country_code", "postal_code"})})
 public class Address implements DomainEntity<Long>{
     @Id
     @GeneratedValue
@@ -39,8 +41,8 @@ public class Address implements DomainEntity<Long>{
         this.postalCode = postalCode;
     }
 
-    public Address(String buildingNumber, String city, String street, String countryCode,
-                   String postalCode, Double latitude, Double longitude){
+    public Address(String countryCode, String city, String postalCode, String street,
+                   String buildingNumber, Double latitude, Double longitude){
         this.buildingNumber = buildingNumber;
         this.city = city;
         this.street = street;

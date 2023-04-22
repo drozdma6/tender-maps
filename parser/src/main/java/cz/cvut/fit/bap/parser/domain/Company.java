@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/*
+    Class represents company table
+ */
 @Entity
 public class Company implements DomainEntity<Long>{
     @Id

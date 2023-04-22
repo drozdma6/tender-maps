@@ -6,6 +6,10 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+
+/*
+    Class represents offer from certain company to certain procurement
+ */
 @Entity
 public class Offer implements DomainEntity<OfferId>{
     @EmbeddedId
