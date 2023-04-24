@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ContractorAuthorityJpaRepository extends JpaRepository<ContractorAuthority, Long>{
-    Optional<ContractorAuthority> findContractorAuthorityByName(String name);
+    Optional<ContractorAuthority> findContractorAuthorityByProfile(String profile);
 }

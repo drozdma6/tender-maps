@@ -16,12 +16,13 @@ public class ContractorAuthorityService extends AbstractCreateService<Contractor
     }
 
     /**
-     * Reads contractor authority by name
+     * Reads contractor authority by profile
      *
-     * @param name of wanted contractor authority
+     * @param profile of wanted contractor authority
      * @return optional of contractor authority
      */
-    public Optional<ContractorAuthority> readByName(String name){
-        return ((ContractorAuthorityJpaRepository) repository).findContractorAuthorityByName(name);
+    public Optional<ContractorAuthority> readByProfile(String profile){
+        return ((ContractorAuthorityJpaRepository) repository).findContractorAuthorityByProfile(
+                profile);
     }
 }
