@@ -1,5 +1,7 @@
 package cz.cvut.fit.bap.parser.scrapper;
 
+import cz.cvut.fit.bap.parser.controller.ContractorAuthorityController;
+import cz.cvut.fit.bap.parser.controller.ProcurementController;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,16 +21,16 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnProperty(value = "app.scheduling.enable", havingValue = "true", matchIfMissing = true)
 @Component
 public class MainScrapper{
-    private final ContractorCompletedScrapper contractorCompletedScrapper;
-    private final ContractorDetailScrapper contractorDetailScrapper;
+    private final ContractorAuthorityController contractorAuthorityController;
+    private final ProcurementController procurementController;
 
     @Value("classpath:profiles.txt")
     private Resource profilesPath;
 
-    public MainScrapper(ContractorCompletedScrapper contractorCompletedScrapper,
-                        ContractorDetailScrapper contractorDetailScrapper){
-        this.contractorCompletedScrapper = contractorCompletedScrapper;
-        this.contractorDetailScrapper = contractorDetailScrapper;
+    public MainScrapper(ContractorAuthorityController contractorAuthorityController,
+                        ProcurementController procurementController){
+        this.contractorAuthorityController = contractorAuthorityController;
+        this.procurementController = procurementController;
     }
 
     /**
@@ -42,8 +45,21 @@ public class MainScrapper{
                 new InputStreamReader(profilesPath.getInputStream()))){
             String profile;
             while ((profile = reader.readLine()) != null){
-                ContractorAuthority authority = contractorDetailScrapper.scrape(profile);
-                contractorCompletedScrapper.scrape(authority);
+                ContractorAuthority authority = contractorAuthorityController.saveContractorAuthority(
+                        profile);
+
+                List<String> procurementSystemNums = contractorAuthorityController.getProcurementSystemNumbers(
+                        authority);
+                for (String procurementSystemNum : procurementSystemNums){
+                    try{
+                        boolean procurementExists = procurementController.saveProcurements(
+                                authority, procurementSystemNum);
+                        if (procurementExists){
+                            break;
+                        }
+                    } catch (MissingHtmlElementException ignored){
+                    }
+                }
             }
         }
     }
