@@ -1,7 +1,7 @@
 package cz.cvut.fit.bap.parser.dao;
 
+import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.domain.Address;
-import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

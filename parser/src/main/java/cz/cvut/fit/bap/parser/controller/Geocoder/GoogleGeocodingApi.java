@@ -1,13 +1,13 @@
-package cz.cvut.fit.bap.parser.business.Geocoder;
+package cz.cvut.fit.bap.parser.controller.Geocoder;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.AddressComponent;
 import com.google.maps.model.GeocodingResult;
+import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
 import cz.cvut.fit.bap.parser.domain.Address;
-import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
-import cz.cvut.fit.bap.parser.scrapper.dto.converter.AddressDtoToAddress;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

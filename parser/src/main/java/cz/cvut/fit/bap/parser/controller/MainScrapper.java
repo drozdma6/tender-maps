@@ -1,7 +1,6 @@
-package cz.cvut.fit.bap.parser.scrapper;
+package cz.cvut.fit.bap.parser.controller;
 
-import cz.cvut.fit.bap.parser.controller.ContractorAuthorityController;
-import cz.cvut.fit.bap.parser.controller.ProcurementController;
+import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

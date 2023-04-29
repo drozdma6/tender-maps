@@ -1,10 +1,12 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.CompanyService;
+import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.scrapper.CompanyDetailScrapper;
+import cz.cvut.fit.bap.parser.controller.scrapper.factories.CompanyDetailFactory;
 import cz.cvut.fit.bap.parser.domain.Company;
-import cz.cvut.fit.bap.parser.scrapper.CompanyDetailScrapper;
-import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
-import cz.cvut.fit.bap.parser.scrapper.factories.CompanyDetailFactory;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -16,12 +18,14 @@ import java.util.Optional;
 public class CompanyController extends AbstractController<CompanyService>{
     private final CompanyDetailFactory companyDetailFactory;
     private final AddressController addressController;
+    private final AbstractFetcher fetcher;
 
     public CompanyController(CompanyDetailFactory companyDetailFactory,
-                             CompanyService companyService, AddressController addressController){
+                             CompanyService companyService, AddressController addressController, AbstractFetcher abstractFetcher){
         super(companyService);
         this.companyDetailFactory = companyDetailFactory;
         this.addressController = addressController;
+        this.fetcher = abstractFetcher;
     }
 
     /**
@@ -33,11 +37,17 @@ public class CompanyController extends AbstractController<CompanyService>{
      */
     public Company saveCompany(String url, String companyName){
         Optional<Company> optionalCompany = service.readByName(companyName);
-        if (optionalCompany.isPresent()){
+        if(optionalCompany.isPresent()){
             return optionalCompany.get();
         }
-        CompanyDetailScrapper companyDetailScrapper = companyDetailFactory.create(url);
+        Document doc = getDocument(url);
+        CompanyDetailScrapper companyDetailScrapper = companyDetailFactory.create(doc);
         AddressDto addressDto = companyDetailScrapper.getCompanyAddress();
         return service.create(new Company(companyName, addressController.saveAddress(addressDto)));
+    }
+
+
+    private Document getDocument(String url){
+        return fetcher.getCompanyDetail(url);
     }
 }

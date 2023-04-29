@@ -1,7 +1,7 @@
-package cz.cvut.fit.bap.parser.business.Geocoder;
+package cz.cvut.fit.bap.parser.controller.Geocoder;
 
+import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.domain.Address;
-import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
 
 public interface Geocoder{
     Address geocode(AddressDto addressDto);

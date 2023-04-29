@@ -1,15 +1,19 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.ContractorAuthorityService;
+import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.scrapper.ContractorCompletedScrapper;
+import cz.cvut.fit.bap.parser.controller.scrapper.ContractorDetailScrapper;
+import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
+import cz.cvut.fit.bap.parser.controller.scrapper.factories.ContractorCompletedFactory;
+import cz.cvut.fit.bap.parser.controller.scrapper.factories.ContractorDetailFactory;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
-import cz.cvut.fit.bap.parser.scrapper.ContractorCompletedScrapper;
-import cz.cvut.fit.bap.parser.scrapper.ContractorDetailScrapper;
-import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
-import cz.cvut.fit.bap.parser.scrapper.factories.ContractorCompletedFactory;
-import cz.cvut.fit.bap.parser.scrapper.factories.ContractorDetailFactory;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,15 +25,17 @@ public class ContractorAuthorityController extends AbstractController<Contractor
     private final ContractorDetailFactory contractorDetailFactory;
     private final ContractorCompletedFactory contractorCompletedFactory;
     private final AddressController addressController;
+    private final AbstractFetcher fetcher;
 
     public ContractorAuthorityController(ContractorAuthorityService contractorAuthorityService,
                                          ContractorDetailFactory contractorDetailFactory,
                                          ContractorCompletedFactory contractorCompletedFactory,
-                                         AddressController addressController){
+                                         AddressController addressController, AbstractFetcher fetcher){
         super(contractorAuthorityService);
         this.contractorDetailFactory = contractorDetailFactory;
         this.contractorCompletedFactory = contractorCompletedFactory;
         this.addressController = addressController;
+        this.fetcher = fetcher;
     }
 
     /**
@@ -40,10 +46,11 @@ public class ContractorAuthorityController extends AbstractController<Contractor
      */
     public ContractorAuthority saveContractorAuthority(String profile){
         Optional<ContractorAuthority> optionalAuthority = service.readByProfile(profile);
-        if (optionalAuthority.isPresent()){
+        if(optionalAuthority.isPresent()){
             return optionalAuthority.get();
         }
-        ContractorDetailScrapper contractorDetailScrapper = contractorDetailFactory.create(profile);
+        Document document = getContractorDetailPage(profile);
+        ContractorDetailScrapper contractorDetailScrapper = contractorDetailFactory.create(document);
         String name = contractorDetailScrapper.getContractorAuthorityName();
         AddressDto addressDto = contractorDetailScrapper.getContractorAuthorityAddress();
         Address address = addressController.saveAddress(addressDto);
@@ -57,7 +64,26 @@ public class ContractorAuthorityController extends AbstractController<Contractor
      * @return list of string containing completed procurement system numbers
      */
     public List<String> getProcurementSystemNumbers(ContractorAuthority contractorAuthority){
-        ContractorCompletedScrapper contractorCompletedScrapper = contractorCompletedFactory.create();
-        return contractorCompletedScrapper.getProcurementSystemNumbers(contractorAuthority);
+        List<String> systemNumberList = new ArrayList<>();
+        List<String> pageSystemNumberList = new ArrayList<>();
+        int page = 1;
+        do{
+            Document document = getContractorCompletedPage(contractorAuthority, page++);
+            ContractorCompletedScrapper contractorCompletedScrapper = contractorCompletedFactory.create(document);
+            try{
+                pageSystemNumberList = contractorCompletedScrapper.getProcurementSystemNumbers(contractorAuthority.getName());
+                //skip procurement if insufficient data was provided for filtering
+            }catch(MissingHtmlElementException ignored){
+            }
+        }while(systemNumberList.addAll(pageSystemNumberList));
+        return systemNumberList;
+    }
+
+    private Document getContractorDetailPage(String profile){
+        return fetcher.getContractorDetail(profile);
+    }
+
+    private Document getContractorCompletedPage(ContractorAuthority authority, int page){
+        return fetcher.getContractorCompleted(authority.getProfile(), page);
     }
 }

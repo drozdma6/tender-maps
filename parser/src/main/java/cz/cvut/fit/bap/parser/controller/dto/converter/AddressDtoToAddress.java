@@ -1,7 +1,7 @@
-package cz.cvut.fit.bap.parser.scrapper.dto.converter;
+package cz.cvut.fit.bap.parser.controller.dto.converter;
 
+import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.domain.Address;
-import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;

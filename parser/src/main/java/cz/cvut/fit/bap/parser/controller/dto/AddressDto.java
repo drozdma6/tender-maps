@@ -1,4 +1,4 @@
-package cz.cvut.fit.bap.parser.scrapper.dto;
+package cz.cvut.fit.bap.parser.controller.dto;
 
 /**
  * Represents address from nen.nipez.com, containing either country full name or country shortcut

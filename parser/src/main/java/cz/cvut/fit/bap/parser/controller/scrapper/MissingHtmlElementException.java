@@ -1,4 +1,4 @@
-package cz.cvut.fit.bap.parser.scrapper;
+package cz.cvut.fit.bap.parser.controller.scrapper;
 
 /**
  * Unchecked exception signalizing missing html element
