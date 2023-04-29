@@ -1,8 +1,9 @@
-package cz.cvut.fit.bap.parser.scrapper.fetcher;
+package cz.cvut.fit.bap.parser.controller.fetcher;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriUtils;
 
@@ -17,11 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class NenNipezFetcher extends AbstractFetcher{
     private final String baseUrl = "https://nen.nipez.cz";
 
-    @Value("${procurement.pages.per.fetch:5}") //default value is 5
-    private int procurementPagesPerFetch;  //number of fetched pages per document
-
-    @Value("${procurement.first.date.of.publication:2022-01-01}") //default value is 2022-01-01
-    private String firstDateOfPublication; //since when should procurements be scrapped
+    private static final Logger LOGGER = LoggerFactory.getLogger(NenNipezFetcher.class);
 
     /**
      * Fetches contractor detail site.
@@ -32,34 +29,22 @@ public class NenNipezFetcher extends AbstractFetcher{
     @Override
     public Document getContractorDetail(String profile){
         final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" +
-                           UriUtils.encode(profile, StandardCharsets.UTF_8);
+                UriUtils.encode(profile, StandardCharsets.UTF_8);
         return getDocumentWithRetry(url);
     }
 
     /**
      * Fetches document containing list of completed procurements by provided authority profile.
-     * Filters only awarded procurements created by given contracting authority and created later
-     * than firstDateOfPublication.
      *
-     * @param profile                 of contracting authority
-     * @param contractorAuthorityName name of contracting authority
-     * @param pagingIteration         used to determine which pages are supposed to get fetched
+     * @param profile of contracting authority
+     * @param page    which page is supposed to get fetched
      * @return document containing contractor completed site
      */
     @Override
-    public Document getContractorCompleted(String profile, String contractorAuthorityName,
-                                           int pagingIteration){
-        int rangeEnd = pagingIteration * procurementPagesPerFetch;
-        int rangeStart = rangeEnd - (procurementPagesPerFetch - 1);
-        String pageRange = rangeStart + "-" + rangeEnd;
+    public Document getContractorCompleted(String profile, Integer page){
         final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" +
-                           UriUtils.encode(profile, StandardCharsets.UTF_8) +
-                           "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=" + pageRange +
-                           "&zadavatelNazev=" +
-                           UriUtils.encode(contractorAuthorityName, StandardCharsets.UTF_8) +
-                           "&datumPrvniUver=" +
-                           UriUtils.encode(firstDateOfPublication, StandardCharsets.UTF_8) + ",";
-
+                UriUtils.encode(profile, StandardCharsets.UTF_8) +
+                "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=" + page.toString();
         return getDocumentWithRetry(url);
     }
 
@@ -73,7 +58,7 @@ public class NenNipezFetcher extends AbstractFetcher{
     public Document getProcurementResult(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
-                           "/vysledek/p:vys:page=1-10;uca:page=1-10"; //show all participants and suppliers without paging
+                "/vysledek/p:vys:page=1-10;uca:page=1-10"; //show all participants and suppliers without paging
         return getDocumentWithRetry(url);
     }
 
@@ -86,7 +71,6 @@ public class NenNipezFetcher extends AbstractFetcher{
      */
     @Override
     public Document getCompanyDetail(String detailUrl){
-        //removes redundant information from url to increase performance
         String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
         String url = baseUrl + detailUrl.replaceFirst(pattern, "/");
         return getDocumentWithRetry(url);
@@ -116,14 +100,21 @@ public class NenNipezFetcher extends AbstractFetcher{
         int backoffSeconds = 1; //initial backoff time
         int maxRetries = 8;
 
-        for (int i = 0; i < maxRetries; i++){
+        long startTime, endTime, duration;
+        startTime = System.currentTimeMillis();
+
+        for(int i = 0; i < maxRetries; i++){
             try{
-                return Jsoup.connect(url).get();
-            } catch (IOException e){
+                Document doc = Jsoup.connect(url).get();
+                endTime = System.currentTimeMillis();
+                duration = endTime - startTime;
+                LOGGER.debug("Fetch in " + duration + " ms with " + i + " retries." + url);
+                return doc;
+            }catch(IOException e){
                 try{
                     TimeUnit.SECONDS.sleep(backoffSeconds);
                     backoffSeconds = backoffSeconds * 2;
-                } catch (InterruptedException ex){
+                }catch(InterruptedException ex){
                     throw new RuntimeException(ex);
                 }
             }
