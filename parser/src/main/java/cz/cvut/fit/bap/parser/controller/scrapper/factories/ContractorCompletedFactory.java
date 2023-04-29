@@ -1,6 +1,5 @@
 package cz.cvut.fit.bap.parser.controller.scrapper.factories;
 
-import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ContractorCompletedScrapper;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
@@ -10,11 +9,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ContractorCompletedFactory extends AbstractScrapperFactory<ContractorCompletedScrapper>{
-
-    protected ContractorCompletedFactory(AbstractFetcher fetcher){
-        super(fetcher);
-    }
-
     /**
      * Creates contractor completed scrapper instance
      *

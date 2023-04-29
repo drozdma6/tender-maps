@@ -1,6 +1,5 @@
 package cz.cvut.fit.bap.parser.controller.scrapper.factories;
 
-import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementDetailScrapper;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
@@ -11,12 +10,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ProcurementDetailFactory extends AbstractScrapperFactory<ProcurementDetailScrapper>{
-
-    protected ProcurementDetailFactory(AbstractFetcher fetcher){
-        super(fetcher);
-    }
-
-
     /**
      * Creates procurement detail scrapper instance
      *
