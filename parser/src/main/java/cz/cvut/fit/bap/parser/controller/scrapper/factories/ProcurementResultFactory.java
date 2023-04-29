@@ -1,7 +1,8 @@
-package cz.cvut.fit.bap.parser.scrapper.factories;
+package cz.cvut.fit.bap.parser.controller.scrapper.factories;
 
-import cz.cvut.fit.bap.parser.scrapper.ProcurementResultScrapper;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementResultScrapper;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 /*
@@ -14,13 +15,15 @@ public class ProcurementResultFactory extends AbstractScrapperFactory<Procuremen
         super(fetcher);
     }
 
+
     /**
      * Creates procurement result scrapper instance
      *
-     * @param systemNumber of procurement which scrapper is supposed to be created
+     * @param document which is being scrapped
      * @return ProcurementResultScrapper instance
      */
-    public ProcurementResultScrapper create(String systemNumber){
-        return new ProcurementResultScrapper(fetcher, systemNumber);
+    @Override
+    public ProcurementResultScrapper create(Document document){
+        return new ProcurementResultScrapper(document);
     }
 }

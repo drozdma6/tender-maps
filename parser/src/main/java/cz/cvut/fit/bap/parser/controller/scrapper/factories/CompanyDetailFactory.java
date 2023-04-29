@@ -1,7 +1,8 @@
-package cz.cvut.fit.bap.parser.scrapper.factories;
+package cz.cvut.fit.bap.parser.controller.scrapper.factories;
 
-import cz.cvut.fit.bap.parser.scrapper.CompanyDetailScrapper;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.scrapper.CompanyDetailScrapper;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 /*
@@ -17,10 +18,10 @@ public class CompanyDetailFactory extends AbstractScrapperFactory<CompanyDetailS
     /**
      * Creates CompanyDetailScrapper instance
      *
-     * @param url of company detail page
+     * @param document which is being scrapped
      * @return CompanyDetailScrapper instance
      */
-    public CompanyDetailScrapper create(String url){
-        return new CompanyDetailScrapper(fetcher, url);
+    public CompanyDetailScrapper create(Document document){
+        return new CompanyDetailScrapper(document);
     }
 }

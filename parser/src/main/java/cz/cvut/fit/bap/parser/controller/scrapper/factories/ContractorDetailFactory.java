@@ -1,7 +1,8 @@
-package cz.cvut.fit.bap.parser.scrapper.factories;
+package cz.cvut.fit.bap.parser.controller.scrapper.factories;
 
-import cz.cvut.fit.bap.parser.scrapper.ContractorDetailScrapper;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.scrapper.ContractorDetailScrapper;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 /*
@@ -17,10 +18,11 @@ public class ContractorDetailFactory extends AbstractScrapperFactory<ContractorD
     /**
      * Creates ContractorDetailScrapper instance
      *
-     * @param profile of contractor
+     * @param document which is being scrapped
      * @return ContractorDetailScrapper instance
      */
-    public ContractorDetailScrapper create(String profile){
-        return new ContractorDetailScrapper(fetcher, profile);
+    @Override
+    public ContractorDetailScrapper create(Document document){
+        return new ContractorDetailScrapper(document);
     }
 }

@@ -1,7 +1,7 @@
-package cz.cvut.fit.bap.parser.scrapper;
+package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import org.jsoup.nodes.Document;
 
 import java.util.Objects;
 
@@ -12,9 +12,8 @@ import java.util.Objects;
  */
 public class CompanyDetailScrapper extends AbstractScrapper{
 
-    public CompanyDetailScrapper(AbstractFetcher fetcher, String url){
-        super(fetcher);
-        this.document = fetcher.getCompanyDetail(url);
+    public CompanyDetailScrapper(Document document){
+        super(document);
     }
 
     /**
@@ -29,7 +28,7 @@ public class CompanyDetailScrapper extends AbstractScrapper{
         String countryOfficialName = getNullIfEmpty(document.select("[title=\"State\"] p").text());
         String buildingNumber = getNullIfEmpty(
                 document.select("[title=\"building number\"] p").text());
-        if (Objects.equals(countryOfficialName.toLowerCase(), "česká republika")){
+        if(Objects.equals(countryOfficialName.toLowerCase(), "česká republika")){
             return new AddressDto("CZ", city, postalCode, street, buildingNumber);
         }
         return new AddressDto(countryOfficialName, city, postalCode, street, buildingNumber);

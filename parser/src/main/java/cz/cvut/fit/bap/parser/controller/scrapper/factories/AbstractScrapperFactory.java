@@ -1,6 +1,7 @@
-package cz.cvut.fit.bap.parser.scrapper.factories;
+package cz.cvut.fit.bap.parser.controller.scrapper.factories;
 
-import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
+import org.jsoup.nodes.Document;
 
 /*
     Abstract factory for scrappers
@@ -12,5 +13,5 @@ public abstract class AbstractScrapperFactory<S>{
         this.fetcher = fetcher;
     }
 
-    public abstract S create(String str);
+    public abstract S create(Document document);
 }

@@ -1,6 +1,6 @@
-package cz.cvut.fit.bap.parser.scrapper;
+package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
+import org.jsoup.nodes.Document;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -12,9 +12,8 @@ import java.time.format.DateTimeParseException;
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/mfcr/uzavrene-zakazky/detail-zakazky/N006-23-V00004206">Procurement detail page</a>
  */
 public class ProcurementDetailScrapper extends AbstractScrapper{
-    public ProcurementDetailScrapper(AbstractFetcher fetcher, String systemNumber){
-        super(fetcher);
-        document = fetcher.getProcurementDetail(systemNumber);
+    public ProcurementDetailScrapper(Document document){
+        super(document);
     }
 
     /**

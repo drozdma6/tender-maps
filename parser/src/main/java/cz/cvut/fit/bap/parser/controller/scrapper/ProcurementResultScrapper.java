@@ -1,6 +1,6 @@
-package cz.cvut.fit.bap.parser.scrapper;
+package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -14,10 +14,8 @@ import java.util.HashMap;
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/MVCR/uzavrene-zakazky/detail-zakazky/N006-23-V00005185/vysledek">procurement result page</a>
  */
 public class ProcurementResultScrapper extends AbstractScrapper{
-
-    public ProcurementResultScrapper(AbstractFetcher fetcher, String systemNumber){
-        super(fetcher);
-        document = fetcher.getProcurementResult(systemNumber);
+    public ProcurementResultScrapper(Document document){
+        super(document);
     }
 
     /*

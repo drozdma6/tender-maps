@@ -1,7 +1,7 @@
-package cz.cvut.fit.bap.parser.scrapper;
+package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.scrapper.dto.AddressDto;
-import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import org.jsoup.nodes.Document;
 
 /**
  * Class for scrapping contractor authority detail page.
@@ -10,9 +10,8 @@ import cz.cvut.fit.bap.parser.scrapper.fetcher.AbstractFetcher;
  */
 public class ContractorDetailScrapper extends AbstractScrapper{
 
-    public ContractorDetailScrapper(AbstractFetcher fetcher, String profile){
-        super(fetcher);
-        this.document = fetcher.getContractorDetail(profile);
+    public ContractorDetailScrapper(Document document){
+        super(document);
     }
 
     /**
