@@ -17,12 +17,12 @@ import java.io.IOException;
  * Class for handling communication with Google's geocoding api.
  */
 @Component
-public class GoogleGeocodingApi implements Geocoder, AutoCloseable{
+public class GoogleGeocoding implements Geocoder, AutoCloseable{
     private final GeoApiContext context;
     private final AddressDtoToAddress addressDtoToAddress;
 
-    public GoogleGeocodingApi(@Value("${googleApiKey:}") final String apiKey,
-                              AddressDtoToAddress addressDtoToAddress){
+    public GoogleGeocoding(@Value("${googleApiKey:}") final String apiKey,
+                           AddressDtoToAddress addressDtoToAddress){
         this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
 
         this.addressDtoToAddress = addressDtoToAddress;

@@ -1,8 +1,8 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.AddressService;
-import cz.cvut.fit.bap.parser.controller.Geocoder.GoogleGeocodingApi;
-import cz.cvut.fit.bap.parser.controller.Geocoder.ProfinitGeocodingApi;
+import cz.cvut.fit.bap.parser.controller.Geocoder.GoogleGeocoding;
+import cz.cvut.fit.bap.parser.controller.Geocoder.ProfinitGeocoding;
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
 import cz.cvut.fit.bap.parser.domain.Address;
@@ -17,14 +17,14 @@ import java.util.Optional;
 @Component
 public class AddressController extends AbstractController<AddressService>{
     private final AddressDtoToAddress addressDtoToAddress;
-    private final ProfinitGeocodingApi profinitGeocodingApi;
-    private final GoogleGeocodingApi googleGeocodingApi;
+    private final ProfinitGeocoding profinitGeocoding;
+    private final GoogleGeocoding googleGeocoding;
 
-    public AddressController(AddressService addressService, AddressDtoToAddress addressDtoToAddress, ProfinitGeocodingApi profinitGeocodingApi, GoogleGeocodingApi googleGeocodingApi){
+    public AddressController(AddressService addressService, AddressDtoToAddress addressDtoToAddress, ProfinitGeocoding profinitGeocoding, GoogleGeocoding googleGeocoding){
         super(addressService);
         this.addressDtoToAddress = addressDtoToAddress;
-        this.profinitGeocodingApi = profinitGeocodingApi;
-        this.googleGeocodingApi = googleGeocodingApi;
+        this.profinitGeocoding = profinitGeocoding;
+        this.googleGeocoding = googleGeocoding;
     }
 
     /**
@@ -45,10 +45,10 @@ public class AddressController extends AbstractController<AddressService>{
         String country = addressDto.getCountry().toLowerCase();
         if(Objects.equals(country, "cz")){
             //profinit geocoder for czech places
-            address = profinitGeocodingApi.geocode(addressDto);
+            address = profinitGeocoding.geocode(addressDto);
         }else{
             //google geocoder for foreign countries
-            address = googleGeocodingApi.geocode(addressDto);
+            address = googleGeocoding.geocode(addressDto);
         }
         return service.create(address);
     }

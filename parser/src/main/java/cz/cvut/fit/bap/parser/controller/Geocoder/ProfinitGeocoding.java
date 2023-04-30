@@ -18,7 +18,7 @@ import java.time.Duration;
     Geocoding api client used for geocoding czech locations
  */
 @Component
-public class ProfinitGeocodingApi implements Geocoder{
+public class ProfinitGeocoding implements Geocoder{
     private final String baseUrl = "https://geolokator.profinit.cz";
     private final String czechShortCountryCode = "CZ";
 
@@ -27,8 +27,8 @@ public class ProfinitGeocodingApi implements Geocoder{
     private final WebClient webClient;
     private final AddressDtoToAddress addressDtoToAddress;
 
-    public ProfinitGeocodingApi(AddressDtoToAddress addressDtoToAddress,
-                                WebClient.Builder webClientBuilder){
+    public ProfinitGeocoding(AddressDtoToAddress addressDtoToAddress,
+                             WebClient.Builder webClientBuilder){
         this.addressDtoToAddress = addressDtoToAddress;
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
