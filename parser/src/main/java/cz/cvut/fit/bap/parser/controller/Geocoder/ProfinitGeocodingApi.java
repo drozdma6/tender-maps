@@ -5,6 +5,7 @@ import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
 import cz.cvut.fit.bap.parser.domain.Address;
 import kotlin.Pair;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -75,9 +76,10 @@ public class ProfinitGeocodingApi implements Geocoder{
         }
         JSONObject firstResult = results.getJSONObject(0);
         JSONObject ruian = firstResult.getJSONObject("ruian");
+
         try{
             return new Pair<>(ruian.getDouble("wgs_x"), ruian.getDouble("wgs_y"));
-        } catch (NumberFormatException e){
+        }catch(JSONException e){
             //if wgs_x or wgs_y is null
             return new Pair<>(null, null);
         }
