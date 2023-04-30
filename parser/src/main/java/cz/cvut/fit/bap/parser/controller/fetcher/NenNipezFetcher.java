@@ -5,10 +5,8 @@ import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,27 +21,25 @@ public class NenNipezFetcher extends AbstractFetcher{
     /**
      * Fetches contractor detail site.
      *
-     * @param profile of contractor
+     * @param href of contractor authority
      * @return Document containing contractor detail site
      */
     @Override
-    public Document getContractorDetail(String profile){
-        final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" +
-                UriUtils.encode(profile, StandardCharsets.UTF_8);
+    public Document getContractorDetail(String href){
+        final String url = baseUrl + "/en" + href;
         return getDocumentWithRetry(url);
     }
 
     /**
      * Fetches document containing list of completed procurements by provided authority profile.
      *
-     * @param profile of contracting authority
-     * @param page    which page is supposed to get fetched
+     * @param href of contracting authority
+     * @param page which page is supposed to get fetched
      * @return document containing contractor completed site
      */
     @Override
-    public Document getContractorCompleted(String profile, Integer page){
-        final String url = baseUrl + "/en/profily-zadavatelu-platne/detail-profilu/" +
-                UriUtils.encode(profile, StandardCharsets.UTF_8) +
+    public Document getContractorCompleted(String href, Integer page){
+        final String url = baseUrl + "/en" + href +
                 "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=" + page.toString();
         return getDocumentWithRetry(url);
     }
@@ -91,6 +87,19 @@ public class NenNipezFetcher extends AbstractFetcher{
     }
 
     /**
+     * Fetches contractor authority list
+     *
+     * @param page which is supposed to get fetched
+     * @return document containing contractor authorities
+     */
+    @Override
+    public Document getContractorAuthorityList(Integer page){
+        String url = baseUrl + "/profily-zadavatelu-platne/p:pzp:page=" + page;
+        return getDocumentWithRetry(url);
+    }
+
+
+    /**
      * Fetches document from url with exponential backoff
      *
      * @param url which is supposed to be fetched
@@ -98,7 +107,7 @@ public class NenNipezFetcher extends AbstractFetcher{
      */
     private Document getDocumentWithRetry(String url){
         int backoffSeconds = 1; //initial backoff time
-        int maxRetries = 8;
+        int maxRetries = 5;
 
         long startTime, endTime, duration;
         startTime = System.currentTimeMillis();
@@ -119,6 +128,6 @@ public class NenNipezFetcher extends AbstractFetcher{
                 }
             }
         }
-        throw new RuntimeException("Failed to retrieve document after " + maxRetries + " tries");
+        throw new RuntimeException("Failed to retrieve document after " + maxRetries + " tries from url " + url);
     }
 }

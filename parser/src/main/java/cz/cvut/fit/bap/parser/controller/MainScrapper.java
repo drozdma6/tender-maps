@@ -2,15 +2,11 @@ package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
-import org.springframework.beans.factory.annotation.Value;
+import kotlin.Pair;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -23,41 +19,27 @@ public class MainScrapper{
     private final ContractorAuthorityController contractorAuthorityController;
     private final ProcurementController procurementController;
 
-    @Value("classpath:profiles.txt")
-    private Resource profilesPath;
-
-    public MainScrapper(ContractorAuthorityController contractorAuthorityController,
-                        ProcurementController procurementController){
+    public MainScrapper(ContractorAuthorityController contractorAuthorityController, ProcurementController procurementController){
         this.contractorAuthorityController = contractorAuthorityController;
         this.procurementController = procurementController;
     }
 
     /**
-     * Scrapes all profiles from profilesPath
-     * This method is scheduled to run every 2 weeks
-     *
-     * @throws IOException if the content stream could not be opened
+     * Starts scrapping. It is scheduled to run once every 2 weeks
      */
     @Scheduled(fixedRate = 14, timeUnit = TimeUnit.DAYS)
-    public void scrape() throws IOException{
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(profilesPath.getInputStream()))){
-            String profile;
-            while ((profile = reader.readLine()) != null){
-                ContractorAuthority authority = contractorAuthorityController.saveContractorAuthority(
-                        profile);
-
-                List<String> procurementSystemNums = contractorAuthorityController.getProcurementSystemNumbers(
-                        authority);
-                for (String procurementSystemNum : procurementSystemNums){
-                    try{
-                        boolean procurementExists = procurementController.saveProcurements(
-                                authority, procurementSystemNum);
-                        if (procurementExists){
-                            break;
-                        }
-                    } catch (MissingHtmlElementException ignored){
+    public void run(){
+        List<Pair<String,String>> authorityHrefs = contractorAuthorityController.getContractorAuthorityList();
+        for(Pair<String,String> contractorData : authorityHrefs){
+            ContractorAuthority authority = contractorAuthorityController.saveContractorAuthority(contractorData.getFirst(), contractorData.getSecond());
+            List<String> procurementSystemNums = contractorAuthorityController.getProcurementSystemNumbers(authority);
+            for(String procurementSystemNum : procurementSystemNums){
+                try{
+                    boolean procurementExists = procurementController.saveProcurements(authority, procurementSystemNum);
+                    if(procurementExists){
+                        break;
                     }
+                }catch(MissingHtmlElementException ignored){
                 }
             }
         }
