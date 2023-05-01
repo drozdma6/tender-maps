@@ -43,7 +43,7 @@ public class CompanyController extends AbstractController<CompanyService>{
         Document doc = getDocument(url);
         CompanyDetailScrapper companyDetailScrapper = companyDetailFactory.create(doc);
         AddressDto addressDto = companyDetailScrapper.getCompanyAddress();
-        return service.create(new Company(companyName, addressController.saveAddress(addressDto)));
+        return service.create(new Company(companyName, addressController.saveAddress(addressDto), removeUrlParameters(url)));
     }
 
 

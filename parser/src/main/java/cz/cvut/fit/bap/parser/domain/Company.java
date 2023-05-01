@@ -28,6 +28,9 @@ public class Company implements DomainEntity<Long>{
     @JoinColumn(name = "address_id")
     private Address address;
 
+    @Column(name = "url")
+    private String url;
+
     public Address getAddress(){
         return address;
     }
@@ -39,9 +42,18 @@ public class Company implements DomainEntity<Long>{
     public Company(){
     }
 
-    public Company(String name, Address address){
+    public Company(String name, Address address, String url){
         this.name = name;
         this.address = address;
+        this.url = url;
+    }
+
+    public String getUrl(){
+        return url;
+    }
+
+    public void setUrl(String url){
+        this.url = url;
     }
 
     public Set<Procurement> getSuppliedProcurements(){
