@@ -11,35 +11,27 @@ import java.util.Objects;
     Class represents offer from certain company to certain procurement
  */
 @Entity
-public class Offer implements DomainEntity<OfferId>{
-    @EmbeddedId
-    private OfferId id;
+public class Offer implements DomainEntity<Long>{
+    @Id
+    @GeneratedValue
+    private Long id;
 
     @Column(precision = 14, scale = 2)
     private BigDecimal price;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("procurementId")
     @JoinColumn(name = "procurement_id")
     private Procurement procurement;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("companyId")
     @JoinColumn(name = "company_id")
     private Company company;
 
     public Offer(){
     }
 
-    public Offer(OfferId id, BigDecimal price, Procurement procurement, Company company){
-        this.id = id;
+    public Offer(BigDecimal price, Procurement procurement, Company company){
         this.price = price;
-        this.procurement = procurement;
-        this.company = company;
-    }
-
-    public Offer(OfferId id, Procurement procurement, Company company){
-        this.id = id;
         this.procurement = procurement;
         this.company = company;
     }
@@ -78,20 +70,20 @@ public class Offer implements DomainEntity<OfferId>{
 
 
     @Override
-    public void setId(OfferId offerId){
-        this.id = offerId;
-    }
-
-    @Override
-    public OfferId getId(){
+    public Long getId(){
         return id;
     }
 
     @Override
+    public void setId(Long id){
+        this.id = id;
+    }
+
+    @Override
     public boolean equals(Object o){
-        if (this == o)
+        if(this == o)
             return true;
-        if (!(o instanceof Offer offer))
+        if(!(o instanceof Offer offer))
             return false;
         return Objects.equals(id, offer.id);
     }
