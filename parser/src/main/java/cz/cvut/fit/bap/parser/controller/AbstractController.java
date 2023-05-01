@@ -14,21 +14,27 @@ public abstract class AbstractController<S>{
     }
 
     /**
-     * Removes URL parameters starting with "/p:" and continuing until the next "/" character or end of string
+     * Removes URL parameters starting with "/p:" and continuing until the next "/" character,
+     * if the /p: parameter is at the end it stays.
      *
      * @param url the URL string to modify
      * @return the modified URL string with "/p:" parameters removed or
      * returns the original URL string if no parameters found
      */
     protected String removeUrlParameters(String url){
-        String patternString = "/p:[^/]*";
-        Pattern pattern = Pattern.compile(patternString);
+        Pattern pattern = Pattern.compile("/p:.*?/");
         Matcher matcher = pattern.matcher(url);
-        if(matcher.find()){
+        StringBuilder modifiedUrl = new StringBuilder(url);
+
+        while(matcher.find()){
             int startIndex = matcher.start();
             int endIndex = matcher.end();
-            return url.substring(0, startIndex) + url.substring(endIndex);
+
+            if(endIndex < modifiedUrl.length()){
+                modifiedUrl.delete(startIndex, endIndex - 1);
+                matcher.reset(modifiedUrl);
+            }
         }
-        return url;
+        return modifiedUrl.toString();
     }
 }
