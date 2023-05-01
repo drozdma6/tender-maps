@@ -28,8 +28,8 @@ public class ContractorAuthority implements DomainEntity<Long>{
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @Column(name = "link")
-    private String link;
+    @Column(name = "url")
+    private String url;
 
     public Address getAddress(){
         return address;
@@ -39,22 +39,22 @@ public class ContractorAuthority implements DomainEntity<Long>{
         this.address = address;
     }
 
-    public ContractorAuthority(String name, String profile, Address address, String link){
+    public ContractorAuthority(String name, String profile, Address address, String url){
         this.name = name;
         this.profile = profile;
         this.address = address;
-        this.link = link;
+        this.url = url;
     }
 
     public ContractorAuthority(){
     }
 
-    public String getLink(){
-        return link;
+    public String getUrl(){
+        return url;
     }
 
-    public void setLink(String link){
-        this.link = link;
+    public void setUrl(String url){
+        this.url = url;
     }
 
     public String getProfile(){

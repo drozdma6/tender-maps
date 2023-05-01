@@ -60,7 +60,7 @@ public class ContractorAuthorityController extends AbstractController<Contractor
         String name = contractorDetailScrapper.getContractorAuthorityName();
         AddressDto addressDto = contractorDetailScrapper.getContractorAuthorityAddress();
         Address address = addressController.saveAddress(addressDto);
-        return service.create(new ContractorAuthority(name, profile, address, href));
+        return service.create(new ContractorAuthority(name, profile, address, removeUrlParameters(href)));
     }
 
     /**
@@ -108,7 +108,7 @@ public class ContractorAuthorityController extends AbstractController<Contractor
     }
 
     private Document getContractorCompletedPage(ContractorAuthority authority, int page){
-        return fetcher.getContractorCompleted(authority.getLink(), page);
+        return fetcher.getContractorCompleted(authority.getUrl(), page);
     }
 
     private Document getContractorAuthorityList(int page){
