@@ -55,21 +55,21 @@ public class ProcurementResultScrapper extends AbstractScrapper{
      *
      * @return map containing company name as key companyInfo as value
      */
-    public HashMap<String, CompanyInfo> getSupplierMap(){
-        HashMap<String, CompanyInfo> suppliersMap = new HashMap<>();
+    public HashMap<String,CompanyInfo> getSupplierMap(){
+        HashMap<String,CompanyInfo> suppliersMap = new HashMap<>();
         Elements suppliersRows = getSuppliersRows();
 
-        for (Element supplierRow : suppliersRows){
+        for(Element supplierRow : suppliersRows){
             String name = getName(supplierRow);
             BigDecimal price = getPrice(supplierRow);
             String detailHref = getDetailHref(supplierRow);
 
             // Check if the company already exists in the map
             CompanyInfo existingCompanyInfo = suppliersMap.get(name);
-            if (existingCompanyInfo != null){
+            if(existingCompanyInfo != null){
                 // If it exists, update the existing contract price
                 existingCompanyInfo.addContractPrice(price);
-            } else{
+            }else{
                 // If it doesn't exist, add the new CompanyInfo object to the map
                 suppliersMap.put(name, new CompanyInfo(price, detailHref, name));
             }
@@ -86,15 +86,14 @@ public class ProcurementResultScrapper extends AbstractScrapper{
         ArrayList<CompanyInfo> participants = new ArrayList<>();
         Elements participantsElems = document.select(
                 "[title=\"List of participants\"] .gov-table__row");
-        for (Element participantRow : participantsElems){
+        for(Element participantRow : participantsElems){
 
             String companyDetailHref = participantRow.select("a").attr("href");
-            String strPrice = formatPrice(
-                    participantRow.select("[data-title=\"Bid price excl. VAT\"]").text());
+            String strPrice = participantRow.select("[data-title=\"Bid price excl. VAT\"]").text();
             String participantName = participantRow.select("[data-title=\"Official name\"]").text();
 
             CompanyInfo companyInfo = new CompanyInfo(getBigDecimalFromString(strPrice),
-                                                      companyDetailHref, participantName);
+                    companyDetailHref, participantName);
             participants.add(companyInfo);
         }
         return participants;
@@ -108,8 +107,8 @@ public class ProcurementResultScrapper extends AbstractScrapper{
      */
     private BigDecimal getBigDecimalFromString(String price){
         try{
-            return new BigDecimal(price);
-        } catch (NumberFormatException e){
+            return new BigDecimal(formatPrice(price));
+        }catch(NumberFormatException e){
             return null;
         }
     }
@@ -128,7 +127,7 @@ public class ProcurementResultScrapper extends AbstractScrapper{
         Elements suppliersRows = document.select(
                 "[title=\"Supplier with Whom the Contract Has Been Entered into\"] .gov-table__row");
 
-        if (suppliersRows.isEmpty()){
+        if(suppliersRows.isEmpty()){
             throw new MissingHtmlElementException();
         }
         return suppliersRows;
@@ -137,7 +136,7 @@ public class ProcurementResultScrapper extends AbstractScrapper{
     private String getName(Element supplierRow){
         Elements nameElem = supplierRow.select("[data-title=\"Official name\"]");
 
-        if (nameElem.isEmpty()){
+        if(nameElem.isEmpty()){
             throw new MissingHtmlElementException();
         }
         return nameElem.text();
@@ -146,7 +145,7 @@ public class ProcurementResultScrapper extends AbstractScrapper{
     private BigDecimal getPrice(Element supplierRow){
         Elements priceElem = supplierRow.select("[data-title=\"Contractual price excl. VAT\"]");
 
-        if (priceElem.isEmpty()){
+        if(priceElem.isEmpty()){
             throw new MissingHtmlElementException();
         }
         return new BigDecimal(formatPrice(priceElem.text()));
@@ -155,7 +154,7 @@ public class ProcurementResultScrapper extends AbstractScrapper{
     private String getDetailHref(Element supplierRow){
         Elements detailLinkElem = supplierRow.select(".gov-link.gov-link--has-arrow");
 
-        if (detailLinkElem.isEmpty()){
+        if(detailLinkElem.isEmpty()){
             throw new MissingHtmlElementException();
         }
         return detailLinkElem.attr("href");
