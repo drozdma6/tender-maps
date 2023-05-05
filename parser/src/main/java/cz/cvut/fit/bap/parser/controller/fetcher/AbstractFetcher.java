@@ -2,6 +2,9 @@ package cz.cvut.fit.bap.parser.controller.fetcher;
 
 
 import org.jsoup.nodes.Document;
+import org.springframework.scheduling.annotation.Async;
+
+import java.util.concurrent.CompletableFuture;
 
 
 public abstract class AbstractFetcher{
@@ -9,11 +12,13 @@ public abstract class AbstractFetcher{
 
     public abstract Document getContractorCompleted(String profile, Integer page);
 
-    public abstract Document getProcurementResult(String procurement);
+    @Async
+    public abstract CompletableFuture<Document> getProcurementResult(String procurement);
 
     public abstract Document getCompanyDetail(String uri);
 
-    public abstract Document getProcurementDetail(String procurement);
+    @Async
+    public abstract CompletableFuture<Document> getProcurementDetail(String procurement);
 
     public abstract Document getContractorAuthorityList(Integer page);
 }

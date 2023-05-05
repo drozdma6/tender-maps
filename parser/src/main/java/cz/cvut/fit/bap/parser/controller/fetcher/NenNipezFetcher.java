@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,11 +52,11 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @return Document containing procurement result site
      */
     @Override
-    public Document getProcurementResult(String systemNumber){
+    public CompletableFuture<Document> getProcurementResult(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
                 "/vysledek/p:vys:page=1-10;uca:page=1-10"; //show all participants and suppliers without paging
-        return getDocumentWithRetry(url);
+        return CompletableFuture.completedFuture(getDocumentWithRetry(url));
     }
 
 
@@ -80,10 +81,10 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @return Document containing procurement detail site
      */
     @Override
-    public Document getProcurementDetail(String systemNumber){
+    public CompletableFuture<Document> getProcurementDetail(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen;
-        return getDocumentWithRetry(url);
+        return CompletableFuture.completedFuture(getDocumentWithRetry(url));
     }
 
     /**
@@ -128,6 +129,7 @@ public class NenNipezFetcher extends AbstractFetcher{
                 }
             }
         }
-        throw new RuntimeException("Failed to retrieve document after " + maxRetries + " tries from url " + url);
+        LOGGER.debug("Failed to fetch url: " + url);
+        throw new FailedFetchException("Failed to fetch url: " + url);
     }
 }

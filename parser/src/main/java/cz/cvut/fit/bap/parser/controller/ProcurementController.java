@@ -12,10 +12,11 @@ import cz.cvut.fit.bap.parser.domain.Procurement;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /*
     Controller handling communication with procurement service and required scrappers to get procurement
@@ -28,6 +29,18 @@ public class ProcurementController extends AbstractController<ProcurementService
     private final CompanyController companyController;
     private final AbstractFetcher fetcher;
 
+    /*
+        A container class for procurement information, used as a dto between methods.
+     */
+    private static class ProcurementInfo{
+        String systemNumber;
+        ContractorAuthority contractorAuthority;
+        String procurementName;
+        String procurementPlaceOfPerformance;
+        LocalDate procurementDateOfPublication;
+        ArrayList<ProcurementResultScrapper.CompanyInfo> participants;
+        HashMap<String,ProcurementResultScrapper.CompanyInfo> suppliersMap;
+    }
 
     public ProcurementController(ProcurementResultFactory procurementResultFactory,
                                  ProcurementDetailFactory procurementDetailFactory,
@@ -48,58 +61,57 @@ public class ProcurementController extends AbstractController<ProcurementService
      *
      * @param authority    contracting authority of procurement
      * @param systemNumber procurement system number
-     * @return true if procurement is already in database, false otherwise
+     * @return false if procurement is already in database, true otherwise
      */
-    public boolean saveProcurements(ContractorAuthority authority, String systemNumber){
+    public boolean saveProcurement(ContractorAuthority authority, String systemNumber) throws ExecutionException, InterruptedException{
         if(service.existsBySystemNumber(systemNumber)){
             return true;
         }
-        Document detailPageDoc = getProcurementDetailPage(systemNumber);
-        ProcurementDetailScrapper procurementDetailScrapper = procurementDetailFactory.create(detailPageDoc);
-        String procurementName = procurementDetailScrapper.getProcurementName();
-        String procurementPlaceOfPerformance = procurementDetailScrapper.getProcurementPlaceOfPerformance();
-        LocalDate procurementDateOfPublication = procurementDetailScrapper.getProcurementDateOfPublication();
 
-        Document resultPageDoc = getProcurementResultPage(systemNumber);
-        ProcurementResultScrapper procurementResultScrapper = procurementResultFactory.create(
-                resultPageDoc);
-        ArrayList<ProcurementResultScrapper.CompanyInfo> participants = procurementResultScrapper.getParticipants();
-        HashMap<String,ProcurementResultScrapper.CompanyInfo> suppliersMap = procurementResultScrapper.getSupplierMap();
+        CompletableFuture<Document> detailPageDoc = fetcher.getProcurementDetail(systemNumber);
+        CompletableFuture<Document> resultPageDoc = fetcher.getProcurementResult(systemNumber);
 
+        CompletableFuture.allOf(detailPageDoc, resultPageDoc).join();
+        ProcurementDetailScrapper procurementDetailScrapper = procurementDetailFactory.create(detailPageDoc.get());
+        ProcurementResultScrapper procurementResultScrapper = procurementResultFactory.create(resultPageDoc.get());
 
-        suppliersMap.forEach((supplierName, supplierInfo) -> {
-            Company supplier = saveSupplier(supplierInfo);
-            Procurement procurement = saveProcurement(authority, systemNumber, procurementName,
-                    procurementPlaceOfPerformance,
-                    procurementDateOfPublication, supplier,
-                    supplierInfo.getContractPrice());
-            saveParticipants(procurement, participants);
-        });
+        ProcurementInfo procurementInfo = processProcurementData(procurementResultScrapper, procurementDetailScrapper, authority, systemNumber);
+        saveProcurementData(authority, systemNumber, procurementInfo);
+
         return false;
     }
 
-    private Document getProcurementDetailPage(String systemNumber){
-        return fetcher.getProcurementDetail(systemNumber);
+    private ProcurementInfo processProcurementData(ProcurementResultScrapper procurementResultScrapper, ProcurementDetailScrapper procurementDetailScrapper,
+                                                   ContractorAuthority contractorAuthority, String systemNumber){
+        ProcurementInfo procurementInfo = new ProcurementInfo();
+        procurementInfo.procurementName = procurementDetailScrapper.getProcurementName();
+        procurementInfo.procurementPlaceOfPerformance = procurementDetailScrapper.getProcurementPlaceOfPerformance();
+        procurementInfo.procurementDateOfPublication = procurementDetailScrapper.getProcurementDateOfPublication();
+
+        procurementInfo.participants = procurementResultScrapper.getParticipants();
+        procurementInfo.suppliersMap = procurementResultScrapper.getSupplierMap();
+        procurementInfo.contractorAuthority = contractorAuthority;
+        procurementInfo.systemNumber = systemNumber;
+
+        return procurementInfo;
     }
 
+    private void saveProcurementData(ContractorAuthority authority, String systemNumber, ProcurementInfo procurementInfo){
+        procurementInfo.suppliersMap.forEach((supplierName, supplierInfo) -> {
+            Company supplier = saveSupplier(supplierInfo);
 
-    private Document getProcurementResultPage(String systemNumber){
-        return fetcher.getProcurementResult(systemNumber);
+            Procurement procurement = service.create(new Procurement(
+                    procurementInfo.procurementName, supplier, authority,
+                    supplierInfo.getContractPrice(), procurementInfo.procurementPlaceOfPerformance,
+                    procurementInfo.procurementDateOfPublication, systemNumber));
+
+            saveParticipants(procurement, procurementInfo.participants);
+        });
     }
 
     private Company saveSupplier(ProcurementResultScrapper.CompanyInfo supplierInfo){
         return companyController.saveCompany(supplierInfo.getDetailHref(),
                 supplierInfo.getCompanyName());
-    }
-
-    private Procurement saveProcurement(ContractorAuthority authority, String systemNumber,
-                                        String procurementName,
-                                        String procurementPlaceOfPerformance,
-                                        LocalDate procurementDateOfPublication, Company supplier,
-                                        BigDecimal contractPrice){
-        return service.create(new Procurement(procurementName, supplier, authority, contractPrice,
-                procurementPlaceOfPerformance,
-                procurementDateOfPublication, systemNumber));
     }
 
     private void saveParticipants(Procurement procurement,

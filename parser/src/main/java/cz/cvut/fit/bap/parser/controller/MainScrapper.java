@@ -1,5 +1,6 @@
 package cz.cvut.fit.bap.parser.controller;
 
+import cz.cvut.fit.bap.parser.controller.fetcher.FailedFetchException;
 import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import kotlin.Pair;
@@ -8,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,18 +30,18 @@ public class MainScrapper{
      * Starts scrapping. It is scheduled to run once every 2 weeks
      */
     @Scheduled(fixedRate = 14, timeUnit = TimeUnit.DAYS)
-    public void run(){
+    public void run() throws ExecutionException, InterruptedException{
         List<Pair<String,String>> authorityHrefs = contractorAuthorityController.getContractorAuthorityList();
         for(Pair<String,String> contractorData : authorityHrefs){
             ContractorAuthority authority = contractorAuthorityController.saveContractorAuthority(contractorData.getFirst(), contractorData.getSecond());
             List<String> procurementSystemNums = contractorAuthorityController.getProcurementSystemNumbers(authority);
             for(String procurementSystemNum : procurementSystemNums){
                 try{
-                    boolean procurementExists = procurementController.saveProcurements(authority, procurementSystemNum);
-                    if(procurementExists){
+                    boolean procurementExists = procurementController.saveProcurement(authority, procurementSystemNum);
+                    if(!procurementExists){
                         break;
                     }
-                }catch(MissingHtmlElementException ignored){
+                }catch(MissingHtmlElementException | FailedFetchException ignored){
                 }
             }
         }
