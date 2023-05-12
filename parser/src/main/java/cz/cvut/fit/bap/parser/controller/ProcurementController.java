@@ -56,7 +56,8 @@ public class ProcurementController extends AbstractController<ProcurementService
      * @param systemNumber procurement system number
      * @return false if procurement is already in database, true otherwise
      */
-    public boolean saveProcurement(ContractorAuthority authority, String systemNumber) throws ExecutionException, InterruptedException{
+    @Timed(value = "scrapper.procurement.save")
+    public boolean saveProcurement(ContractorAuthority authority, String systemNumber){
         if(service.existsBySystemNumber(systemNumber)){
             return false;
         }

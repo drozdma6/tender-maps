@@ -30,6 +30,10 @@ dependencies {
 	testRuntimeOnly 'com.h2database:h2'
 	//parsing JSON
 	implementation 'org.json:json:20230227'
+	//performance metrics
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 }
 
 test {

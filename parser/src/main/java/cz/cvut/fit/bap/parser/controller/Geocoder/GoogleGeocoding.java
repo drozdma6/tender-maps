@@ -8,6 +8,7 @@ import com.google.maps.model.GeocodingResult;
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
 import cz.cvut.fit.bap.parser.domain.Address;
+import io.micrometer.core.annotation.Timed;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +36,7 @@ public class GoogleGeocoding implements Geocoder, AutoCloseable{
      * @return address with latitude, longitude and country code
      */
     @Override
+    @Timed(value = "scrapper.google.geocode")
     public Address geocode(AddressDto addressDto){
         String addressStr = addressDto.getBuildingNumber() + ' ' + addressDto.getStreet() + ' ' +
                             addressDto.getCity() + ' ' + addressDto.getPostalCode() + ' ' +
