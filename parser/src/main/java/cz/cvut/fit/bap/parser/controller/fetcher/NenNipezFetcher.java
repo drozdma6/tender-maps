@@ -1,5 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.fetcher;
 
+import io.micrometer.core.annotation.Timed;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -52,11 +53,11 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @return Document containing procurement result site
      */
     @Override
-    public CompletableFuture<Document> getProcurementResult(String systemNumber){
+    public Document getProcurementResult(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
                 "/vysledek/p:vys:page=1-10;uca:page=1-10"; //show all participants and suppliers without paging
-        return CompletableFuture.completedFuture(getDocumentWithRetry(url));
+        return getDocumentWithRetry(url);
     }
 
 
@@ -106,6 +107,7 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @param url which is supposed to be fetched
      * @return document
      */
+    @Timed(value = "scrapper.nen.nipez.fetch")
     private Document getDocumentWithRetry(String url){
         int backoffSeconds = 1; //initial backoff time
         int maxRetries = 5;

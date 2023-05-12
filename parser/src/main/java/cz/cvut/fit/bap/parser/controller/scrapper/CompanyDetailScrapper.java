@@ -33,4 +33,8 @@ public class CompanyDetailScrapper extends AbstractScrapper{
         }
         return new AddressDto(countryOfficialName, city, postalCode, street, buildingNumber);
     }
+
+    public String getOrganisationId(){
+        return getNullIfEmpty(document.select("[title=\"Organisation ID number\"] p").text());
+    }
 }

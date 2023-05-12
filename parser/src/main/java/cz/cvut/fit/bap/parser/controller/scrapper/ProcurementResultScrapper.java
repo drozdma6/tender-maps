@@ -1,5 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
+import cz.cvut.fit.bap.parser.controller.dto.CompanyDto;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -7,6 +8,8 @@ import org.jsoup.select.Elements;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Class for scrapping procurement result page
@@ -18,83 +21,51 @@ public class ProcurementResultScrapper extends AbstractScrapper{
         super(document);
     }
 
-    /*
-        Class represents Company information scrapped from ProcurementResult page
-     */
-    public static class CompanyInfo{
-        private BigDecimal contractPrice;
-        private final String detailHref;
-        private final String companyName;
-
-        public CompanyInfo(BigDecimal contractPrice, String detailHref, String companyName){
-            this.contractPrice = contractPrice;
-            this.detailHref = detailHref;
-            this.companyName = companyName;
-        }
-
-        public String getCompanyName(){
-            return companyName;
-        }
-
-        public BigDecimal getContractPrice(){
-            return contractPrice;
-        }
-
-        public String getDetailHref(){
-            return detailHref;
-        }
-
-        public void addContractPrice(BigDecimal price){
-            this.contractPrice = this.contractPrice.add(price);
-        }
-    }
-
     /**
      * Gets a supplier's map where key is supplier's name and value is additional information scrapped
      * from procurement result page.
      *
      * @return map containing company name as key companyInfo as value
      */
-    public HashMap<String,CompanyInfo> getSupplierMap(){
-        HashMap<String,CompanyInfo> suppliersMap = new HashMap<>();
+    public HashMap<String,CompanyDto> getSupplierMap(){
+        HashMap<String,CompanyDto> suppliersMap = new HashMap<>();
         Elements suppliersRows = getSuppliersRows();
 
         for(Element supplierRow : suppliersRows){
             String name = getName(supplierRow);
-            BigDecimal price = getPrice(supplierRow);
-            String detailHref = getDetailHref(supplierRow);
+            Optional<BigDecimal> price = getPrice(supplierRow);
+            String url = getDetailHref(supplierRow);
 
             // Check if the company already exists in the map
-            CompanyInfo existingCompanyInfo = suppliersMap.get(name);
+            CompanyDto existingCompanyInfo = suppliersMap.get(name);
             if(existingCompanyInfo != null){
                 // If it exists, update the existing contract price
-                existingCompanyInfo.addContractPrice(price);
+                price.ifPresent(existingCompanyInfo::addContractPrice);
             }else{
                 // If it doesn't exist, add the new CompanyInfo object to the map
-                suppliersMap.put(name, new CompanyInfo(price, detailHref, name));
+                suppliersMap.put(name, new CompanyDto(price.orElse(null), url, name));
             }
         }
         return suppliersMap;
     }
 
     /**
-     * Gets arraylist containing information about participants scrapped from procurement result page
+     * Gets map containing company detail url as key and additional information about company as value
      *
      * @return arraylist of CompanyInfo class
      */
-    public ArrayList<CompanyInfo> getParticipants(){
-        ArrayList<CompanyInfo> participants = new ArrayList<>();
+    public List<CompanyDto> getParticipants(){
+        List<CompanyDto> participants = new ArrayList<>();
         Elements participantsElems = document.select(
                 "[title=\"List of participants\"] .gov-table__row");
         for(Element participantRow : participantsElems){
-
-            String companyDetailHref = participantRow.select("a").attr("href");
+            String url = getDetailHref(participantRow);
             String strPrice = participantRow.select("[data-title=\"Bid price excl. VAT\"]").text();
             String participantName = participantRow.select("[data-title=\"Official name\"]").text();
 
-            CompanyInfo companyInfo = new CompanyInfo(getBigDecimalFromString(strPrice),
-                    companyDetailHref, participantName);
-            participants.add(companyInfo);
+            CompanyDto companyDto = new CompanyDto(getBigDecimalFromString(strPrice),
+                    url, participantName);
+            participants.add(companyDto);
         }
         return participants;
     }
@@ -136,27 +107,26 @@ public class ProcurementResultScrapper extends AbstractScrapper{
     private String getName(Element supplierRow){
         Elements nameElem = supplierRow.select("[data-title=\"Official name\"]");
 
-        if(nameElem.isEmpty()){
+        if(nameElem.isEmpty() || !nameElem.hasText()){
             throw new MissingHtmlElementException();
         }
         return nameElem.text();
     }
 
-    private BigDecimal getPrice(Element supplierRow){
+    private Optional<BigDecimal> getPrice(Element supplierRow){
         Elements priceElem = supplierRow.select("[data-title=\"Contractual price excl. VAT\"]");
-
-        if(priceElem.isEmpty()){
-            throw new MissingHtmlElementException();
+        if(priceElem.isEmpty() || !priceElem.hasText()){
+            return Optional.empty();
         }
-        return new BigDecimal(formatPrice(priceElem.text()));
+        return Optional.of(new BigDecimal(formatPrice(priceElem.text())));
     }
 
-    private String getDetailHref(Element supplierRow){
-        Elements detailLinkElem = supplierRow.select(".gov-link.gov-link--has-arrow");
+    private String getDetailHref(Element companyRow){
+        Elements detailLinkElem = companyRow.select(".gov-link.gov-link--has-arrow");
 
-        if(detailLinkElem.isEmpty()){
+        if(detailLinkElem.isEmpty() || !detailLinkElem.hasAttr("href")){
             throw new MissingHtmlElementException();
         }
-        return detailLinkElem.attr("href");
+        return removeUrlParameters(detailLinkElem.attr("href"));
     }
 }

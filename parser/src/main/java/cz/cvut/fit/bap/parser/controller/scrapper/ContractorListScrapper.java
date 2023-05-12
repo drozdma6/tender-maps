@@ -29,8 +29,9 @@ public class ContractorListScrapper extends AbstractScrapper{
         Elements rows = document.select(".gov-table__row");
         for(Element row : rows){
             String href = row.select("a").attr("href");
+            String urlWithoutParameters = removeUrlParameters(href);
             String profile = row.select("td.gov-table__cell:nth-of-type(4)").text();
-            authorities.add(new Pair<>(href, profile));
+            authorities.add(new Pair<>(urlWithoutParameters, profile));
         }
         return authorities;
     }

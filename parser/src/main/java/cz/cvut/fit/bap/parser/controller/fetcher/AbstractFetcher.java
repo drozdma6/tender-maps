@@ -12,8 +12,7 @@ public abstract class AbstractFetcher{
 
     public abstract Document getContractorCompleted(String profile, Integer page);
 
-    @Async
-    public abstract CompletableFuture<Document> getProcurementResult(String procurement);
+    public abstract Document getProcurementResult(String procurement);
 
     public abstract Document getCompanyDetail(String uri);
 

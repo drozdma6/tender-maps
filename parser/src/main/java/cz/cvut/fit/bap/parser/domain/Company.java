@@ -28,8 +28,8 @@ public class Company implements DomainEntity<Long>{
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @Column(name = "url")
-    private String url;
+    @Column(name = "organisation_id", unique = true)
+    private String organisationId;
 
     public Address getAddress(){
         return address;
@@ -42,18 +42,18 @@ public class Company implements DomainEntity<Long>{
     public Company(){
     }
 
-    public Company(String name, Address address, String url){
+    public Company(String name, Address address, String organisationId){
         this.name = name;
         this.address = address;
-        this.url = url;
+        this.organisationId = organisationId;
     }
 
-    public String getUrl(){
-        return url;
+    public String getOrganisationId(){
+        return organisationId;
     }
 
-    public void setUrl(String url){
-        this.url = url;
+    public void setOrganisationId(String organisationId){
+        this.organisationId = organisationId;
     }
 
     public Set<Procurement> getSuppliedProcurements(){
