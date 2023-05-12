@@ -2,6 +2,7 @@ package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.ContractorAuthorityService;
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ContractorCompletedScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ContractorDetailScrapper;
@@ -12,7 +13,6 @@ import cz.cvut.fit.bap.parser.controller.scrapper.factories.ContractorDetailFact
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.ContractorListFactory;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
-import kotlin.Pair;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
@@ -46,21 +46,20 @@ public class ContractorAuthorityController extends AbstractController<Contractor
     /**
      * Gets additional information and saves contractor authority
      *
-     * @param href    addition to base url of contractor authority
-     * @param profile of contractor authority
+     * @param contractorDto of contractor authority
      * @return saved contractor authority
      */
-    public ContractorAuthority saveContractorAuthority(String href, String profile){
-        Optional<ContractorAuthority> optionalAuthority = service.readByProfile(profile);
+    public ContractorAuthority saveContractorAuthority(ContractorAuthorityDto contractorDto){
+        Optional<ContractorAuthority> optionalAuthority = service.readByProfile(contractorDto.profileName());
         if(optionalAuthority.isPresent()){
             return optionalAuthority.get();
         }
-        Document document = getContractorDetailPage(href);
+        Document document = getContractorDetailPage(contractorDto.url());
         ContractorDetailScrapper contractorDetailScrapper = contractorDetailFactory.create(document);
         String name = contractorDetailScrapper.getContractorAuthorityName();
         AddressDto addressDto = contractorDetailScrapper.getContractorAuthorityAddress();
         Address address = addressController.saveAddress(addressDto);
-        return service.create(new ContractorAuthority(name, profile, address, href));
+        return service.create(new ContractorAuthority(name, contractorDto.profileName(), address, contractorDto.url()));
     }
 
     /**
@@ -90,10 +89,10 @@ public class ContractorAuthorityController extends AbstractController<Contractor
      *
      * @return list of pairs, first is link second is profile name
      */
-    public List<Pair<String,String>> getContractorAuthorityList(){
+    public List<ContractorAuthorityDto> getContractorAuthorityList(){
         //store link and profile name of authority
-        List<Pair<String,String>> authorityHrefList = new ArrayList<>();
-        List<Pair<String,String>> pageAuthorityHrefList;
+        List<ContractorAuthorityDto> authorityHrefList = new ArrayList<>();
+        List<ContractorAuthorityDto> pageAuthorityHrefList;
         int page = 1;
         do{
             Document document = getContractorAuthorityList(page++);

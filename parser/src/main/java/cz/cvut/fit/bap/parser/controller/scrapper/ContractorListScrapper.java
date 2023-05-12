@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import kotlin.Pair;
+import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -24,14 +24,14 @@ public class ContractorListScrapper extends AbstractScrapper{
      * @return list of pairs where first element is link to detail information about authority
      * and second is its profile name
      */
-    public List<Pair<String,String>> getAuthoritiesHrefs(){
-        List<Pair<String,String>> authorities = new ArrayList<>();
+    public List<ContractorAuthorityDto> getAuthoritiesHrefs(){
+        List<ContractorAuthorityDto> authorities = new ArrayList<>();
         Elements rows = document.select(".gov-table__row");
         for(Element row : rows){
             String href = row.select("a").attr("href");
             String urlWithoutParameters = removeUrlParameters(href);
             String profile = row.select("td.gov-table__cell:nth-of-type(4)").text();
-            authorities.add(new Pair<>(urlWithoutParameters, profile));
+            authorities.add(new ContractorAuthorityDto(urlWithoutParameters, profile));
         }
         return authorities;
     }
