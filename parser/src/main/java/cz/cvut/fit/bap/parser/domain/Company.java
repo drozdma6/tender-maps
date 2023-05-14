@@ -28,7 +28,7 @@ public class Company implements DomainEntity<Long>{
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @Column(name = "organisation_id", unique = true)
+    @Column(name = "organisation_id")
     private String organisationId;
 
     public Address getAddress(){
