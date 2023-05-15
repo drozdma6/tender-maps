@@ -2,10 +2,10 @@ package cz.cvut.fit.bap.parser.controller.scrapper;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Class for scrapping authority's completed list of procurements
@@ -24,17 +24,17 @@ public class ContractorCompletedScrapper extends AbstractScrapper{
      * @return List of completed procurement's system numbers
      */
     public List<String> getProcurementSystemNumbers(String contractorAuthorityName){
-        return document.select("tr.gov-table__row")
-                .stream()
-                .filter(row -> contractorAuthorityName.equalsIgnoreCase(
-                        Optional.ofNullable(row.selectFirst("td[data-title='Contracting authority']"))
-                                .map(Element::text)
-                                .orElseThrow(() -> new MissingHtmlElementException("Contracting authority element not found"))
-                ))
-                .map(row -> Optional.ofNullable(row.selectFirst("td[data-title='NEN system number']"))
-                        .map(Element::text)
-                        .orElseThrow(() -> new MissingHtmlElementException("NEN system number element not found"))
-                )
-                .collect(Collectors.toList());
+        Elements rows = document.select("tr.gov-table__row");
+        List<String> systemNumbers = new ArrayList<>();
+        for(Element row : rows){
+            Element contractingAuthorityElem = row.selectFirst("td[data-title='Contracting authority']");
+            Element procurementSystemNumberElem = row.selectFirst("td[data-title='NEN system number']");
+            if(contractingAuthorityElem != null
+                    && procurementSystemNumberElem != null
+                    && contractorAuthorityName.equalsIgnoreCase(contractingAuthorityElem.text())){
+                systemNumbers.add(procurementSystemNumberElem.text());
+            }
+        }
+        return systemNumbers;
     }
 }

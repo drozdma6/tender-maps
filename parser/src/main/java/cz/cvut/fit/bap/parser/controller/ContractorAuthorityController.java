@@ -7,18 +7,18 @@ import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ContractorCompletedScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ContractorDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ContractorListScrapper;
-import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.ContractorCompletedFactory;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.ContractorDetailFactory;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.ContractorListFactory;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import org.jsoup.nodes.Document;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /*
     Controller for communication with contractor authority service as well as scrappers
@@ -30,6 +30,7 @@ public class ContractorAuthorityController extends AbstractController<Contractor
     private final AddressController addressController;
     private final AbstractFetcher fetcher;
     private final ContractorListFactory contractorListFactory;
+    private int authorityListPage = 1;
 
     public ContractorAuthorityController(ContractorAuthorityService contractorAuthorityService,
                                          ContractorDetailFactory contractorDetailFactory,
@@ -54,7 +55,7 @@ public class ContractorAuthorityController extends AbstractController<Contractor
         if(optionalAuthority.isPresent()){
             return optionalAuthority.get();
         }
-        Document document = getContractorDetailPage(contractorDto.url());
+        Document document = fetcher.getContractorDetail(contractorDto.url());
         ContractorDetailScrapper contractorDetailScrapper = contractorDetailFactory.create(document);
         String name = contractorDetailScrapper.getContractorAuthorityName();
         AddressDto addressDto = contractorDetailScrapper.getContractorAuthorityAddress();
@@ -63,54 +64,28 @@ public class ContractorAuthorityController extends AbstractController<Contractor
     }
 
     /**
-     * Get completed procurement system numbers of given contractor authority
+     * Scrapes contracting authorities from next page.
      *
-     * @param contractorAuthority contractor authority
-     * @return list of string containing completed procurement system numbers
+     * @return future of list of contractor authority dto scrapped from next page
      */
-    public List<String> getProcurementSystemNumbers(ContractorAuthority contractorAuthority){
-        List<String> systemNumberList = new ArrayList<>();
-        List<String> pageSystemNumberList = new ArrayList<>();
-        int page = 1;
-        do{
-            Document document = getContractorCompletedPage(contractorAuthority, page++);
-            ContractorCompletedScrapper contractorCompletedScrapper = contractorCompletedFactory.create(document);
-            try{
-                pageSystemNumberList = contractorCompletedScrapper.getProcurementSystemNumbers(contractorAuthority.getName());
-                //skip procurement if insufficient data was provided for filtering
-            }catch(MissingHtmlElementException ignored){
-            }
-        }while(systemNumberList.addAll(pageSystemNumberList));
-        return systemNumberList;
+    @Async
+    public CompletableFuture<List<ContractorAuthorityDto>> getNextPageAuthorities(){
+        Document document = fetcher.getContractorAuthorityList(authorityListPage++);
+        ContractorListScrapper contractorListScrapper = contractorListFactory.create(document);
+        return CompletableFuture.completedFuture(contractorListScrapper.getAuthoritiesHrefs());
     }
 
     /**
-     * Gets information about each contracting authority registered on nen.nipez.cz
+     * Get completed procurement system numbers of given contractor authority on provided page
      *
-     * @return list of pairs, first is link second is profile name
+     * @param contractorAuthority who created procurements
+     * @param page                which is supposed to be scrapped.
+     * @return future of list of procurement system numbers from provided page
      */
-    public List<ContractorAuthorityDto> getContractorAuthorityList(){
-        //store link and profile name of authority
-        List<ContractorAuthorityDto> authorityHrefList = new ArrayList<>();
-        List<ContractorAuthorityDto> pageAuthorityHrefList;
-        int page = 1;
-        do{
-            Document document = getContractorAuthorityList(page++);
-            ContractorListScrapper contractorListScrapper = contractorListFactory.create(document);
-            pageAuthorityHrefList = contractorListScrapper.getAuthoritiesHrefs();
-        }while(authorityHrefList.addAll(pageAuthorityHrefList));
-        return authorityHrefList;
-    }
-
-    private Document getContractorDetailPage(String href){
-        return fetcher.getContractorDetail(href);
-    }
-
-    private Document getContractorCompletedPage(ContractorAuthority authority, int page){
-        return fetcher.getContractorCompleted(authority.getUrl(), page);
-    }
-
-    private Document getContractorAuthorityList(int page){
-        return fetcher.getContractorAuthorityList(page);
+    @Async
+    public CompletableFuture<List<String>> getProcurementSystemNumbers(ContractorAuthority contractorAuthority, int page){
+        Document document = fetcher.getContractorCompleted(contractorAuthority.getUrl(), page);
+        ContractorCompletedScrapper contractorCompletedScrapper = contractorCompletedFactory.create(document);
+        return CompletableFuture.completedFuture(contractorCompletedScrapper.getProcurementSystemNumbers(contractorAuthority.getName()));
     }
 }

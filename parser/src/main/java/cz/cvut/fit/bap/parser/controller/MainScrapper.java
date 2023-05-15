@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,18 +31,45 @@ public class MainScrapper{
      */
     @Scheduled(fixedRate = 14, timeUnit = TimeUnit.DAYS)
     public void run(){
-        List<ContractorAuthorityDto> authorityHrefs = contractorAuthorityController.getContractorAuthorityList();
-        for(ContractorAuthorityDto contractorData : authorityHrefs){
-            ContractorAuthority authority = contractorAuthorityController.saveContractorAuthority(contractorData);
-            List<String> procurementSystemNums = contractorAuthorityController.getProcurementSystemNumbers(authority);
-            for(String procurementSystemNum : procurementSystemNums){
-                try{
-                    boolean procurementExists = procurementController.saveProcurement(authority, procurementSystemNum);
-                    if(!procurementExists){
-                        break;
-                    }
-                }catch(MissingHtmlElementException | FailedFetchException ignored){
+        CompletableFuture<List<ContractorAuthorityDto>> authoritiesFuture = contractorAuthorityController.getNextPageAuthorities();
+        while(true){
+            List<ContractorAuthorityDto> authorities = authoritiesFuture.join();
+            if(authorities.isEmpty()){
+                break;
+            }
+            authoritiesFuture = contractorAuthorityController.getNextPageAuthorities();
+            scrapeAuthorities(authorities);
+        }
+    }
+
+    private void scrapeAuthorities(List<ContractorAuthorityDto> authoritiesDto){
+        for(ContractorAuthorityDto authorityDto : authoritiesDto){
+            ContractorAuthority authority = contractorAuthorityController.saveContractorAuthority(authorityDto);
+            scrapeAllProcurements(authority);
+        }
+    }
+
+    private void scrapeAllProcurements(ContractorAuthority contractorAuthority){
+        int page = 1;
+        CompletableFuture<List<String>> procurementSystemNumbersFuture = contractorAuthorityController.getProcurementSystemNumbers(contractorAuthority, page++);
+        while(true){
+            List<String> procurementSystemNumbers = procurementSystemNumbersFuture.join();
+            if(procurementSystemNumbers.isEmpty()){
+                break;
+            }
+            procurementSystemNumbersFuture = contractorAuthorityController.getProcurementSystemNumbers(contractorAuthority, page++);
+            scrapeProcurementPage(contractorAuthority, procurementSystemNumbers);
+        }
+    }
+
+    private void scrapeProcurementPage(ContractorAuthority contractorAuthority, List<String> systemNumbers){
+        for(String procurementSystemNum : systemNumbers){
+            try{
+                boolean procurementExists = procurementController.saveProcurement(contractorAuthority, procurementSystemNum);
+                if(!procurementExists){
+                    break;
                 }
+            }catch(MissingHtmlElementException | FailedFetchException ignored){
             }
         }
     }
