@@ -30,7 +30,7 @@ public class GoogleGeocoding implements Geocoder, AutoCloseable{
     }
 
     /**
-     * Send request to google's geocoding api with provided addressDto
+     * Geocodes addressDto
      *
      * @param addressDto addressDto which is supposed to be geocoded
      * @return address with latitude, longitude and country code
@@ -38,19 +38,23 @@ public class GoogleGeocoding implements Geocoder, AutoCloseable{
     @Override
     @Timed(value = "scrapper.google.geocode")
     public Address geocode(AddressDto addressDto){
+        GeocodingResult[] geocodingResults = sendRequest(addressDto);
+        Address address = addressDtoToAddress.apply(addressDto);
+        if(address.getCountryCode() == null){
+            address.setCountryCode(getCountryCode(geocodingResults));
+        }
+        address.setLongitude(getLongitude(geocodingResults));
+        address.setLatitude(getLatitude(geocodingResults));
+        return address;
+    }
+
+    private GeocodingResult[] sendRequest(AddressDto addressDto){
         String addressStr = addressDto.getBuildingNumber() + ' ' + addressDto.getStreet() + ' ' +
-                            addressDto.getCity() + ' ' + addressDto.getPostalCode() + ' ' +
-                            addressDto.getCountry();
+                addressDto.getCity() + ' ' + addressDto.getPostalCode() + ' ' +
+                addressDto.getCountry();
         try{
-            GeocodingResult[] geocodingResults = GeocodingApi.geocode(context, addressStr).await();
-            Address address = addressDtoToAddress.apply(addressDto);
-            if (address.getCountryCode() == null){
-                address.setCountryCode(getCountryCode(geocodingResults));
-            }
-            address.setLongitude(getLongitude(geocodingResults));
-            address.setLatitude(getLatitude(geocodingResults));
-            return address;
-        } catch (ApiException | InterruptedException | IOException e){
+            return GeocodingApi.geocode(context, addressStr).await();
+        }catch(ApiException | InterruptedException | IOException e){
             throw new RuntimeException(e);
         }
     }
@@ -63,7 +67,7 @@ public class GoogleGeocoding implements Geocoder, AutoCloseable{
      */
     private String getCountryCode(GeocodingResult[] results){
         AddressComponent[] addressComponents = results[0].addressComponents;
-        for (AddressComponent addressComponent : addressComponents){
+        for(AddressComponent addressComponent : addressComponents){
             for (int j = 0; j < addressComponent.types.length; j++){
                 if (addressComponent.types[j].toString().equals("country")){
                     return addressComponent.shortName;

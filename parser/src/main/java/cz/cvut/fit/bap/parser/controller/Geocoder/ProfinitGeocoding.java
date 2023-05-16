@@ -48,8 +48,7 @@ public class ProfinitGeocoding implements Geocoder{
     @Timed(value = "scrapper.profinit.geocode")
     public Address geocode(AddressDto addressDto){
         Address address = addressDtoToAddress.apply(addressDto);
-        address.setCountryCode(
-                czechShortCountryCode); //profinit geocoder is used only for czech places
+        address.setCountryCode(czechShortCountryCode); //profinit geocoder is used only for czech places
         String response = sendQueryRequest(addressDto);
         Pair<Double,Double> coordinates = getWgsCoordinates(response);
         address.setLatitude(coordinates.getFirst()); //wgs_x
@@ -63,13 +62,14 @@ public class ProfinitGeocoding implements Geocoder{
      * @param addressDto which is supposed to be geocoded
      * @return Json response
      */
-    public String sendQueryRequest(AddressDto addressDto){
+    private String sendQueryRequest(AddressDto addressDto){
         String addressStr = addressDto.getStreet() + ' ' + addressDto.getBuildingNumber() + ", " +
                 addressDto.getPostalCode() + ", " + addressDto.getCity();
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/query").queryParam("token", apiToken)
-                        .queryParam("query", addressStr).build()).retrieve()
+                        .queryParam("query", addressStr).build())
+                .retrieve()
                 .bodyToMono(String.class)
                 .retryWhen(Retry.backoff(5, Duration.ofSeconds(2))
                         .doAfterRetry(rs -> LOGGER.warn("Retrying profinit geocoding request.")))
