@@ -49,9 +49,9 @@ public class GoogleGeocoding implements Geocoder, AutoCloseable{
     }
 
     private GeocodingResult[] sendRequest(AddressDto addressDto){
-        String addressStr = addressDto.getBuildingNumber() + ' ' + addressDto.getStreet() + ' ' +
-                addressDto.getCity() + ' ' + addressDto.getPostalCode() + ' ' +
-                addressDto.getCountry();
+        String addressStr = addressDto.buildingNumber() + ' ' + addressDto.street() + ' ' +
+                addressDto.city() + ' ' + addressDto.postalCode() + ' ' +
+                addressDto.country();
         try{
             return GeocodingApi.geocode(context, addressStr).await();
         }catch(ApiException | InterruptedException | IOException e){

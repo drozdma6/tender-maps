@@ -1,7 +1,7 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.ProcurementService;
-import cz.cvut.fit.bap.parser.controller.dto.CompanyDto;
+import cz.cvut.fit.bap.parser.controller.dto.OfferDto;
 import cz.cvut.fit.bap.parser.controller.dto.ProcurementDetailDto;
 import cz.cvut.fit.bap.parser.controller.dto.ProcurementResultDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 /*
     Controller handling communication with procurement service and required scrappers to get procurement
@@ -61,6 +60,7 @@ public class ProcurementController extends AbstractController<ProcurementService
         if(service.existsBySystemNumber(systemNumber)){
             return false;
         }
+        //run procurement detail scrapping in separate thread
         CompletableFuture<ProcurementDetailDto> procurementDetailDtoFuture = fetcher.getProcurementDetail(systemNumber)
                 .thenApply(procurementDetailFactory::create)
                 .thenApply(this::getProcurementDetailDto);
@@ -84,7 +84,7 @@ public class ProcurementController extends AbstractController<ProcurementService
             Company supplier = saveSupplier(supplierInfo);
 
             Procurement procurement = service.create(new Procurement(procurementDetailDto.procurementName(), supplier, authority,
-                    supplierInfo.getContractPrice(), procurementDetailDto.placeOfPerformance(),
+                    supplierInfo.contractPrice(), procurementDetailDto.placeOfPerformance(),
                     procurementDetailDto.dateOfPublication(), systemNumber));
 
             for(Pair<Company,BigDecimal> participant : participants){
@@ -103,23 +103,23 @@ public class ProcurementController extends AbstractController<ProcurementService
         return new ProcurementResultDto(procurementResultScrapper.getParticipants(), procurementResultScrapper.getSupplierMap());
     }
 
-    private Company saveSupplier(CompanyDto supplierInfo){
-        Company supplier = companyController.getCompany(supplierInfo.getDetailHref(), supplierInfo.getCompanyName());
-        return companyController.saveCompany(supplier);
+    private Company saveSupplier(OfferDto supplierInfo){
+        CompletableFuture<Company> company = companyController.getCompany(supplierInfo.detailHref(), supplierInfo.companyName());
+        return companyController.saveCompany(company.join());
     }
 
-    private List<Pair<Company,BigDecimal>> saveParticipants(List<CompanyDto> participants){
-        //run scrapping of each participant in separate thread
+    private List<Pair<Company,BigDecimal>> saveParticipants(List<OfferDto> participants){
         List<Pair<CompletableFuture<Company>,BigDecimal>> companyFutures = new ArrayList<>();
-        participants.forEach(companyDto -> {
-            CompletableFuture<Company> participantFuture = companyController.getCompanyAsync(companyDto.getDetailHref(), companyDto.getCompanyName());
-            companyFutures.add(new Pair<>(participantFuture, companyDto.getContractPrice()));
+        participants.forEach(offerDto -> {
+            //run scrapping in separate thread
+            CompletableFuture<Company> participantFuture = companyController.getCompany(offerDto.detailHref(), offerDto.companyName());
+            companyFutures.add(new Pair<>(participantFuture, offerDto.contractPrice()));
         });
-        //Wait for all participants to finish
-        List<Pair<Company,BigDecimal>> participantList = finishFutures(companyFutures);
-
-        participantList.forEach(pair -> companyController.saveCompany(pair.getFirst()));
-        return participantList;
+        //Wait for all futures to finish
+        return finishFutures(companyFutures)
+                .stream()
+                .map(pair -> new Pair<>(companyController.saveCompany(pair.getFirst()), pair.getSecond())) //save each participant
+                .toList();
     }
 
     private List<Pair<Company,BigDecimal>> finishFutures(List<Pair<CompletableFuture<Company>,BigDecimal>> futures){
@@ -132,6 +132,6 @@ public class ProcurementController extends AbstractController<ProcurementService
         // Collect the results and return as a List<Pair<Company, BigDecimal>>
         return futures.stream()
                 .map(pair -> new Pair<>(pair.getFirst().join(), pair.getSecond()))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

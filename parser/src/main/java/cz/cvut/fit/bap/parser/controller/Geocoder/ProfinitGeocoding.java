@@ -63,8 +63,8 @@ public class ProfinitGeocoding implements Geocoder{
      * @return Json response
      */
     private String sendQueryRequest(AddressDto addressDto){
-        String addressStr = addressDto.getStreet() + ' ' + addressDto.getBuildingNumber() + ", " +
-                addressDto.getPostalCode() + ", " + addressDto.getCity();
+        String addressStr = addressDto.street() + ' ' + addressDto.buildingNumber() + ", " +
+                addressDto.postalCode() + ", " + addressDto.city();
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/query").queryParam("token", apiToken)

@@ -41,8 +41,7 @@ public class AddressController extends AbstractController<AddressService>{
         if(dtoIsIncomplete(addressDto)){
             return service.create(addressDtoToAddress.apply(addressDto));
         }
-        Address address;
-        String country = addressDto.getCountry().toLowerCase();
+        String country = addressDto.country().toLowerCase();
         if(Objects.equals(country, "cz")){
             //profinit geocoder for czech places
             address = profinitGeocoding.geocode(addressDto);
@@ -54,8 +53,8 @@ public class AddressController extends AbstractController<AddressService>{
     }
 
     private boolean dtoIsIncomplete(AddressDto addressDto){
-        return addressDto.getCountry() == null || addressDto.getBuildingNumber() == null ||
-                addressDto.getCity() == null || addressDto.getStreet() == null ||
-                addressDto.getPostalCode() == null;
+        return addressDto.country() == null || addressDto.buildingNumber() == null ||
+                addressDto.city() == null || addressDto.street() == null ||
+                addressDto.postalCode() == null;
     }
 }

@@ -1,15 +1,12 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.controller.dto.CompanyDto;
+import cz.cvut.fit.bap.parser.controller.dto.OfferDto;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Class for scrapping procurement result page
@@ -27,24 +24,24 @@ public class ProcurementResultScrapper extends AbstractScrapper{
      *
      * @return map containing company name as key companyInfo as value
      */
-    public HashMap<String,CompanyDto> getSupplierMap(){
-        HashMap<String,CompanyDto> suppliersMap = new HashMap<>();
+    public Map<String,OfferDto> getSupplierMap(){
+        Map<String,OfferDto> suppliersMap = new HashMap<>();
         Elements suppliersRows = getSuppliersRows();
 
         for(Element supplierRow : suppliersRows){
             String name = getName(supplierRow);
             Optional<BigDecimal> price = getPrice(supplierRow);
             String url = getDetailHref(supplierRow);
-
             // Check if the company already exists in the map
-            CompanyDto existingCompanyInfo = suppliersMap.get(name);
-            if(existingCompanyInfo != null){
-                // If it exists, update the existing contract price
-                price.ifPresent(existingCompanyInfo::addContractPrice);
-            }else{
-                // If it doesn't exist, add the new CompanyInfo object to the map
-                suppliersMap.put(name, new CompanyDto(price.orElse(null), url, name));
-            }
+            suppliersMap.compute(name, (key, existingOffer) -> {
+                if(existingOffer != null){
+                    // If it exists change value to new OfferDto
+                    return existingOffer.addPriceToOffer(price.orElse(null));
+                }else{
+                    // If it doesn't exist, add the new OfferDto object to the map
+                    return new OfferDto(price.orElse(null), url, name);
+                }
+            });
         }
         return suppliersMap;
     }
@@ -54,8 +51,8 @@ public class ProcurementResultScrapper extends AbstractScrapper{
      *
      * @return arraylist of CompanyInfo class
      */
-    public List<CompanyDto> getParticipants(){
-        List<CompanyDto> participants = new ArrayList<>();
+    public List<OfferDto> getParticipants(){
+        List<OfferDto> participants = new ArrayList<>();
         Elements participantsElems = document.select(
                 "[title=\"List of participants\"] .gov-table__row");
         for(Element participantRow : participantsElems){
@@ -63,9 +60,9 @@ public class ProcurementResultScrapper extends AbstractScrapper{
             String strPrice = participantRow.select("[data-title=\"Bid price excl. VAT\"]").text();
             String participantName = participantRow.select("[data-title=\"Official name\"]").text();
 
-            CompanyDto companyDto = new CompanyDto(getBigDecimalFromString(strPrice),
+            OfferDto offerDto = new OfferDto(getBigDecimalFromString(strPrice),
                     url, participantName);
-            participants.add(companyDto);
+            participants.add(offerDto);
         }
         return participants;
     }
