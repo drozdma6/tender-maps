@@ -13,6 +13,7 @@ import cz.cvut.fit.bap.parser.domain.Company;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import cz.cvut.fit.bap.parser.domain.Procurement;
 import io.micrometer.core.annotation.Timed;
+import jakarta.transaction.Transactional;
 import kotlin.Pair;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
@@ -56,6 +57,7 @@ public class ProcurementController extends AbstractController<ProcurementService
      * @return false if procurement is already in database, true otherwise
      */
     @Timed(value = "scrapper.procurement.save")
+    @Transactional
     public boolean saveProcurement(ContractorAuthority authority, String systemNumber){
         if(service.existsBySystemNumber(systemNumber)){
             return false;

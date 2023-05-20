@@ -1,7 +1,6 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.ContractorAuthorityService;
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ContractorCompletedScrapper;
@@ -12,6 +11,7 @@ import cz.cvut.fit.bap.parser.controller.scrapper.factories.ContractorDetailFact
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.ContractorListFactory;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
+import jakarta.transaction.Transactional;
 import org.jsoup.nodes.Document;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -50,6 +50,7 @@ public class ContractorAuthorityController extends AbstractController<Contractor
      * @param contractorDto of contractor authority
      * @return saved contractor authority
      */
+    @Transactional
     public ContractorAuthority saveContractorAuthority(ContractorAuthorityDto contractorDto){
         Optional<ContractorAuthority> optionalAuthority = service.readByProfile(contractorDto.profileName());
         if(optionalAuthority.isPresent()){
