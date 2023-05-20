@@ -1,6 +1,5 @@
 package cz.cvut.fit.bap.parser.business;
 
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.dao.AddressJpaRepository;
 import cz.cvut.fit.bap.parser.domain.Address;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ public class AddressService extends AbstractCreateService<Address, Long>{
      * @param address which is supposed to be found
      * @return optional of address
      */
-    public Optional<Address> readAddress(AddressDto address){
+    public Optional<Address> readAddress(Address address){
         return ((AddressJpaRepository) repository).readAddress(address);
     }
 }

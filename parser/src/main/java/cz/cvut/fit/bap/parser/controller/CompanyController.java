@@ -32,51 +32,38 @@ public class CompanyController extends AbstractController<CompanyService>{
     }
 
     /**
-     * Gets company from url
+     * Saves company and its address
      *
-     * @param url         of company site
-     * @param companyName of company
-     * @return company instance
-     */
-    public Company getCompany(String url, String companyName){
-        Optional<Company> companyOptional = service.readByName(companyName);
-        return companyOptional.orElseGet(() -> getCompanyFromUrl(url, companyName));
-    }
-
-    /**
-     * Get future of company from url. Runs this method in separate thread.
-     *
-     * @param url         of company site
-     * @param companyName of company
-     * @return future of company instance
-     */
-    @Async
-    public CompletableFuture<Company> getCompanyAsync(String url, String companyName){
-        Optional<Company> companyOptional = service.readByName(companyName);
-        return companyOptional
-                .map(CompletableFuture::completedFuture)
-                .orElseGet(() -> CompletableFuture.completedFuture(getCompanyFromUrl(url, companyName)));
-    }
-
-    /**
-     * Saves company if it is not saved already
-     *
-     * @param company to be stored
+     * @param company which is supposed to be stored
      * @return stored company
      */
     public Company saveCompany(Company company){
-        if(company.getId() != null){
-            return company;
+        Optional<Company> companyOptional = service.readByName(company.getName());
+        if(companyOptional.isPresent()){
+            return companyOptional.get();
         }
-        return service.create(company);
+        Address address = addressController.saveAddress(company.getAddress());
+        return service.create(new Company(company.getName(), address, company.getOrganisationId()));
     }
 
-    private Company getCompanyFromUrl(String url, String companyName){
+    /**
+     * Get company from url with provided name
+     *
+     * @param url         where information about company is
+     * @param companyName of wanted company
+     * @return future of scrapped company
+     */
+    @Async
+    public CompletableFuture<Company> getCompany(String url, String companyName){
+        Optional<Company> companyOptional = service.readByName(companyName);
+        if(companyOptional.isPresent()){
+            return CompletableFuture.completedFuture(companyOptional.get());
+        }
         Document doc = fetcher.getCompanyDetail(url);
         CompanyDetailScrapper companyDetailScrapper = companyDetailFactory.create(doc);
         AddressDto addressDto = companyDetailScrapper.getCompanyAddress();
         String organisationId = companyDetailScrapper.getOrganisationId();
-        Address address = addressController.saveAddress(addressDto);
-        return new Company(companyName, address, organisationId);
+        Address geocodedAddress = addressController.geocode(addressDto);
+        return CompletableFuture.completedFuture(new Company(companyName, geocodedAddress, organisationId));
     }
 }

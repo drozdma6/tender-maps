@@ -1,6 +1,5 @@
 package cz.cvut.fit.bap.parser.dao;
 
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.domain.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,10 +17,10 @@ public interface AddressJpaRepository extends JpaRepository<Address, Long>{
      * @return optional of address
      */
     @Query(value = "SELECT * FROM address WHERE " +
-                   "building_number IS NOT DISTINCT FROM :#{#address.buildingNumber} " +
-                   "AND city IS NOT DISTINCT FROM :#{#address.city} " +
-                   "AND street IS NOT DISTINCT FROM :#{#address.street} " +
-                   "AND postal_code IS NOT DISTINCT FROM :#{#address.postalCode}",
-           nativeQuery = true)
-    Optional<Address> readAddress(@Param("address") AddressDto address);
+            "building_number IS NOT DISTINCT FROM :#{#address.buildingNumber} " +
+            "AND city IS NOT DISTINCT FROM :#{#address.city} " +
+            "AND street IS NOT DISTINCT FROM :#{#address.street} " +
+            "AND postal_code IS NOT DISTINCT FROM :#{#address.postalCode}",
+            nativeQuery = true)
+    Optional<Address> readAddress(@Param("address") Address address);
 }

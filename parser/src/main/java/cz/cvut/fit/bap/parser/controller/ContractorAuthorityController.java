@@ -58,8 +58,8 @@ public class ContractorAuthorityController extends AbstractController<Contractor
         Document document = fetcher.getContractorDetail(contractorDto.url());
         ContractorDetailScrapper contractorDetailScrapper = contractorDetailFactory.create(document);
         String name = contractorDetailScrapper.getContractorAuthorityName();
-        AddressDto addressDto = contractorDetailScrapper.getContractorAuthorityAddress();
-        Address address = addressController.saveAddress(addressDto);
+        Address geocodedAddress = addressController.geocode(contractorDetailScrapper.getContractorAuthorityAddress());
+        Address address = addressController.saveAddress(geocodedAddress);
         return service.create(new ContractorAuthority(name, contractorDto.profileName(), address, contractorDto.url()));
     }
 

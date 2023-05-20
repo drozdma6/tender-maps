@@ -28,28 +28,28 @@ public class AddressController extends AbstractController<AddressService>{
     }
 
     /**
-     * Creates new address entity from addressDto by setting country code, latitude and longitude
+     * Saves address
      *
-     * @param addressDto which is supposed to be stored
+     * @param address which is supposed to be stored
      * @return address from database
      */
-    public Address saveAddress(AddressDto addressDto){
-        Optional<Address> addressOptional = service.readAddress(addressDto);
-        if(addressOptional.isPresent()){
-            return addressOptional.get();
-        }
+    public Address saveAddress(Address address){
+        Optional<Address> addressOptional = service.readAddress(address);
+        return addressOptional.orElseGet(() -> service.create(address));
+    }
+
+    public Address geocode(AddressDto addressDto){
         if(dtoIsIncomplete(addressDto)){
-            return service.create(addressDtoToAddress.apply(addressDto));
+            return addressDtoToAddress.apply(addressDto);
         }
         String country = addressDto.country().toLowerCase();
         if(Objects.equals(country, "cz")){
             //profinit geocoder for czech places
-            address = profinitGeocoding.geocode(addressDto);
+            return profinitGeocoding.geocode(addressDto);
         }else{
             //google geocoder for foreign countries
-            address = googleGeocoding.geocode(addressDto);
+            return googleGeocoding.geocode(addressDto);
         }
-        return service.create(address);
     }
 
     private boolean dtoIsIncomplete(AddressDto addressDto){
