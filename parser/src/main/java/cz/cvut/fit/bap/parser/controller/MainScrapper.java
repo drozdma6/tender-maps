@@ -4,18 +4,15 @@ import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.FailedFetchException;
 import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
- * Class for handling scrappers
+ * Main loop of program
  */
-@ConditionalOnProperty(value = "app.scheduling.enable", havingValue = "true", matchIfMissing = true)
 @Component
 public class MainScrapper{
     private final ContractorAuthorityController contractorAuthorityController;
@@ -29,7 +26,7 @@ public class MainScrapper{
     /**
      * Starts scrapping. It is scheduled to run once every 2 weeks
      */
-    @Scheduled(fixedRate = 14, timeUnit = TimeUnit.DAYS)
+    @Scheduled(cron = "${parser.scheduling.cron}")
     public void run(){
         CompletableFuture<List<ContractorAuthorityDto>> authoritiesFuture = contractorAuthorityController.getNextPageAuthorities();
         while(true){
