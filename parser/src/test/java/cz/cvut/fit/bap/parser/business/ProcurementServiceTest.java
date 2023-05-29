@@ -2,22 +2,22 @@ package cz.cvut.fit.bap.parser.business;
 
 import cz.cvut.fit.bap.parser.dao.ProcurementJpaRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ProcurementServiceTest{
-    @Autowired
+    @InjectMocks
     private ProcurementService procurementService;
 
-    @MockBean
+    @Mock
     private ProcurementJpaRepository procurementJpaRepository;
-
 
     @Test
     void existsByServiceNumber(){

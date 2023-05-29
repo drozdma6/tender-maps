@@ -4,9 +4,10 @@ import cz.cvut.fit.bap.parser.dao.ContractorAuthorityJpaRepository;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
@@ -14,39 +15,39 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ContractorAuthorityServiceTest{
-    @Autowired
+    @InjectMocks
     private ContractorAuthorityService contractorAuthorityService;
 
-    @MockBean
+    @Mock
     private ContractorAuthorityJpaRepository contractorAuthorityJpaRepository;
 
     @Test
     void readByNameExisting(){
-        String authorityName = "testContractor";
-        ContractorAuthority contractorAuthority = new ContractorAuthority(authorityName, "",
-                                                                          new Address());
-        when(contractorAuthorityJpaRepository.findContractorAuthorityByName(
-                authorityName)).thenReturn(Optional.of(contractorAuthority));
-        Optional<ContractorAuthority> returnedContractorAuthority = contractorAuthorityService.readByName(
-                authorityName);
+        String profile = "profile";
+        ContractorAuthority contractorAuthority = new ContractorAuthority("name", profile,
+                new Address(), "url");
+        when(contractorAuthorityJpaRepository.findContractorAuthorityByProfile(
+                profile)).thenReturn(Optional.of(contractorAuthority));
+        Optional<ContractorAuthority> returnedContractorAuthority = contractorAuthorityService.readByProfile(
+                profile);
         assertTrue(returnedContractorAuthority.isPresent());
         assertEquals(contractorAuthority, returnedContractorAuthority.get());
         assertEquals(contractorAuthority.getName(), returnedContractorAuthority.get().getName());
         assertEquals(contractorAuthority.getProfile(),
-                     returnedContractorAuthority.get().getProfile());
+                returnedContractorAuthority.get().getProfile());
         assertEquals(contractorAuthority.getAddress(),
-                     returnedContractorAuthority.get().getAddress());
+                returnedContractorAuthority.get().getAddress());
     }
 
     @Test
     void readByNameNonExisting(){
-        String name = "testName";
-        when(contractorAuthorityJpaRepository.findContractorAuthorityByName(name)).thenReturn(
+        String profile = "testProfile";
+        when(contractorAuthorityJpaRepository.findContractorAuthorityByProfile(profile)).thenReturn(
                 Optional.empty());
-        Optional<ContractorAuthority> returnContractorAuthority = contractorAuthorityService.readByName(
-                name);
+        Optional<ContractorAuthority> returnContractorAuthority = contractorAuthorityService.readByProfile(
+                profile);
         assertTrue(returnContractorAuthority.isEmpty());
     }
 }

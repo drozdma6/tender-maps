@@ -3,48 +3,42 @@ package cz.cvut.fit.bap.parser.business;
 import cz.cvut.fit.bap.parser.dao.CompanyJpaRepository;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.Company;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class CompanyServiceTest{
-    @Autowired
+    @InjectMocks
     private CompanyService companyService;
 
-    @MockBean
+    @Mock
     private CompanyJpaRepository companyJpaRepository;
 
     @Test
-    void createExistingId(){
-        Company company = new Company("testCompany", new Address());
-        company.setId(1L);
-        when(companyJpaRepository.existsById(company.getId())).thenReturn(true);
-        when(companyJpaRepository.save(any(Company.class))).thenAnswer(i -> i.getArgument(0));
-        assertThrows(RuntimeException.class, () -> companyService.create(company));
-        verify(companyJpaRepository, never()).save(company);
-    }
-
-    @Test
     void createNonExistingCompany(){
-        Company company = new Company("testCompany", new Address());
+        Company company = new Company("testCompany", new Address(), "organisationId");
         company.setId(1L);
-        when(companyJpaRepository.existsById(company.getId())).thenReturn(false);
         when(companyJpaRepository.save(any(Company.class))).thenAnswer(i -> i.getArgument(0));
-        companyService.create(company);
+        Company savedCompany = companyService.create(company);
         verify(companyJpaRepository, times(1)).save(company);
+        Assertions.assertEquals(company.getName(), savedCompany.getName());
+        Assertions.assertEquals(company.getOrganisationId(), savedCompany.getOrganisationId());
     }
 
     @Test
     void readByNameExisting(){
         String companyName = "testCompany";
-        Company company = new Company(companyName, new Address());
+        Company company = new Company(companyName, new Address(), "organisationId");
         when(companyJpaRepository.findCompanyByName(companyName)).thenReturn(Optional.of(company));
         Optional<Company> receivedCompany = companyService.readByName(companyName);
         assertTrue(receivedCompany.isPresent());
