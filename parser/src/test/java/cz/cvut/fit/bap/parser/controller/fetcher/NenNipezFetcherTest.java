@@ -1,59 +1,56 @@
-package cz.cvut.fit.bap.parser.scrapper.fetcher;
-
+package cz.cvut.fit.bap.parser.controller.fetcher;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.TestPropertySource;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-
-@SpringBootTest
-@TestPropertySource(
-        properties = {"procurement.first.date.of.publication=2022-01-01", "procurement.pages.per.fetch=5"})
+@ExtendWith(MockitoExtension.class)
 class NenNipezFetcherTest{
-
-    @MockBean
+    @Mock
     private Connection connection;
 
-    @Autowired
+    @InjectMocks
     private NenNipezFetcher nenNipezFetcher;
 
     @Test
     void getContractorDetail() throws IOException{
-        String profile = "testProfile";
+        String testUrl = "/testUrl";
         String expectedUrl =
-                "https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/" + profile;
+                "https://nen.nipez.cz/en" + testUrl;
+
         Document expectedDoc = new Document(expectedUrl);
 
         when(connection.get()).thenReturn(expectedDoc);
-        try (MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
+        try(MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
             jsoup.when(() -> Jsoup.connect(expectedUrl)).thenReturn(connection);
-            Assertions.assertEquals(expectedDoc, nenNipezFetcher.getContractorDetail(profile));
+            Assertions.assertEquals(expectedDoc, nenNipezFetcher.getContractorDetail(testUrl));
         }
     }
 
     @Test
     void getContractorCompleted() throws IOException{
-        String expectedUrl = "https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/testProfile/uzavrene-zakazky/p:puvz:stavZP=zadana&page=21-25&zadavatelNazev=test%20Name&datumPrvniUver=2022-01-01,";
+        String testUrl = "/testUrl";
+        int page = 1;
+        String expectedUrl = "https://nen.nipez.cz/en" + testUrl + "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=" + page;
         Document expectedDoc = new Document(expectedUrl);
 
         when(connection.get()).thenReturn(expectedDoc);
-        try (MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
+        try(MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
             jsoup.when(() -> Jsoup.connect(expectedUrl)).thenReturn(connection);
             Assertions.assertEquals(expectedDoc,
-                                    nenNipezFetcher.getContractorCompleted("testProfile",
-                                                                           "test Name", 5));
+                    nenNipezFetcher.getContractorCompleted(testUrl, page));
         }
     }
 
@@ -64,10 +61,10 @@ class NenNipezFetcherTest{
         Document expectedDoc = new Document(expectedUrl);
 
         when(connection.get()).thenReturn(expectedDoc);
-        try (MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
+        try(MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
             jsoup.when(() -> Jsoup.connect(expectedUrl)).thenReturn(connection);
             Assertions.assertEquals(expectedDoc,
-                                    nenNipezFetcher.getProcurementResult(testSystemNumber));
+                    nenNipezFetcher.getProcurementResult(testSystemNumber));
         }
     }
 
@@ -78,7 +75,7 @@ class NenNipezFetcherTest{
         Document expectedDoc = new Document(expectedUrl);
 
         when(connection.get()).thenReturn(expectedDoc);
-        try (MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
+        try(MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
             jsoup.when(() -> Jsoup.connect(expectedUrl)).thenReturn(connection);
             Assertions.assertEquals(expectedDoc, nenNipezFetcher.getCompanyDetail(testUrl));
         }
@@ -91,10 +88,25 @@ class NenNipezFetcherTest{
         Document expectedDoc = new Document(expectedUrl);
 
         when(connection.get()).thenReturn(expectedDoc);
-        try (MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
+        try(MockedStatic<Jsoup> jsoup = Mockito.mockStatic(Jsoup.class)){
             jsoup.when(() -> Jsoup.connect(expectedUrl)).thenReturn(connection);
-            Assertions.assertEquals(expectedDoc,
-                                    nenNipezFetcher.getProcurementDetail(testSystemNumber));
+            Document actualDocument = nenNipezFetcher.getProcurementDetail(testSystemNumber).join();
+
+            Assertions.assertEquals(expectedDoc, actualDocument);
+            verify(connection, times(1)).get();
+        }
+    }
+
+    @Test
+    void getContractorAuthorityList() throws IOException{
+        int page = 1;
+        String expectedUrl = "https://nen.nipez.cz/profily-zadavatelu-platne/p:pzp:page=" + page;
+        Document expectedDoc = new Document(expectedUrl);
+
+        when(connection.get()).thenReturn(expectedDoc);
+        try(MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
+            jsoup.when(() -> Jsoup.connect(expectedUrl)).thenReturn(connection);
+            Assertions.assertEquals(expectedDoc, nenNipezFetcher.getContractorAuthorityList(page));
         }
     }
 }
