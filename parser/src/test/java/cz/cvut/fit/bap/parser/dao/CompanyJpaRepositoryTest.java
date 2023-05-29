@@ -1,10 +1,11 @@
 package cz.cvut.fit.bap.parser.dao;
 
+import cz.cvut.fit.bap.parser.TestConfigurationClass;
 import cz.cvut.fit.bap.parser.domain.Company;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.context.annotation.Import;
 
 import java.util.Optional;
 
@@ -12,16 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Import(TestConfigurationClass.class)
 public class CompanyJpaRepositoryTest{
-
     @Autowired
     private CompanyJpaRepository companyJpaRepository;
 
     @Test
     public void testFindCompanyByName(){
         String companyName = "testName";
-        Company company = new Company(companyName, null);
+        Company company = new Company(companyName, null, "organisationId");
 
         companyJpaRepository.save(company);
 
