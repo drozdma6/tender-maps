@@ -1,14 +1,12 @@
-package cz.cvut.fit.bap.parser.scrapper;
+package cz.cvut.fit.bap.parser.controller.scrapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@SpringBootTest
 class AbstractScrapperTest{
     private AbstractScrapper abstractScrapper;
 
@@ -36,5 +34,15 @@ class AbstractScrapperTest{
         String input = "sample text";
         String result = abstractScrapper.getNullIfEmpty(input);
         assertEquals(input, result);
+    }
+
+    @Test
+    void testRemoveUrlParameters(){
+        String url = "/p:abc/def/?param=value";
+        String expectedModifiedUrl = "/def/?param=value";
+
+        String modifiedUrl = abstractScrapper.removeUrlParameters(url);
+
+        assertEquals(expectedModifiedUrl, modifiedUrl);
     }
 }
