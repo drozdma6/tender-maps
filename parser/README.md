@@ -1,13 +1,14 @@
 # Scrapper
 
-Application for scrapping [nen.nipez.cz](https://nen.nipez.cz/en/profily-zadavatelu-platne). Scrapping is focused on
-public
-procurements and their suppliers (winners) or participants.
+Application for scrapping [nen.nipez.cz](https://nen.nipez.cz/en/profily-zadavatelu-platne), with focus on
+public procurements and their suppliers and participants. Application also geocodes addresses of registered companies..
 
 ## Requirements
 
-1. create your own [google maps](https://developers.google.com/maps) api key to enable geocoding functionality
-2. provide it in *.env* file in format `apiKey={your_google_api_key}`
+1. create api tokens:
+    1. [profinit geocoding](https://geolokator.profinit.cz/) used for Czech places
+    2. [google maps](https://developers.google.com/maps) for foreign places (optional)
+2. provide them in *.env* in format `PROFINIT_API_KEY={api_key}` and `GOOGLE_API_KEY={api_key}`
 3. continue with [docker run](#docker-compose) or [local run](#local-run)
 
 ## Docker-compose
@@ -16,7 +17,7 @@ procurements and their suppliers (winners) or participants.
 
 ## Local run
 
-1. Set up postgres database and configure application.properties
+1. Set up postgres database and configure application.properties accordingly
 2. `./gradlew build` build
 3. `./gradlew bootRun` run
 
@@ -26,18 +27,11 @@ procurements and their suppliers (winners) or participants.
 
 ## Modifiers
 
-- All modifiers are optional
-- Change the starting date from which public orders are to be scrapped
-    - Docker-compose `PROCUREMENT_FIRST_DATE_OF_PUBLICATION=YYYY-MM-DD`
-    - Command line argument (running locally) `--procurement.first.date.of.publication=YYYY-MM-DD`
-    - Default value: 2022-01-01
+- Scheduled run interval
+  as [cron expression](https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm)
+    - Docker-compose `SCHEDULING_CRON={cron_expression}` (Cron)
+    - Default value: 0 0 0 1 * * (first day of each month at midnight)
 
-- Change the number of fetched pages of procurements per one fetched html
-    - Docker-compose `PROCUREMENT_PAGES_PER_FETCH={positive_integer}`
-    - Command line argument (running locally) `--procurement.pages.per.fetch={positive_integer}`
-    - Default value: 5
-
-- Determines whether fetching should stop at first already stored procurement or not (from single contractor)
-    - Docker-compose `PROCUREMENT_SCRAPE_ALL={boolean}`
-    - Command line argument (running locally)`--procurement.scrape.all={boolean}`
+- Determines whether scrapping should start with application run or wait for scheduled run
+    - Docker-compose `RUN_ON_STARTUP={boolean}`
     - Default value: false
