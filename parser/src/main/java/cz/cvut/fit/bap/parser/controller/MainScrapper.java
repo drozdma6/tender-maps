@@ -4,6 +4,9 @@ import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.FailedFetchException;
 import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,19 +17,29 @@ import java.util.concurrent.CompletableFuture;
  * Main loop of program
  */
 @Component
-public class MainScrapper{
+public class MainScrapper implements ApplicationRunner{
     private final ContractorAuthorityController contractorAuthorityController;
     private final ProcurementController procurementController;
+
+    @Value("${RUN_ON_STARTUP:false}") //default value is set to false
+    private boolean runOnStartup;
 
     public MainScrapper(ContractorAuthorityController contractorAuthorityController, ProcurementController procurementController){
         this.contractorAuthorityController = contractorAuthorityController;
         this.procurementController = procurementController;
     }
 
+    @Override
+    public void run(ApplicationArguments args){
+        if(runOnStartup){
+            run();
+        }
+    }
+
     /**
-     * Starts scrapping. It is scheduled to run once every 2 weeks
+     * Scheduled start of scrapping.
      */
-    @Scheduled(cron = "${parser.scheduling.cron}")
+    @Scheduled(cron = "${SCHEDULING_CRON}")
     public void run(){
         CompletableFuture<List<ContractorAuthorityDto>> authoritiesFuture = contractorAuthorityController.getNextPageAuthorities();
         while(true){
