@@ -1,10 +1,10 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.AddressService;
-import cz.cvut.fit.bap.parser.controller.Geocoder.GoogleGeocoding;
-import cz.cvut.fit.bap.parser.controller.Geocoder.ProfinitGeocoding;
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
+import cz.cvut.fit.bap.parser.controller.geocoder.GoogleGeocoder;
+import cz.cvut.fit.bap.parser.controller.geocoder.ProfinitGeocoder;
 import cz.cvut.fit.bap.parser.domain.Address;
 import org.springframework.stereotype.Component;
 
@@ -17,14 +17,14 @@ import java.util.Optional;
 @Component
 public class AddressController extends AbstractController<AddressService>{
     private final AddressDtoToAddress addressDtoToAddress;
-    private final ProfinitGeocoding profinitGeocoding;
-    private final GoogleGeocoding googleGeocoding;
+    private final ProfinitGeocoder profinitGeocoder;
+    private final GoogleGeocoder googleGeocoder;
 
-    public AddressController(AddressService addressService, AddressDtoToAddress addressDtoToAddress, ProfinitGeocoding profinitGeocoding, GoogleGeocoding googleGeocoding){
+    public AddressController(AddressService addressService, AddressDtoToAddress addressDtoToAddress, ProfinitGeocoder profinitGeocoder, GoogleGeocoder googleGeocoder){
         super(addressService);
         this.addressDtoToAddress = addressDtoToAddress;
-        this.profinitGeocoding = profinitGeocoding;
-        this.googleGeocoding = googleGeocoding;
+        this.profinitGeocoder = profinitGeocoder;
+        this.googleGeocoder = googleGeocoder;
     }
 
     /**
@@ -38,18 +38,24 @@ public class AddressController extends AbstractController<AddressService>{
         return addressOptional.orElseGet(() -> service.create(address));
     }
 
+    /**
+     * Geocodes addressDto. Uses profinit geocoding api for czech places. If google api key was defined uses
+     * it for foreign places.
+     *
+     * @param addressDto to be geocoded
+     * @return geocoded address
+     */
     public Address geocode(AddressDto addressDto){
         if(dtoIsIncomplete(addressDto)){
             return addressDtoToAddress.apply(addressDto);
         }
         String country = addressDto.country().toLowerCase();
+        // Profinit geocoder for Czech places
         if(Objects.equals(country, "cz")){
-            //profinit geocoder for czech places
-            return profinitGeocoding.geocode(addressDto);
-        }else{
-            //google geocoder for foreign countries
-            return googleGeocoding.geocode(addressDto);
+            return profinitGeocoder.geocode(addressDto);
         }
+        // Google geocoder for foreign countries
+        return googleGeocoder.geocode(addressDto);
     }
 
     private boolean dtoIsIncomplete(AddressDto addressDto){

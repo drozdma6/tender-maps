@@ -1,10 +1,10 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.AddressService;
-import cz.cvut.fit.bap.parser.controller.Geocoder.GoogleGeocoding;
-import cz.cvut.fit.bap.parser.controller.Geocoder.ProfinitGeocoding;
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
+import cz.cvut.fit.bap.parser.controller.geocoder.GoogleGeocoder;
+import cz.cvut.fit.bap.parser.controller.geocoder.ProfinitGeocoder;
 import cz.cvut.fit.bap.parser.domain.Address;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,10 +24,10 @@ class AddressControllerTest{
     private AddressController addressController;
 
     @Mock
-    private ProfinitGeocoding profinitGeocoding;
+    private ProfinitGeocoder profinitGeocoder;
 
     @Mock
-    private GoogleGeocoding googleGeocoding;
+    private GoogleGeocoder googleGeocoder;
 
     @Mock
     private AddressService addressService;
@@ -69,24 +69,24 @@ class AddressControllerTest{
     void geocodeForeign(){
         AddressDto addressDto = new AddressDto("SK", "Bratislava", "16000", "Bratislavska", "65");
         addressController.geocode(addressDto);
-        verify(profinitGeocoding, never()).geocode(addressDto);
-        verify(googleGeocoding).geocode(addressDto);
+        verify(profinitGeocoder, never()).geocode(addressDto);
+        verify(googleGeocoder).geocode(addressDto);
     }
 
     @Test
     void geocode(){
         AddressDto addressDto = new AddressDto("CZ", "Praha", "16000", "Bratislavska", "65");
         addressController.geocode(addressDto);
-        verify(googleGeocoding, never()).geocode(addressDto);
-        verify(profinitGeocoding).geocode(addressDto);
+        verify(googleGeocoder, never()).geocode(addressDto);
+        verify(profinitGeocoder).geocode(addressDto);
     }
 
     @Test
     void geocodeIncomplete(){
         AddressDto addressDto = new AddressDto("CZ", "Praha", null, "Bratislavska", "65");
         addressController.geocode(addressDto);
-        verify(googleGeocoding, never()).geocode(addressDto);
-        verify(profinitGeocoding, never()).geocode(addressDto);
+        verify(googleGeocoder, never()).geocode(addressDto);
+        verify(profinitGeocoder, never()).geocode(addressDto);
         verify(addressDtoToAddress).apply(addressDto);
     }
 }

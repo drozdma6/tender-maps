@@ -1,4 +1,4 @@
-package cz.cvut.fit.bap.parser.controller.Geocoder;
+package cz.cvut.fit.bap.parser.controller.geocoder;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
@@ -18,14 +18,17 @@ import java.io.IOException;
  * Class for handling communication with Google's geocoding api.
  */
 @Component
-public class GoogleGeocoding implements Geocoder, AutoCloseable{
-    private final GeoApiContext context;
+public class GoogleGeocoder implements Geocoder, AutoCloseable{
+    private GeoApiContext context;
     private final AddressDtoToAddress addressDtoToAddress;
+    private final String apiKey;
 
-    public GoogleGeocoding(@Value("${googleApiKey:}") final String apiKey,
-                           AddressDtoToAddress addressDtoToAddress){
-        this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
-
+    public GoogleGeocoder(@Value("${GOOGLE_API_KEY:}") String apiKey,
+                          AddressDtoToAddress addressDtoToAddress){
+        if(!apiKey.isEmpty()){
+            this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
+        }
+        this.apiKey = apiKey;
         this.addressDtoToAddress = addressDtoToAddress;
     }
 
@@ -38,6 +41,9 @@ public class GoogleGeocoding implements Geocoder, AutoCloseable{
     @Override
     @Timed(value = "scrapper.google.geocode")
     public Address geocode(AddressDto addressDto){
+        if(apiKey.isEmpty()){
+            addressDtoToAddress.apply(addressDto);
+        }
         GeocodingResult[] geocodingResults = sendRequest(addressDto);
         Address address = addressDtoToAddress.apply(addressDto);
         if(address.getCountryCode() == null){
@@ -68,8 +74,8 @@ public class GoogleGeocoding implements Geocoder, AutoCloseable{
     private String getCountryCode(GeocodingResult[] results){
         AddressComponent[] addressComponents = results[0].addressComponents;
         for(AddressComponent addressComponent : addressComponents){
-            for (int j = 0; j < addressComponent.types.length; j++){
-                if (addressComponent.types[j].toString().equals("country")){
+            for(int j = 0; j < addressComponent.types.length; j++){
+                if(addressComponent.types[j].toString().equals("country")){
                     return addressComponent.shortName;
                 }
             }

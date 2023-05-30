@@ -1,4 +1,4 @@
-package cz.cvut.fit.bap.parser.controller.Geocoder;
+package cz.cvut.fit.bap.parser.controller.geocoder;
 
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.domain.Address;
@@ -8,20 +8,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /*
-    Integration test testing google api geocoding.
+    Integration test testing profinit api geocoding.
  */
 @SpringBootTest
-class GoogleGeocodingTest{
+class ProfinitGeocoderTest{
+
     @Autowired
-    private GoogleGeocoding googleGeocoding;
+    private ProfinitGeocoder profinitGeocoderApi;
 
     @Test
-    public void geocode(){
-        AddressDto addressDto = new AddressDto("Česká republika", "Praha", "17000", "Čechova",
-                "10");
-        Address expectedAddress = new Address("CZ", "Praha", "17000", "Čechova", "10", 50.1006926,
-                14.4215078);
-        Address actualAddress = googleGeocoding.geocode(addressDto);
+    public void test(){
+        //Čechova 225/10, 17000, Praha 7
+        AddressDto addressDto = new AddressDto("CZ", "Praha", "17000", "Čechova", "10");
+        Address expectedAddress = new Address("CZ", "Praha", "17000", "Čechova", "10",
+                50.10070427864861, 14.42151999409848);
+        Address actualAddress = profinitGeocoderApi.geocode(addressDto);
 
         Assertions.assertEquals(expectedAddress.getCountryCode(), actualAddress.getCountryCode());
         Assertions.assertEquals(expectedAddress.getCity(), actualAddress.getCity());

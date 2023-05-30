@@ -1,4 +1,4 @@
-package cz.cvut.fit.bap.parser.controller.Geocoder;
+package cz.cvut.fit.bap.parser.controller.geocoder;
 
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
@@ -22,18 +22,18 @@ import java.time.Duration;
     Geocoding api client used for geocoding czech locations
  */
 @Component
-public class ProfinitGeocoding implements Geocoder{
+public class ProfinitGeocoder implements Geocoder{
     private final String baseUrl = "https://geolokator.profinit.cz";
     private final String czechShortCountryCode = "CZ";
     private static final Logger LOGGER = LoggerFactory.getLogger(NenNipezFetcher.class);
 
-    @Value("${profinitApiToken}")
+    @Value("${PROFINIT_API_KEY}")
     private String apiToken;
     private final WebClient webClient;
     private final AddressDtoToAddress addressDtoToAddress;
 
-    public ProfinitGeocoding(AddressDtoToAddress addressDtoToAddress,
-                             WebClient.Builder webClientBuilder){
+    public ProfinitGeocoder(AddressDtoToAddress addressDtoToAddress,
+                            WebClient.Builder webClientBuilder){
         this.addressDtoToAddress = addressDtoToAddress;
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
