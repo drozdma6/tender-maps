@@ -27,6 +27,7 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @return Document containing contractor detail site
      */
     @Override
+    @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getContractorDetail(String href){
         final String url = baseUrl + "/en" + href;
         return getDocumentWithRetry(url);
@@ -40,6 +41,7 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @return document containing contractor completed site
      */
     @Override
+    @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getContractorCompleted(String href, Integer page){
         final String url = baseUrl + "/en" + href +
                 "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=" + page.toString();
@@ -53,6 +55,7 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @return Document containing procurement result site
      */
     @Override
+    @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getProcurementResult(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
@@ -68,6 +71,7 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @return Document containing company detail site
      */
     @Override
+    @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getCompanyDetail(String detailUrl){
         String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
         String url = baseUrl + detailUrl.replaceFirst(pattern, "/");
@@ -82,6 +86,7 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @return Document containing procurement detail site
      */
     @Override
+    @Timed(value = "scrapper.nen.nipez.fetch")
     public CompletableFuture<Document> getProcurementDetail(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen;
@@ -95,6 +100,7 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @return document containing contractor authorities
      */
     @Override
+    @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getContractorAuthorityList(Integer page){
         String url = baseUrl + "/profily-zadavatelu-platne/p:pzp:page=" + page;
         return getDocumentWithRetry(url);
@@ -107,10 +113,9 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @param url which is supposed to be fetched
      * @return document
      */
-    @Timed(value = "scrapper.nen.nipez.fetch")
     private Document getDocumentWithRetry(String url){
         int backoffSeconds = 1; //initial backoff time
-        int maxRetries = 5;
+        int maxRetries = 8;
 
         long startTime, endTime, duration;
         startTime = System.currentTimeMillis();
