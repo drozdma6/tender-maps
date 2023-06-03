@@ -1,6 +1,7 @@
 package cz.cvut.fit.bap.parser.controller.geocoder;
 
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
 import cz.cvut.fit.bap.parser.domain.Address;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -34,5 +35,25 @@ class GoogleGeocoderTest{
                 epsilon);
         Assertions.assertEquals(expectedAddress.getLatitude(), actualAddress.getLatitude(),
                 epsilon);
+    }
+
+    @Test
+    public void geocodeMissingApiKey(){
+        AddressDtoToAddress addressDtoToAddress = new AddressDtoToAddress();
+        GoogleGeocoder googleGeocoder = new GoogleGeocoder("", addressDtoToAddress);
+        AddressDto addressDto = new AddressDto("CZ", "Praha", "17000", "Čechova",
+                "10");
+        Address expectedAddress = new Address("CZ", "Praha", "17000", "Čechova",
+                "10");
+        Address actualAddress = googleGeocoder.geocode(addressDto);
+
+        Assertions.assertEquals(expectedAddress.getCountryCode(), actualAddress.getCountryCode());
+        Assertions.assertEquals(expectedAddress.getCity(), actualAddress.getCity());
+        Assertions.assertEquals(expectedAddress.getPostalCode(), actualAddress.getPostalCode());
+        Assertions.assertEquals(expectedAddress.getStreet(), actualAddress.getStreet());
+        Assertions.assertEquals(expectedAddress.getBuildingNumber(),
+                actualAddress.getBuildingNumber());
+        Assertions.assertNull(actualAddress.getLatitude());
+        Assertions.assertNull(actualAddress.getLongitude());
     }
 }

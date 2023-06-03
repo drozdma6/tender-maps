@@ -42,7 +42,7 @@ public class GoogleGeocoder implements Geocoder, AutoCloseable{
     @Timed(value = "scrapper.google.geocode")
     public Address geocode(AddressDto addressDto){
         if(apiKey.isEmpty()){
-            addressDtoToAddress.apply(addressDto);
+            return addressDtoToAddress.apply(addressDto);
         }
         GeocodingResult[] geocodingResults = sendRequest(addressDto);
         Address address = addressDtoToAddress.apply(addressDto);
