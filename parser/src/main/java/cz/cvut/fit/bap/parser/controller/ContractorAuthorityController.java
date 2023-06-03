@@ -30,7 +30,6 @@ public class ContractorAuthorityController extends AbstractController<Contractor
     private final AddressController addressController;
     private final AbstractFetcher fetcher;
     private final ContractorListFactory contractorListFactory;
-    private int authorityListPage = 1;
 
     public ContractorAuthorityController(ContractorAuthorityService contractorAuthorityService,
                                          ContractorDetailFactory contractorDetailFactory,
@@ -70,8 +69,8 @@ public class ContractorAuthorityController extends AbstractController<Contractor
      * @return future of list of contractor authority dto scrapped from next page
      */
     @Async
-    public CompletableFuture<List<ContractorAuthorityDto>> getNextPageAuthorities(){
-        Document document = fetcher.getContractorAuthorityList(authorityListPage++);
+    public CompletableFuture<List<ContractorAuthorityDto>> getAuthoritiesPage(int page){
+        Document document = fetcher.getContractorAuthorityList(page);
         ContractorListScrapper contractorListScrapper = contractorListFactory.create(document);
         return CompletableFuture.completedFuture(contractorListScrapper.getAuthoritiesHrefs());
     }

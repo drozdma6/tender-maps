@@ -41,13 +41,14 @@ public class MainScrapper implements ApplicationRunner{
      */
     @Scheduled(cron = "${SCHEDULING_CRON}")
     public void run(){
-        CompletableFuture<List<ContractorAuthorityDto>> authoritiesFuture = contractorAuthorityController.getNextPageAuthorities();
+        int page = 1;
+        CompletableFuture<List<ContractorAuthorityDto>> authoritiesFuture = contractorAuthorityController.getAuthoritiesPage(page);
         while(true){
             List<ContractorAuthorityDto> authorities = authoritiesFuture.join();
             if(authorities.isEmpty()){
                 break;
             }
-            authoritiesFuture = contractorAuthorityController.getNextPageAuthorities();
+            authoritiesFuture = contractorAuthorityController.getAuthoritiesPage(++page);
             scrapeAuthorities(authorities);
         }
     }
