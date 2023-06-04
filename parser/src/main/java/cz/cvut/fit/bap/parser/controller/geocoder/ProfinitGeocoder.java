@@ -5,6 +5,7 @@ import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
 import cz.cvut.fit.bap.parser.controller.fetcher.NenNipezFetcher;
 import cz.cvut.fit.bap.parser.domain.Address;
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Metrics;
 import kotlin.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +26,7 @@ import java.time.Duration;
 public class ProfinitGeocoder implements Geocoder{
     private final String baseUrl = "https://geolokator.profinit.cz";
     private final String czechShortCountryCode = "CZ";
-    private static final Logger LOGGER = LoggerFactory.getLogger(NenNipezFetcher.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(NenNipezFetcher.class);
 
     @Value("${PROFINIT_API_KEY}")
     private String apiToken;
@@ -72,7 +73,10 @@ public class ProfinitGeocoder implements Geocoder{
                 .retrieve()
                 .bodyToMono(String.class)
                 .retryWhen(Retry.backoff(5, Duration.ofSeconds(2))
-                        .doAfterRetry(rs -> LOGGER.warn("Retrying profinit geocoding request.")))
+                        .doAfterRetry(rs -> {
+                            LOGGER.debug("Retrying profinit geocoding request.");
+                            Metrics.counter("scrapper.profinit.geocoder.retry").increment();
+                        }))
                 .block();
     }
 

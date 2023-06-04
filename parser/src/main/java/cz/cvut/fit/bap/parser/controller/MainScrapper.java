@@ -2,8 +2,12 @@ package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.FailedFetchException;
+import cz.cvut.fit.bap.parser.controller.fetcher.NenNipezFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
+import io.micrometer.core.instrument.Metrics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -20,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 public class MainScrapper implements ApplicationRunner{
     private final ContractorAuthorityController contractorAuthorityController;
     private final ProcurementController procurementController;
+    private final Logger LOGGER = LoggerFactory.getLogger(NenNipezFetcher.class);
 
     @Value("${RUN_ON_STARTUP:false}") //default value is set to false
     private boolean runOnStartup;
@@ -80,7 +85,12 @@ public class MainScrapper implements ApplicationRunner{
                 if(!procurementExists){
                     break;
                 }
-            }catch(MissingHtmlElementException | FailedFetchException ignored){
+            }catch(MissingHtmlElementException e){
+                Metrics.counter("scrapper.skipped.procurements").increment();
+                LOGGER.debug(e.getMessage());
+            }catch(FailedFetchException e){
+                Metrics.counter("scrapper.failed.fetch.").increment();
+                LOGGER.debug(e.getMessage());
             }
         }
     }
