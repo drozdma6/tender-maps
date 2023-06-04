@@ -23,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -121,11 +120,10 @@ class ContractorAuthorityControllerTest{
         when(contractorListFactory.create(document)).thenReturn(contractorListScrapper);
         when(contractorListScrapper.getAuthoritiesHrefs()).thenReturn(expectedAuthorities);
 
-        CompletableFuture<List<ContractorAuthorityDto>> futureResult = contractorAuthorityController.getNextPageAuthorities();
-        List<ContractorAuthorityDto> actualAuthorities = futureResult.join();
+        List<ContractorAuthorityDto> result = contractorAuthorityController.getAuthoritiesPage(testAuthorityListPage).join();
 
         verify(fetcher).getContractorAuthorityList(testAuthorityListPage);
-        Assertions.assertEquals(expectedAuthorities, actualAuthorities);
+        Assertions.assertEquals(expectedAuthorities, result);
     }
 
     @Test

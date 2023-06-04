@@ -1,6 +1,7 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,7 +23,11 @@ public class ProcurementDetailScrapper extends AbstractScrapper{
      * @return procurement name
      */
     public String getProcurementName(){
-        return document.select("h1").text();
+        Elements name = document.select("h1");
+        if(name.isEmpty() || !name.hasText()){
+            throw new MissingHtmlElementException(document.location() + "is missing procurement name.");
+        }
+        return name.text();
     }
 
     /**

@@ -29,7 +29,7 @@ public class ProcurementResultScrapper extends AbstractScrapper{
         Elements suppliersRows = getSuppliersRows();
 
         for(Element supplierRow : suppliersRows){
-            String name = getName(supplierRow);
+            String name = getSupplierName(supplierRow);
             Optional<BigDecimal> price = getPrice(supplierRow);
             String url = getDetailHref(supplierRow);
             // Check if the company already exists in the map
@@ -94,18 +94,16 @@ public class ProcurementResultScrapper extends AbstractScrapper{
     private Elements getSuppliersRows(){
         Elements suppliersRows = document.select(
                 "[title=\"Supplier with Whom the Contract Has Been Entered into\"] .gov-table__row");
-
         if(suppliersRows.isEmpty()){
-            throw new MissingHtmlElementException();
+            throw new MissingHtmlElementException(document.location() + "is missing supplier row.");
         }
         return suppliersRows;
     }
 
-    private String getName(Element supplierRow){
+    private String getSupplierName(Element supplierRow){
         Elements nameElem = supplierRow.select("[data-title=\"Official name\"]");
-
         if(nameElem.isEmpty() || !nameElem.hasText()){
-            throw new MissingHtmlElementException();
+            throw new MissingHtmlElementException(document.location() + "is missing supplier name.");
         }
         return nameElem.text();
     }
@@ -122,7 +120,7 @@ public class ProcurementResultScrapper extends AbstractScrapper{
         Elements detailLinkElem = companyRow.select(".gov-link.gov-link--has-arrow");
 
         if(detailLinkElem.isEmpty() || !detailLinkElem.hasAttr("href")){
-            throw new MissingHtmlElementException();
+            throw new MissingHtmlElementException(document.location() + "is missing detail link.");
         }
         return removeUrlParameters(detailLinkElem.attr("href"));
     }

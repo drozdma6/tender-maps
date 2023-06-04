@@ -32,12 +32,10 @@ public class MainScrapperTest{
         List<String> procurements1 = List.of("systemNumber", "systemNumber2");
         List<String> procurements2 = List.of();
 
-
-        CompletableFuture<List<ContractorAuthorityDto>> future1 = CompletableFuture.completedFuture(authorities1);
-        CompletableFuture<List<ContractorAuthorityDto>> future2 = CompletableFuture.completedFuture(authorities2);
-        when(contractorAuthorityController.getNextPageAuthorities())
-                .thenReturn(future1)
-                .thenReturn(future2);
+        when(contractorAuthorityController.getAuthoritiesPage(1))
+                .thenReturn(CompletableFuture.completedFuture(authorities1));
+        when(contractorAuthorityController.getAuthoritiesPage(2))
+                .thenReturn(CompletableFuture.completedFuture(authorities2));
         when(contractorAuthorityController.saveContractorAuthority(any(ContractorAuthorityDto.class)))
                 .thenReturn(new ContractorAuthority());
         when(contractorAuthorityController.getProcurementSystemNumbers(any(ContractorAuthority.class), eq(1)))
@@ -46,7 +44,9 @@ public class MainScrapperTest{
                 .thenReturn(CompletableFuture.completedFuture(procurements2));
 
         mainScrapper.run();
-        verify(contractorAuthorityController, times(2)).getNextPageAuthorities();
+        verify(contractorAuthorityController).getAuthoritiesPage(1);
+        verify(contractorAuthorityController).getAuthoritiesPage(2);
+
         authorities1.forEach(dto ->
                 verify(contractorAuthorityController).saveContractorAuthority(dto)
         );
@@ -63,12 +63,10 @@ public class MainScrapperTest{
         List<String> procurements1 = List.of("newSystemNumber", "savedSystemNumber", "savedSystemNumber2");
         List<String> procurements2 = List.of();
 
-        CompletableFuture<List<ContractorAuthorityDto>> future1 = CompletableFuture.completedFuture(authorities1);
-        CompletableFuture<List<ContractorAuthorityDto>> future2 = CompletableFuture.completedFuture(authorities2);
-
-        when(contractorAuthorityController.getNextPageAuthorities())
-                .thenReturn(future1)
-                .thenReturn(future2);
+        when(contractorAuthorityController.getAuthoritiesPage(1))
+                .thenReturn(CompletableFuture.completedFuture(authorities1));
+        when(contractorAuthorityController.getAuthoritiesPage(2))
+                .thenReturn(CompletableFuture.completedFuture(authorities2));
         when(contractorAuthorityController.saveContractorAuthority(any(ContractorAuthorityDto.class)))
                 .thenReturn(new ContractorAuthority());
         when(contractorAuthorityController.getProcurementSystemNumbers(any(ContractorAuthority.class), eq(1)))
@@ -80,7 +78,8 @@ public class MainScrapperTest{
 
         mainScrapper.run();
 
-        verify(contractorAuthorityController, times(2)).getNextPageAuthorities();
+        verify(contractorAuthorityController).getAuthoritiesPage(1);
+        verify(contractorAuthorityController).getAuthoritiesPage(2);
         authorities1.forEach(dto ->
                 verify(contractorAuthorityController).saveContractorAuthority(dto)
         );

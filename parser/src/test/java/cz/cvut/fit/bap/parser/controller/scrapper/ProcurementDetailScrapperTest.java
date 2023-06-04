@@ -26,6 +26,19 @@ class ProcurementDetailScrapperTest{
     }
 
     @Test
+    void getProcurementNameMissing(){
+        String htmlWithoutName = """
+                <div title="Code from the CPV code list" class="gov-grid-tile">
+                    <h3 class="gov-title--delta">Code from the CPV code list</h3>
+                    <p class="gov-note" title="72267100-0">72267100-0</p>
+                </div>""";
+
+        Document document = Jsoup.parse(htmlWithoutName);
+        ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
+        Assertions.assertThrows(MissingHtmlElementException.class, procurementDetailScrapper::getProcurementName);
+    }
+
+    @Test
     void getProcurementPlaceOfPerformance() throws IOException{
         final String url = "https://nen.nipez.cz/en/verejne-zakazky/p:vz:sort-stavZP=none/detail-zakazky/N006-23-V00002372";
         Document document = Jsoup.parse(
