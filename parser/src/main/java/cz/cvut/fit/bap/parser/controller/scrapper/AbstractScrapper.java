@@ -29,7 +29,7 @@ public abstract class AbstractScrapper{
      * returns the original URL string if no such parameters found
      */
     protected String removeUrlParameters(String url){
-        Pattern pattern = Pattern.compile("");
+        Pattern pattern = Pattern.compile("/p:[^/]*+/");
         Matcher matcher = pattern.matcher(url);
         StringBuilder modifiedUrl = new StringBuilder(url);
 
