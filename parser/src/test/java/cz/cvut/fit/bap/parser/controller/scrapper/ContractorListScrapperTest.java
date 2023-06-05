@@ -19,7 +19,7 @@ class ContractorListScrapperTest{
 
         List<ContractorAuthorityDto> actualContractorAuthorityList = contractorListScrapper.getAuthoritiesHrefs();
 
-        Assertions.assertEquals(actualContractorAuthorityList.size(), 50);
+        Assertions.assertEquals(50, actualContractorAuthorityList.size());
         Assertions.assertEquals(actualContractorAuthorityList.get(0), new ContractorAuthorityDto("/en/profily-zadavatelu-platne/detail-profilu/1415BI", "Zlínský kraj"));
         Assertions.assertEquals(actualContractorAuthorityList.get(1), new ContractorAuthorityDto("/en/profily-zadavatelu-platne/detail-profilu/7usro", "7U s.r.o."));
     }

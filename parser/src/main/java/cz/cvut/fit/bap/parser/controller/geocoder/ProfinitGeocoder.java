@@ -2,7 +2,6 @@ package cz.cvut.fit.bap.parser.controller.geocoder;
 
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
-import cz.cvut.fit.bap.parser.controller.fetcher.NenNipezFetcher;
 import cz.cvut.fit.bap.parser.domain.Address;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Metrics;
@@ -24,9 +23,9 @@ import java.time.Duration;
  */
 @Component
 public class ProfinitGeocoder implements Geocoder{
-    private final String baseUrl = "https://geolokator.profinit.cz";
-    private final String czechShortCountryCode = "CZ";
-    private final Logger LOGGER = LoggerFactory.getLogger(NenNipezFetcher.class);
+    private static final String BASE_URL = "https://geolokator.profinit.cz";
+    private static final String CZECH_SHORT_COUNTRY_CODE = "CZ";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfinitGeocoder.class);
 
     @Value("${PROFINIT_API_KEY}")
     private String apiToken;
@@ -36,7 +35,7 @@ public class ProfinitGeocoder implements Geocoder{
     public ProfinitGeocoder(AddressDtoToAddress addressDtoToAddress,
                             WebClient.Builder webClientBuilder){
         this.addressDtoToAddress = addressDtoToAddress;
-        this.webClient = webClientBuilder.baseUrl(baseUrl).build();
+        this.webClient = webClientBuilder.baseUrl(BASE_URL).build();
     }
 
     /**
@@ -49,7 +48,7 @@ public class ProfinitGeocoder implements Geocoder{
     @Timed(value = "scrapper.profinit.geocode")
     public Address geocode(AddressDto addressDto){
         Address address = addressDtoToAddress.apply(addressDto);
-        address.setCountryCode(czechShortCountryCode); //profinit geocoder is used only for czech places
+        address.setCountryCode(CZECH_SHORT_COUNTRY_CODE); //profinit geocoder is used only for czech places
         String response = sendQueryRequest(addressDto);
         Pair<Double,Double> coordinates = getWgsCoordinates(response);
         address.setLatitude(coordinates.getFirst()); //wgs_x

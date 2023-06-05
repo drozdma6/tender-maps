@@ -16,8 +16,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class NenNipezFetcher extends AbstractFetcher{
-    private final String baseUrl = "https://nen.nipez.cz";
-
+    private static final String BASE_URL = "https://nen.nipez.cz";
     private static final Logger LOGGER = LoggerFactory.getLogger(NenNipezFetcher.class);
 
     /**
@@ -29,7 +28,7 @@ public class NenNipezFetcher extends AbstractFetcher{
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getContractorDetail(String href){
-        final String url = baseUrl + "/en" + href;
+        final String url = BASE_URL + "/en" + href;
         return getDocumentWithRetry(url);
     }
 
@@ -43,7 +42,7 @@ public class NenNipezFetcher extends AbstractFetcher{
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getContractorCompleted(String href, Integer page){
-        final String url = baseUrl + "/en" + href +
+        final String url = BASE_URL + "/en" + href +
                 "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=" + page.toString();
         return getDocumentWithRetry(url);
     }
@@ -58,7 +57,7 @@ public class NenNipezFetcher extends AbstractFetcher{
     @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getProcurementResult(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
-        final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
+        final String url = BASE_URL + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
                 "/vysledek/p:vys:page=1-10;uca:page=1-10"; //show all participants and suppliers without paging
         return getDocumentWithRetry(url);
     }
@@ -74,7 +73,7 @@ public class NenNipezFetcher extends AbstractFetcher{
     @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getCompanyDetail(String detailUrl){
         String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
-        String url = baseUrl + detailUrl.replaceFirst(pattern, "/");
+        String url = BASE_URL + detailUrl.replaceFirst(pattern, "/");
         return getDocumentWithRetry(url);
     }
 
@@ -89,7 +88,7 @@ public class NenNipezFetcher extends AbstractFetcher{
     @Timed(value = "scrapper.nen.nipez.fetch")
     public CompletableFuture<Document> getProcurementDetail(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
-        final String url = baseUrl + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen;
+        final String url = BASE_URL + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen;
         return CompletableFuture.completedFuture(getDocumentWithRetry(url));
     }
 
@@ -102,7 +101,7 @@ public class NenNipezFetcher extends AbstractFetcher{
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getContractorAuthorityList(Integer page){
-        String url = baseUrl + "/profily-zadavatelu-platne/p:pzp:page=" + page;
+        String url = BASE_URL + "/profily-zadavatelu-platne/p:pzp:page=" + page;
         return getDocumentWithRetry(url);
     }
 
@@ -125,18 +124,19 @@ public class NenNipezFetcher extends AbstractFetcher{
                 Document doc = Jsoup.connect(url).get();
                 endTime = System.currentTimeMillis();
                 duration = endTime - startTime;
-                LOGGER.debug("Fetch in " + duration + " ms with " + i + " retries." + url);
+                LOGGER.debug("Fetch in {} ms with {} retries for {}", duration, i, url);
                 return doc;
             }catch(IOException e){
                 try{
                     TimeUnit.SECONDS.sleep(backoffSeconds);
                     backoffSeconds = backoffSeconds * 2;
                 }catch(InterruptedException ex){
+                    Thread.currentThread().interrupt();
                     throw new RuntimeException(ex);
                 }
             }
         }
-        LOGGER.debug("Failed to fetch url: " + url);
+        LOGGER.debug("Failed to fetch url: {}", url);
         throw new FailedFetchException("Failed to fetch url: " + url);
     }
 }

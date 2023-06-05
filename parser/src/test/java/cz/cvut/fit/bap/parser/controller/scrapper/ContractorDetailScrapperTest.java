@@ -29,6 +29,6 @@ class ContractorDetailScrapperTest{
         Document document = Jsoup.parse(new HtmlFileCreator().ensureCreatedHtmlFile(url, "ContractorDetail.html"));
         ContractorDetailScrapper contractorDetailScrapper = new ContractorDetailScrapper(document);
         String actualName = contractorDetailScrapper.getContractorAuthorityName();
-        Assertions.assertEquals(actualName, "Ministerstvo vnitra");
+        Assertions.assertEquals("Ministerstvo vnitra", actualName);
     }
 }

@@ -7,6 +7,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -34,7 +36,7 @@ class ProcurementResultScrapperTest{
         List<OfferDto> expectedOffers = Arrays.asList(offer1, offer2);
         List<OfferDto> actualOffers = procurementResultScrapper.getParticipants();
 
-        Assertions.assertEquals(actualOffers.size(), 2);
+        Assertions.assertEquals(2, actualOffers.size());
         for(int i = 0; i < expectedOffers.size(); i++){
             Assertions.assertEquals(expectedOffers.get(i), actualOffers.get(i));
         }
@@ -53,7 +55,7 @@ class ProcurementResultScrapperTest{
 
         Map<String,OfferDto> actualOffers = procurementResultScrapper.getSupplierMap();
 
-        Assertions.assertEquals(actualOffers.size(), 1);
+        Assertions.assertEquals(1, actualOffers.size());
         Assertions.assertEquals(expectedOffer, actualOffers.get(expectedOffer.companyName()));
     }
 
@@ -146,7 +148,7 @@ class ProcurementResultScrapperTest{
                 "/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539261",
                 "Netfox s.r.o.");
         Map<String,OfferDto> actualOffers = procurementResultScrapper.getSupplierMap();
-        Assertions.assertEquals(actualOffers.size(), 1);
+        Assertions.assertEquals(1, actualOffers.size());
         Assertions.assertTrue(actualOffers.containsKey(expectedOfferDto.companyName()));
         Assertions.assertEquals(expectedOfferDto, actualOffers.get(expectedOfferDto.companyName()));
     }
@@ -209,7 +211,7 @@ class ProcurementResultScrapperTest{
                 "supplier2");
 
         Map<String,OfferDto> actualOffers = procurementResultScrapper.getSupplierMap();
-        Assertions.assertEquals(actualOffers.size(), 2);
+        Assertions.assertEquals(2, actualOffers.size());
         Assertions.assertTrue(actualOffers.containsKey(expectedOfferDto1.companyName()));
         Assertions.assertTrue(actualOffers.containsKey(expectedOfferDto2.companyName()));
 
@@ -218,161 +220,74 @@ class ProcurementResultScrapperTest{
 
     }
 
-    @Test
-    void testEmptySupplierName(){
-        String html = """
-                <div class="gov-content-block" title="Supplier with Whom the Contract Has Been Entered into">
-                            <table class="gov-table gov-table--tablet-block gov-sortable-table">
-                                <tbody class="gov-table__body">
-                                <tr class="gov-table__row">
-                                    <td class="gov-table__cell" data-title="Closing date of the contract" title="26/05/2023"
-                                        style="width: 130px;">26/05/2023
-                                    </td>
-                                    <td class="gov-table__cell" data-title="Official name" title="" style="width: 100%;">
-                                    </td>
-                                    <td class="gov-table__cell" data-title="Contractual price excl. VAT" title="105 780,00"
-                                        style="width: 100%;">105 780,00
-                                    </td>
-                                    <td class="gov-table__cell gov-table__cell--last" data-title="Currency" title="CZK"
-                                        style="width: 100%;">CZK
-                                    </td>
-                                    <td class="gov-table__cell gov-table__cell--narrow gov-table__cell u-display-block u-hide--from-tablet gov-table__row-controls"
-                                        style="display: none; visibility: hidden;"><a class="gov-link gov-link--has-arrow"
-                                                                                      aria-label="Show detail Netfox s.r.o."
-                                                                                      href="/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539261"><span
-                                            class="gov-table__row-button-text">Detail</span></a></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    """;
-        Document document = Jsoup.parse(html);
-        ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(document);
-        Assertions.assertThrows(MissingHtmlElementException.class,
-                procurementResultScrapper::getSupplierMap);
-    }
+    @ParameterizedTest
+    @ValueSource(strings = {
+            """
+                    <td class="gov-table__cell" data-title="Official name" title="" style="width: 100%;">
+                    </td>
+                    <td class="gov-table__cell gov-table__cell--narrow gov-table__cell u-display-block u-hide--from-tablet gov-table__row-controls"
+                        style="display: none; visibility: hidden;">
+                        <a class="gov-link gov-link--has-arrow" aria-label="Show detail Netfox s.r.o."
+                            href="/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539261"><span
+                                class="gov-table__row-button-text">Detail</span></a>
+                    </td>
+                    """,
+            """
+                    <td class="gov-table__cell gov-table__cell--narrow gov-table__cell u-display-block u-hide--from-tablet gov-table__row-controls"
+                        style="display: none; visibility: hidden;">
+                        <a class="gov-link gov-link--has-arrow" aria-label="Show detail Netfox s.r.o."
+                            href="/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539261"><span
+                                class="gov-table__row-button-text">Detail</span></a>
+                    </td>
+                    """,
+            """
+                    <td class="gov-table__cell" data-title="Official name" title="Netfox s.r.o." style="width: 100%;">
+                        Netfox s.r.o.
+                    </td>
+                    """
+    })
+    void testInvalidSupplier(String arg){
 
-    @Test
-    void testSupplierNameNull(){
-        String html = """
-                <div class="gov-content-block" title="Supplier with Whom the Contract Has Been Entered into">
-                            <table class="gov-table gov-table--tablet-block gov-sortable-table">
-                                <tbody class="gov-table__body">
-                                <tr class="gov-table__row">
-                                    <td class="gov-table__cell" data-title="Closing date of the contract" title="26/05/2023"
-                                        style="width: 130px;">26/05/2023
-                                    </td>
-                                    <td class="gov-table__cell" data-title="Contractual price excl. VAT" title="105 780,00"
-                                        style="width: 100%;">105 780,00
-                                    </td>
-                                    <td class="gov-table__cell gov-table__cell--last" data-title="Currency" title="CZK"
-                                        style="width: 100%;">CZK
-                                    </td>
-                                    <td class="gov-table__cell gov-table__cell--narrow gov-table__cell u-display-block u-hide--from-tablet gov-table__row-controls"
-                                        style="display: none; visibility: hidden;"><a class="gov-link gov-link--has-arrow"
-                                                                                      aria-label="Show detail Netfox s.r.o."
-                                                                                      href="/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539261"><span
-                                            class="gov-table__row-button-text">Detail</span></a></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    """;
+        String html = """             
+                < div class= "gov-content-block"title= "Supplier with Whom the Contract Has Been Entered into" >
+                <table class= "gov-table gov-table--tablet-block gov-sortable-table" >
+                <tbody class= "gov-table__body" >""" + arg + "</tbody>\n </table>\n </div>";
 
         Document document = Jsoup.parse(html);
         ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(document);
         Assertions.assertThrows(MissingHtmlElementException.class,
                 procurementResultScrapper::getSupplierMap);
     }
-
-    @Test
-    void testSupplierMissingDetailLink(){
-        String html = """
-                <div class="gov-content-block" title="Supplier with Whom the Contract Has Been Entered into">
-                            <table class="gov-table gov-table--tablet-block gov-sortable-table">
-                                <tbody class="gov-table__body">
-                                <tr class="gov-table__row">
-                                    <td class="gov-table__cell" data-title="Closing date of the contract" title="26/05/2023"
-                                        style="width: 130px;">26/05/2023
-                                    </td>
-                                    <td class="gov-table__cell" data-title="Official name" title="Netfox s.r.o." style="width: 100%;">
-                                        Netfox s.r.o.
-                                    </td>
-                                    <td class="gov-table__cell" data-title="Contractual price excl. VAT" title="105 780,00"
-                                        style="width: 100%;">105 780,00
-                                    </td>
-                                    <td class="gov-table__cell gov-table__cell--last" data-title="Currency" title="CZK"
-                                        style="width: 100%;">CZK
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    """;
-        Document document = Jsoup.parse(html);
-        ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(document);
-        Assertions.assertThrows(MissingHtmlElementException.class,
-                procurementResultScrapper::getSupplierMap);
-    }
-
-    String html = """
-            <div class="gov-content-block" title="Supplier with Whom the Contract Has Been Entered into">
-                        <table class="gov-table gov-table--tablet-block gov-sortable-table">
-                            <tbody class="gov-table__body">
-                            <tr class="gov-table__row">
-                                <td class="gov-table__cell" data-title="Closing date of the contract" title="26/05/2023"
-                                    style="width: 130px;">26/05/2023
-                                </td>
-                                <td class="gov-table__cell" data-title="Official name" title="Netfox s.r.o." style="width: 100%;">
-                                    Netfox s.r.o.
-                                </td>
-                                <td class="gov-table__cell" data-title="Contractual price excl. VAT" title="105 780,00"
-                                    style="width: 100%;">105 780,00
-                                </td>
-                                <td class="gov-table__cell gov-table__cell--last" data-title="Currency" title="CZK"
-                                    style="width: 100%;">CZK
-                                </td>
-                                <td class="gov-table__cell gov-table__cell--narrow gov-table__cell u-display-block u-hide--from-tablet gov-table__row-controls"
-                                    style="display: none; visibility: hidden;"><a class="gov-link gov-link--has-arrow"
-                                                                                  aria-label="Show detail Netfox s.r.o."
-                                                                                  href="/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539261"><span
-                                        class="gov-table__row-button-text">Detail</span></a></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                """;
-
 
     @Test
     void getBigDecimalFromStringWrongFormat(){
         String html = """
-                <div class="gov-content-block" title="Supplier with Whom the Contract Has Been Entered into">
-                            <table class="gov-table gov-table--tablet-block gov-sortable-table">
-                                <tbody class="gov-table__body">
-                                <tr class="gov-table__row">
-                                    <td class="gov-table__cell" data-title="Closing date of the contract" title="26/05/2023"
-                                        style="width: 130px;">26/05/2023
-                                    </td>
-                                    <td class="gov-table__cell" data-title="Official name" title="Netfox s.r.o." style="width: 100%;">
-                                        Netfox s.r.o.
-                                    </td>
-                                    <td class="gov-table__cell" data-title="Contractual price excl. VAT" title=""
-                                        style="width: 100%;">
-                                    </td>
-                                    <td class="gov-table__cell gov-table__cell--last" data-title="Currency" title="CZK"
-                                        style="width: 100%;">CZK
-                                    </td>
-                                    <td class="gov-table__cell gov-table__cell--narrow gov-table__cell u-display-block u-hide--from-tablet gov-table__row-controls"
-                                        style="display: none; visibility: hidden;"><a class="gov-link gov-link--has-arrow"
-                                                                                      aria-label="Show detail Netfox s.r.o."
-                                                                                      href="/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539261"><span
-                                            class="gov-table__row-button-text">Detail</span></a></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    """;
+                        < div class= "gov-content-block"title= "Supplier with Whom the Contract Has Been Entered into" >
+                <table class= "gov-table gov-table--tablet-block gov-sortable-table" >
+                <tbody class= "gov-table__body" >
+                <tr class= "gov-table__row" >
+                <td class= "gov-table__cell"data-title="Closing date of the contract"title= "26/05/2023"
+                style= "width: 130px;" > 26 / 05 / 2023
+                </td>
+                <td class= "gov-table__cell"data-title="Official name"title= "Netfox s.r.o."style= "width: 100%;" >
+                Netfox s.r.o.
+                </td>
+                <td class= "gov-table__cell"data-title="Contractual price excl. VAT"title= ""
+                style= "width: 100%;" >
+                </td>
+                <td class= "gov-table__cell gov-table__cell--last"data-title="Currency"title= "CZK"
+                style= "width: 100%;" > CZK
+                </td>
+                <td class= "gov-table__cell gov-table__cell--narrow gov-table__cell u-display-block u-hide--from-tablet gov-table__row-controls"
+                style= "display: none; visibility: hidden;" ><a class= "gov-link gov-link--has-arrow"
+                aria-label="Show detail Netfox s.r.o."
+                href= "/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539261" ><span
+                class= "gov-table__row-button-text" > Detail </span></a></td>
+                </tr>
+                </tbody>
+                </table>
+                </div>
+                """;
         Document document = Jsoup.parse(html);
         ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(document);
         OfferDto expectedOfferDto = new OfferDto(null,

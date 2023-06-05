@@ -61,6 +61,7 @@ public class GoogleGeocoder implements Geocoder, AutoCloseable{
         try{
             return GeocodingApi.geocode(context, addressStr).await();
         }catch(ApiException | InterruptedException | IOException e){
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
     }

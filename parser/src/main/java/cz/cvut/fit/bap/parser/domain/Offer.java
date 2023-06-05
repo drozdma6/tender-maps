@@ -60,15 +60,6 @@ public class Offer implements DomainEntity<Long>{
         this.price = price;
     }
 
-    public Company getSupplier(){
-        return company;
-    }
-
-    public void setSupplier(Company company){
-        this.company = company;
-    }
-
-
     @Override
     public Long getId(){
         return id;
