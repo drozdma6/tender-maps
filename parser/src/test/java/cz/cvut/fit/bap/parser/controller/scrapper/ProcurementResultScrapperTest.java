@@ -262,7 +262,7 @@ class ProcurementResultScrapperTest{
     @Test
     void getBigDecimalFromStringWrongFormat(){
         String html = """
-                        < div class= "gov-content-block"title= "Supplier with Whom the Contract Has Been Entered into" >
+                        <div class="gov-content-block"title= "Supplier with Whom the Contract Has Been Entered into" >
                 <table class= "gov-table gov-table--tablet-block gov-sortable-table" >
                 <tbody class= "gov-table__body" >
                 <tr class= "gov-table__row" >

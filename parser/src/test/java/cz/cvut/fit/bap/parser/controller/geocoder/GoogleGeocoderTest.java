@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /*
-    Integration test testing google api geocoding.
+    Integration test testing google api geocoding. Google API key is required.
  */
 @SpringBootTest
 class GoogleGeocoderTest{

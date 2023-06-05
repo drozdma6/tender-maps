@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /*
-    Integration test testing profinit api geocoding.
+    Integration test testing profinit api geocoding. Api key is required for this test.
  */
 @SpringBootTest
 class ProfinitGeocoderTest{
