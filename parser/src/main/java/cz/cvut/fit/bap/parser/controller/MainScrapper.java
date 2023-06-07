@@ -25,8 +25,11 @@ public class MainScrapper implements ApplicationRunner{
     private final ProcurementController procurementController;
     private final Logger logger = LoggerFactory.getLogger(MainScrapper.class);
 
-    @Value("${RUN_ON_STARTUP:false}") //default value is set to false
+    @Value("${run.on.startup}") //default value is set to false
     private boolean runOnStartup;
+
+    @Value("${scrape.all}")
+    private boolean scrapeAll;
 
     public MainScrapper(ContractorAuthorityController contractorAuthorityController, ProcurementController procurementController){
         this.contractorAuthorityController = contractorAuthorityController;
@@ -43,7 +46,7 @@ public class MainScrapper implements ApplicationRunner{
     /**
      * Scheduled start of scrapping.
      */
-    @Scheduled(cron = "${SCHEDULING_CRON}")
+    @Scheduled(cron = "${scheduling.cron}")
     public void run(){
         int page = 1;
         CompletableFuture<List<ContractorAuthorityDto>> authoritiesFuture = contractorAuthorityController.getAuthoritiesPage(page);
@@ -81,7 +84,7 @@ public class MainScrapper implements ApplicationRunner{
         for(String procurementSystemNum : systemNumbers){
             try{
                 boolean procurementExists = procurementController.saveProcurement(contractorAuthority, procurementSystemNum);
-                if(!procurementExists){
+                if(!scrapeAll && (!procurementExists)){
                     break;
                 }
             }catch(MissingHtmlElementException e){
