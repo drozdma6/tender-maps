@@ -5,13 +5,16 @@ services:
       - "8080:8080"
     depends_on:
       - database
+    container_name: scrapper
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://public_procurements_db/postgres
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://public_procurements_db/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
 
-      RUN_ON_STARTUP: ${RUN_ON_STARTUP:-true}
-      SCHEDULING_CRON: ${SCHEDULING_CRON:-0 0 0 1 * *}
+      - RUN_ON_STARTUP=true
+      - SCHEDULING_CRON=0 0 0 1 * *
+      - SCRAPE_ALL=true
+      - CORE_POOL_SIZE=5
     env_file:
       - .env
 
@@ -22,12 +25,13 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - '5432:5432'
 
   adminer:
     image: adminer
+    container_name: database_viewer
     restart: always
     ports:
       - 8081:8080
@@ -37,18 +41,23 @@ services:
     container_name: prometheus
     ports:
       - 9090:9090
+    restart: unless-stopped
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-
+      - prometheus-data:/prometheus
+  
   grafana:
     image: grafana/grafana
-    ports:
-      - 3000:3000
+    container_name: grafana
     depends_on:
       - prometheus
+    ports:
+      - 3000:3000
+    restart: unless-stopped
     volumes:
-      - grafana-storage:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
 
 volumes:
   pg_data:
-  grafana-storage:
+  grafana-data:
+  prometheus-data:
