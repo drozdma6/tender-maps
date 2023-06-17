@@ -9,14 +9,19 @@ import kotlin.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.util.retry.Retry;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 /*
     Geocoding api client used for geocoding czech locations
@@ -25,17 +30,13 @@ import java.time.Duration;
 public class ProfinitGeocoder implements Geocoder{
     private static final String BASE_URL = "https://geolokator.profinit.cz";
     private static final String CZECH_SHORT_COUNTRY_CODE = "CZ";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProfinitGeocoder.class);
 
     @Value("${PROFINIT_API_KEY}")
     private String apiToken;
-    private final WebClient webClient;
     private final AddressDtoToAddress addressDtoToAddress;
 
-    public ProfinitGeocoder(AddressDtoToAddress addressDtoToAddress,
-                            WebClient.Builder webClientBuilder){
+    public ProfinitGeocoder(AddressDtoToAddress addressDtoToAddress){
         this.addressDtoToAddress = addressDtoToAddress;
-        this.webClient = webClientBuilder.baseUrl(BASE_URL).build();
     }
 
     /**
@@ -49,15 +50,19 @@ public class ProfinitGeocoder implements Geocoder{
     public Address geocode(AddressDto addressDto){
         Address address = addressDtoToAddress.apply(addressDto);
         address.setCountryCode(CZECH_SHORT_COUNTRY_CODE); //profinit geocoder is used only for czech places
-        String response = sendQueryRequest(addressDto);
-        Pair<Double,Double> coordinates = getWgsCoordinates(response);
-        address.setLatitude(coordinates.getFirst()); //wgs_x
-        address.setLongitude(coordinates.getSecond()); //wgx_y
-        return address;
+        try{
+            String response = sendQueryRequest(addressDto);
+            Pair<Double,Double> coordinates = getWgsCoordinates(response);
+            address.setLatitude(coordinates.getFirst()); //wgs_x
+            address.setLongitude(coordinates.getSecond()); //wgx_y
+            return address;
+        }catch(GeocodingException e){
+            return address;
+        }
     }
 
     /**
-     * Sends request to geocoder with exponential backoff
+     * Sends request to geocoder
      *
      * @param addressDto which is supposed to be geocoded
      * @return Json response
@@ -66,24 +71,39 @@ public class ProfinitGeocoder implements Geocoder{
         String addressStr = addressDto.street() + ' ' + addressDto.buildingNumber() + ", " +
                 addressDto.postalCode() + ", " + addressDto.city();
 
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/query").queryParam("token", apiToken)
-                        .queryParam("query", addressStr).build())
-                .retrieve()
-                .bodyToMono(String.class)
-                .retryWhen(Retry.backoff(5, Duration.ofSeconds(2))
-                        .doAfterRetry(rs -> {
-                            LOGGER.debug("Retrying profinit geocoding request.");
-                            Metrics.counter("scrapper.profinit.geocoder.retry").increment();
-                        }))
-                .block();
+        HttpClient httpClient = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(10))
+                .build();
+
+        String queryUrl = BASE_URL + "/query?token=" + URLEncoder.encode(apiToken, StandardCharsets.UTF_8) +
+                "&query=" + URLEncoder.encode(addressStr, StandardCharsets.UTF_8);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(queryUrl))
+                .timeout(Duration.of(10, SECONDS))
+                .GET()
+                .build();
+
+        try{
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return response.body();
+        }catch(IOException e){
+            e.printStackTrace();
+            Metrics.counter("scrapper.profinit.geocoder.failed").increment();
+            throw new GeocodingException(e);
+        }catch(InterruptedException e){
+            e.printStackTrace();
+            Metrics.counter("scrapper.profinit.geocoder.failed").increment();
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
     }
 
-    private Pair<Double, Double> getWgsCoordinates(String jsonString){
+    private Pair<Double,Double> getWgsCoordinates(String jsonString){
         JSONObject json = new JSONObject(jsonString);
         JSONArray results = json.getJSONArray("results");
 
-        if (results.isEmpty()){
+        if(results.isEmpty()){
             return new Pair<>(null, null);
         }
         JSONObject firstResult = results.getJSONObject(0);
