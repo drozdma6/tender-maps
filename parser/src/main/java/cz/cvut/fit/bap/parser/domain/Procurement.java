@@ -12,6 +12,7 @@ import java.util.Set;
     Class represents procurement table
  */
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"system_number", "supplier_id"})})
 public class Procurement implements DomainEntity<Long>{
     @Id
     @GeneratedValue
