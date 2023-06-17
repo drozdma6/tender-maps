@@ -9,6 +9,7 @@ import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
 import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
 import cz.cvut.fit.bap.parser.domain.Address;
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Metrics;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -44,8 +45,12 @@ public class GoogleGeocoder implements Geocoder, AutoCloseable{
         if(apiKey.isEmpty()){
             return addressDtoToAddress.apply(addressDto);
         }
-        GeocodingResult[] geocodingResults = sendRequest(addressDto);
         Address address = addressDtoToAddress.apply(addressDto);
+        GeocodingResult[] geocodingResults = sendRequest(addressDto);
+        if(geocodingResults == null || geocodingResults.length == 0){
+            Metrics.counter("scrapper.google.geocode.failed").increment();
+            return address;
+        }
         if(address.getCountryCode() == null){
             address.setCountryCode(getCountryCode(geocodingResults));
         }
@@ -60,9 +65,11 @@ public class GoogleGeocoder implements Geocoder, AutoCloseable{
                 addressDto.country();
         try{
             return GeocodingApi.geocode(context, addressStr).await();
-        }catch(ApiException | InterruptedException | IOException e){
+        }catch(ApiException | IOException e){
+            throw new GeocodingException(e);
+        }catch(InterruptedException e){
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new GeocodingException(e);
         }
     }
 
