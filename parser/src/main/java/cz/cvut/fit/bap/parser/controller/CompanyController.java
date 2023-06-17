@@ -15,10 +15,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /*
-    Controller for communication with company service
+    Controller for companies
  */
 @Component
-public class CompanyController extends AbstractController<CompanyService>{
+public class CompanyController extends AbstractController<CompanyService,Company,Long>{
     private final CompanyDetailFactory companyDetailFactory;
     private final AddressController addressController;
     private final AbstractFetcher fetcher;
@@ -37,33 +37,49 @@ public class CompanyController extends AbstractController<CompanyService>{
      * @param company which is supposed to be stored
      * @return stored company
      */
-    public Company saveCompany(Company company){
+    @Override
+    public Company save(Company company){
         Optional<Company> companyOptional = service.readByName(company.getName());
         if(companyOptional.isPresent()){
             return companyOptional.get();
         }
-        Address address = addressController.saveAddress(company.getAddress());
-        return service.create(new Company(company.getName(), address, company.getOrganisationId()));
+        Address address = addressController.save(company.getAddress());
+        return super.save(new Company(company.getName(), address, company.getOrganisationId()));
     }
 
     /**
-     * Get company from url with provided name
+     * Get company from url with provided name in separate thread
      *
      * @param url         where information about company is
      * @param companyName of wanted company
      * @return future of scrapped company
      */
     @Async
-    public CompletableFuture<Company> getCompany(String url, String companyName){
-        Optional<Company> companyOptional = service.readByName(companyName);
-        if(companyOptional.isPresent()){
-            return CompletableFuture.completedFuture(companyOptional.get());
-        }
+    public CompletableFuture<Company> getCompanyAsync(String url, String companyName){
+        return service.readByName(companyName)
+                .map(CompletableFuture::completedFuture)
+                .orElseGet(() -> CompletableFuture.completedFuture(fetchCompanyDetails(url, companyName)));
+    }
+
+
+    /**
+     * Get company from url with provided name in main thread
+     *
+     * @param url         where information about company is
+     * @param companyName of wanted company
+     * @return scrapped company
+     */
+    public Company getCompany(String url, String companyName){
+        return service.readByName(companyName)
+                .orElseGet(() -> fetchCompanyDetails(url, companyName));
+    }
+
+    private Company fetchCompanyDetails(String url, String companyName){
         Document doc = fetcher.getCompanyDetail(url);
         CompanyDetailScrapper companyDetailScrapper = companyDetailFactory.create(doc);
         AddressDto addressDto = companyDetailScrapper.getCompanyAddress();
         String organisationId = companyDetailScrapper.getOrganisationId();
         Address geocodedAddress = addressController.geocode(addressDto);
-        return CompletableFuture.completedFuture(new Company(companyName, geocodedAddress, organisationId));
+        return new Company(companyName, geocodedAddress, organisationId);
     }
 }

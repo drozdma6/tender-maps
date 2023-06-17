@@ -12,10 +12,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 /*
-    Controller for communication with address service
+    Controller for addresses
  */
 @Component
-public class AddressController extends AbstractController<AddressService>{
+public class AddressController extends AbstractController<AddressService,Address,Long>{
     private final AddressDtoToAddress addressDtoToAddress;
     private final ProfinitGeocoder profinitGeocoder;
     private final GoogleGeocoder googleGeocoder;
@@ -33,9 +33,10 @@ public class AddressController extends AbstractController<AddressService>{
      * @param address which is supposed to be stored
      * @return address from database
      */
-    public Address saveAddress(Address address){
+    @Override
+    public Address save(Address address){
         Optional<Address> addressOptional = service.readAddress(address);
-        return addressOptional.orElseGet(() -> service.create(address));
+        return addressOptional.orElseGet(() -> super.save(address));
     }
 
     /**

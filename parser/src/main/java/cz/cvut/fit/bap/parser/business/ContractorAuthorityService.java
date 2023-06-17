@@ -10,19 +10,18 @@ import java.util.Optional;
  * Class handling communication with contractor authority repository
  */
 @Service
-public class ContractorAuthorityService extends AbstractCreateService<ContractorAuthority, Long>{
+public class ContractorAuthorityService extends AbstractCreateService<ContractorAuthority,Long>{
     public ContractorAuthorityService(ContractorAuthorityJpaRepository repository){
         super(repository);
     }
 
     /**
-     * Reads contractor authority by profile
+     * Reads contractor authority by name
      *
-     * @param profile of wanted contractor authority
+     * @param name of wanted contractor authority
      * @return optional of contractor authority
      */
-    public Optional<ContractorAuthority> readByProfile(String profile){
-        return ((ContractorAuthorityJpaRepository) repository).findContractorAuthorityByProfile(
-                profile);
+    public Optional<ContractorAuthority> readByName(String name){
+        return ((ContractorAuthorityJpaRepository) repository).findContractorAuthorityByName(name);
     }
 }

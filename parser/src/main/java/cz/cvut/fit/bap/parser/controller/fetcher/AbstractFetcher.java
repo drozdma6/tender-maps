@@ -10,8 +10,6 @@ import java.util.concurrent.CompletableFuture;
 public abstract class AbstractFetcher{
     public abstract Document getContractorDetail(String href);
 
-    public abstract Document getContractorCompleted(String profile, Integer page);
-
     public abstract Document getProcurementResult(String procurement);
 
     public abstract Document getCompanyDetail(String uri);
@@ -19,5 +17,7 @@ public abstract class AbstractFetcher{
     @Async
     public abstract CompletableFuture<Document> getProcurementDetail(String procurement);
 
-    public abstract Document getContractorAuthorityList(Integer page);
+    public abstract Document getContractorAuthorityList(int page);
+
+    public abstract Document getProcurementListPage(int page);
 }

@@ -5,6 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -28,22 +29,7 @@ public class NenNipezFetcher extends AbstractFetcher{
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getContractorDetail(String href){
-        final String url = BASE_URL + "/en" + href;
-        return getDocumentWithRetry(url);
-    }
-
-    /**
-     * Fetches document containing list of completed procurements by provided authority profile.
-     *
-     * @param href of contracting authority
-     * @param page which page is supposed to get fetched
-     * @return document containing contractor completed site
-     */
-    @Override
-    @Timed(value = "scrapper.nen.nipez.fetch")
-    public Document getContractorCompleted(String href, Integer page){
-        final String url = BASE_URL + "/en" + href +
-                "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=" + page.toString();
+        final String url = BASE_URL + href;
         return getDocumentWithRetry(url);
     }
 
@@ -58,7 +44,7 @@ public class NenNipezFetcher extends AbstractFetcher{
     public Document getProcurementResult(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = BASE_URL + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
-                "/vysledek/p:vys:page=1-10;uca:page=1-10"; //show all participants and suppliers without paging
+                "/vysledek/p:vys:page=1-50;uca:page=1-50"; //show all participants and suppliers without paging
         return getDocumentWithRetry(url);
     }
 
@@ -85,6 +71,7 @@ public class NenNipezFetcher extends AbstractFetcher{
      * @return Document containing procurement detail site
      */
     @Override
+    @Async
     @Timed(value = "scrapper.nen.nipez.fetch")
     public CompletableFuture<Document> getProcurementDetail(String systemNumber){
         String systemNumberHyphen = systemNumber.replace('/', '-');
@@ -100,8 +87,21 @@ public class NenNipezFetcher extends AbstractFetcher{
      */
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
-    public Document getContractorAuthorityList(Integer page){
+    public Document getContractorAuthorityList(int page){
         String url = BASE_URL + "/profily-zadavatelu-platne/p:pzp:page=" + page;
+        return getDocumentWithRetry(url);
+    }
+
+    /**
+     * Fetches procurement list page
+     *
+     * @param page which is supposed to get fetched
+     * @return document containing wanted page of procurements
+     */
+    @Override
+    @Timed(value = "scrapper.nen.nipez.fetch")
+    public Document getProcurementListPage(int page){
+        String url = BASE_URL + "/en/verejne-zakazky/p:vz:stavZP=zadana,plneni&page=" + page;
         return getDocumentWithRetry(url);
     }
 

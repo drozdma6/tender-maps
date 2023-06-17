@@ -1,5 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
+import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -15,6 +16,21 @@ import java.time.format.DateTimeParseException;
 public class ProcurementDetailScrapper extends AbstractScrapper{
     public ProcurementDetailScrapper(Document document){
         super(document);
+    }
+
+    /**
+     * Gets information about contractor authority who created this procurement
+     *
+     * @return contractorAuthorityDto of authority
+     */
+    public ContractorAuthorityDto getContractorAuthorityDto(){
+        Elements authorityElem = document.select("[title=\"Contracting authority\"] a");
+        if(authorityElem.isEmpty() || !authorityElem.hasText()){
+            throw new MissingHtmlElementException(document.location() + " missing contractor authority info.");
+        }
+        String url = authorityElem.attr("href");
+        String name = authorityElem.text();
+        return new ContractorAuthorityDto(url, name);
     }
 
     /**
@@ -51,7 +67,7 @@ public class ProcurementDetailScrapper extends AbstractScrapper{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. MM. yyyy [HH:mm]");
         try{
             return LocalDate.parse(scrappedData, formatter);
-        } catch (DateTimeParseException e){
+        }catch(DateTimeParseException e){
             return null;
         }
     }

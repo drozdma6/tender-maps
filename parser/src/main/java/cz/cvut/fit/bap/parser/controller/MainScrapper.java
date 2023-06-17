@@ -1,9 +1,7 @@
 package cz.cvut.fit.bap.parser.controller;
 
-import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.FailedFetchException;
 import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
-import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
 import io.micrometer.core.instrument.Metrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,21 +19,19 @@ import java.util.concurrent.CompletableFuture;
  */
 @Component
 public class MainScrapper implements ApplicationRunner{
-    private final ContractorAuthorityController contractorAuthorityController;
     private final ProcurementController procurementController;
     private final Logger logger = LoggerFactory.getLogger(MainScrapper.class);
 
     @Value("${run.on.startup}") //default value is set to false
     private boolean runOnStartup;
 
-    @Value("${scrape.all}")
-    private boolean scrapeAll;
-
-    public MainScrapper(ContractorAuthorityController contractorAuthorityController, ProcurementController procurementController){
-        this.contractorAuthorityController = contractorAuthorityController;
+    public MainScrapper(ProcurementController procurementController){
         this.procurementController = procurementController;
     }
 
+    /*
+        Run method.
+     */
     @Override
     public void run(ApplicationArguments args){
         if(runOnStartup){
@@ -49,44 +45,21 @@ public class MainScrapper implements ApplicationRunner{
     @Scheduled(cron = "${scheduling.cron}")
     public void run(){
         int page = 1;
-        CompletableFuture<List<ContractorAuthorityDto>> authoritiesFuture = contractorAuthorityController.getAuthoritiesPage(page);
+        CompletableFuture<List<String>> systemNumbersFuture = procurementController.getPageSystemNumbers(page);
         while(true){
-            List<ContractorAuthorityDto> authorities = authoritiesFuture.join();
-            if(authorities.isEmpty()){
+            List<String> systemNumbers = systemNumbersFuture.join();
+            if(systemNumbers.isEmpty()){
                 break;
             }
-            authoritiesFuture = contractorAuthorityController.getAuthoritiesPage(++page);
-            scrapeAuthorities(authorities);
+            systemNumbersFuture = procurementController.getPageSystemNumbers(++page);
+            scrapeProcurementPage(systemNumbers);
         }
     }
 
-    private void scrapeAuthorities(List<ContractorAuthorityDto> authoritiesDto){
-        for(ContractorAuthorityDto authorityDto : authoritiesDto){
-            ContractorAuthority authority = contractorAuthorityController.saveContractorAuthority(authorityDto);
-            scrapeAllProcurements(authority);
-        }
-    }
-
-    private void scrapeAllProcurements(ContractorAuthority contractorAuthority){
-        int page = 1;
-        CompletableFuture<List<String>> procurementSystemNumbersFuture = contractorAuthorityController.getProcurementSystemNumbers(contractorAuthority, page++);
-        while(true){
-            List<String> procurementSystemNumbers = procurementSystemNumbersFuture.join();
-            if(procurementSystemNumbers.isEmpty()){
-                break;
-            }
-            procurementSystemNumbersFuture = contractorAuthorityController.getProcurementSystemNumbers(contractorAuthority, page++);
-            scrapeProcurementPage(contractorAuthority, procurementSystemNumbers);
-        }
-    }
-
-    private void scrapeProcurementPage(ContractorAuthority contractorAuthority, List<String> systemNumbers){
+    private void scrapeProcurementPage(List<String> systemNumbers){
         for(String procurementSystemNum : systemNumbers){
             try{
-                boolean procurementExists = procurementController.saveProcurement(contractorAuthority, procurementSystemNum);
-                if(!scrapeAll && (!procurementExists)){
-                    break;
-                }
+                procurementController.save(procurementSystemNum);
             }catch(MissingHtmlElementException e){
                 Metrics.counter("scrapper.skipped.procurements").increment();
                 logger.debug(e.getMessage());

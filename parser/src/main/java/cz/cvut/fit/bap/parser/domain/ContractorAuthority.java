@@ -21,10 +21,7 @@ public class ContractorAuthority implements DomainEntity<Long>{
     @OneToMany(mappedBy = "contractorAuthority")
     private Set<Procurement> procurements = new HashSet<>();
 
-    @Column(name = "contractor_authority_profile", unique = true)
-    private String profile;
-
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
 
@@ -39,9 +36,8 @@ public class ContractorAuthority implements DomainEntity<Long>{
         this.address = address;
     }
 
-    public ContractorAuthority(String name, String profile, Address address, String url){
+    public ContractorAuthority(String name, Address address, String url){
         this.name = name;
-        this.profile = profile;
         this.address = address;
         this.url = url;
     }
@@ -55,14 +51,6 @@ public class ContractorAuthority implements DomainEntity<Long>{
 
     public void setUrl(String url){
         this.url = url;
-    }
-
-    public String getProfile(){
-        return profile;
-    }
-
-    public void setProfile(String profile){
-        this.profile = profile;
     }
 
     public Set<Procurement> getProcurements(){

@@ -15,12 +15,12 @@ public class ContractorDetailScrapper extends AbstractScrapper{
     }
 
     /**
-     * Gets contractor authority name
+     * Gets contractor authority nen.nipez profile url
      *
-     * @return contractor authority name
+     * @return contractor authority's nen.nipez profile url or null if information is missing
      */
-    public String getContractorAuthorityName(){
-        return document.select("[title=\"Official name\"] p").text();
+    public String getContractorAuthorityUrl(){
+        return getNullIfEmpty(document.select("[title=\"Contracting authority's NEN profile\"] a").text());
     }
 
     /**

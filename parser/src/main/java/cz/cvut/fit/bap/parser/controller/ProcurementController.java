@@ -6,61 +6,80 @@ import cz.cvut.fit.bap.parser.controller.dto.ProcurementDetailDto;
 import cz.cvut.fit.bap.parser.controller.dto.ProcurementResultDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementDetailScrapper;
+import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementListScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementResultScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementDetailFactory;
+import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementListFactory;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementResultFactory;
 import cz.cvut.fit.bap.parser.domain.Company;
 import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
+import cz.cvut.fit.bap.parser.domain.Offer;
 import cz.cvut.fit.bap.parser.domain.Procurement;
 import io.micrometer.core.annotation.Timed;
 import jakarta.transaction.Transactional;
 import kotlin.Pair;
 import org.jsoup.nodes.Document;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /*
-    Controller handling communication with procurement service and required scrappers to get procurement
+    Controller for procurements
  */
 @Component
-public class ProcurementController extends AbstractController<ProcurementService>{
+public class ProcurementController extends AbstractController<ProcurementService,Procurement,Long>{
     private final ProcurementResultFactory procurementResultFactory;
     private final ProcurementDetailFactory procurementDetailFactory;
+    private final ProcurementListFactory procurementListFactory;
     private final OfferController offerController;
     private final CompanyController companyController;
+    private final ContractorAuthorityController contractorAuthorityController;
     private final AbstractFetcher fetcher;
 
     public ProcurementController(ProcurementResultFactory procurementResultFactory,
                                  ProcurementDetailFactory procurementDetailFactory,
                                  ProcurementService procurementService,
-                                 OfferController offerController,
+                                 ProcurementListFactory procurementListFactory, OfferController offerController,
                                  CompanyController companyController,
-                                 AbstractFetcher fetcher){
+                                 ContractorAuthorityController contractorAuthorityController, AbstractFetcher fetcher){
         super(procurementService);
         this.procurementResultFactory = procurementResultFactory;
         this.procurementDetailFactory = procurementDetailFactory;
+        this.procurementListFactory = procurementListFactory;
         this.offerController = offerController;
         this.companyController = companyController;
+        this.contractorAuthorityController = contractorAuthorityController;
         this.fetcher = fetcher;
     }
 
     /**
-     * Saves procurements. If there are multiple suppliers for single procurement creates and saves
-     * new Procurement for each supplier, so that one procurement always has single supplier.
+     * Gets system numbers of procurements on given page
      *
-     * @param authority    contracting authority of procurement
+     * @param page number of page which is supposed to be scrapped
+     * @return list of system numbers
+     */
+    @Async
+    public CompletableFuture<List<String>> getPageSystemNumbers(int page){
+        Document document = fetcher.getProcurementListPage(page);
+        ProcurementListScrapper procurementListScrapper = procurementListFactory.create(document);
+        return CompletableFuture.completedFuture(procurementListScrapper.getProcurementSystemNumbers());
+    }
+
+    /**
+     * Gets and saves all the neccessary data in order to store procurement with given systemNumber.
+     * If there are multiple suppliers for single procurement creates and saves new Procurement for each supplier,
+     * so that one procurement always has single supplier.
+     *
      * @param systemNumber procurement system number
-     * @return false if procurement is already in database, true otherwise
      */
     @Timed(value = "scrapper.procurement.save")
     @Transactional
-    public boolean saveProcurement(ContractorAuthority authority, String systemNumber){
+    public void save(String systemNumber){
         if(service.existsBySystemNumber(systemNumber)){
-            return false;
+            return;
         }
         //run procurement detail scrapping in separate thread
         CompletableFuture<ProcurementDetailDto> procurementDetailDtoFuture = fetcher.getProcurementDetail(systemNumber)
@@ -71,34 +90,36 @@ public class ProcurementController extends AbstractController<ProcurementService
         ProcurementResultScrapper procurementResultScrapper = procurementResultFactory.create(resultPageDoc);
         ProcurementResultDto procurementResultDto = getProcurementResultDto(procurementResultScrapper);
 
-        List<Pair<Company,BigDecimal>> participantList = saveParticipants(procurementResultDto.participants());
+        List<Pair<Company,BigDecimal>> participantList = getParticipants(procurementResultDto.participants());
 
         ProcurementDetailDto procurementDetailDto = procurementDetailDtoFuture.join();
-        saveProcurementData(authority, systemNumber, procurementResultDto, procurementDetailDto, participantList);
-        return true;
+        saveProcurementData(systemNumber, procurementResultDto, procurementDetailDto, participantList);
     }
 
-    private void saveProcurementData(ContractorAuthority authority, String systemNumber,
-                                     ProcurementResultDto procurementResultDto,
+    private void saveProcurementData(String systemNumber, ProcurementResultDto procurementResultDto,
                                      ProcurementDetailDto procurementDetailDto,
                                      List<Pair<Company,BigDecimal>> participants){
         procurementResultDto.suppliersMap().forEach((supplierName, supplierInfo) -> {
             Company supplier = saveSupplier(supplierInfo);
-
-            Procurement procurement = service.create(new Procurement(procurementDetailDto.procurementName(), supplier, authority,
-                    supplierInfo.contractPrice(), procurementDetailDto.placeOfPerformance(),
+            ContractorAuthority savedAuthority = contractorAuthorityController.save(procurementDetailDto.contractorAuthority());
+            Procurement procurement = super.save(new Procurement(procurementDetailDto.procurementName(), supplier,
+                    savedAuthority, supplierInfo.contractPrice(), procurementDetailDto.placeOfPerformance(),
                     procurementDetailDto.dateOfPublication(), systemNumber));
 
             for(Pair<Company,BigDecimal> participant : participants){
-                offerController.saveOffer(participant.getSecond(), procurement, participant.getFirst());
+                Company savedCompany = companyController.save(participant.getFirst());
+                Offer offer = new Offer(participant.getSecond(), procurement, savedCompany);
+                offerController.save(offer);
             }
         });
     }
 
     private ProcurementDetailDto getProcurementDetailDto(ProcurementDetailScrapper procurementDetailScrapper){
+        ContractorAuthority contractorAuthority = contractorAuthorityController.getContractorAuthority(
+                procurementDetailScrapper.getContractorAuthorityDto());
         return new ProcurementDetailDto(procurementDetailScrapper.getProcurementName(),
                 procurementDetailScrapper.getProcurementPlaceOfPerformance(),
-                procurementDetailScrapper.getProcurementDateOfPublication());
+                procurementDetailScrapper.getProcurementDateOfPublication(), contractorAuthority);
     }
 
     private ProcurementResultDto getProcurementResultDto(ProcurementResultScrapper procurementResultScrapper){
@@ -106,34 +127,26 @@ public class ProcurementController extends AbstractController<ProcurementService
     }
 
     private Company saveSupplier(OfferDto supplierInfo){
-        CompletableFuture<Company> company = companyController.getCompany(supplierInfo.detailHref(), supplierInfo.companyName());
-        return companyController.saveCompany(company.join());
+        Company company = companyController.getCompany(supplierInfo.detailHref(), supplierInfo.companyName());
+        return companyController.save(company);
     }
 
-    private List<Pair<Company,BigDecimal>> saveParticipants(List<OfferDto> participants){
-        List<Pair<CompletableFuture<Company>,BigDecimal>> companyFutures = new ArrayList<>();
-        participants.forEach(offerDto -> {
-            //run scrapping in separate thread
-            CompletableFuture<Company> participantFuture = companyController.getCompany(offerDto.detailHref(), offerDto.companyName());
-            companyFutures.add(new Pair<>(participantFuture, offerDto.contractPrice()));
-        });
-        //Wait for all futures to finish
-        return finishFutures(companyFutures)
-                .stream()
-                .map(pair -> new Pair<>(companyController.saveCompany(pair.getFirst()), pair.getSecond())) //save each participant
+    /**
+     * Gets participant companies, each participant runs in separate thread.
+     *
+     * @param participants scrapped data about participants from result page
+     * @return List of companies and their offers
+     */
+    private List<Pair<Company,BigDecimal>> getParticipants(List<OfferDto> participants){
+        List<CompletableFuture<Pair<Company,BigDecimal>>> futures = participants.stream()
+                .map(offerDto -> {
+                    CompletableFuture<Company> participantFuture = companyController.getCompanyAsync(offerDto.detailHref(), offerDto.companyName());
+                    return participantFuture.thenApply(company -> new Pair<>(company, offerDto.contractPrice()));
+                })
                 .toList();
-    }
-
-    private List<Pair<Company,BigDecimal>> finishFutures(List<Pair<CompletableFuture<Company>,BigDecimal>> futures){
-        CompletableFuture<?>[] cfs = futures.stream()
-                .map(Pair::getFirst)
-                .toArray(CompletableFuture[]::new);
-        // Wait for all CompletableFuture objects to complete
-        CompletableFuture.allOf(cfs).join();
-
-        // Collect the results and return as a List<Pair<Company, BigDecimal>>
+        //wait for all to finish
         return futures.stream()
-                .map(pair -> new Pair<>(pair.getFirst().join(), pair.getSecond()))
+                .map(CompletableFuture::join)
                 .toList();
     }
 }
