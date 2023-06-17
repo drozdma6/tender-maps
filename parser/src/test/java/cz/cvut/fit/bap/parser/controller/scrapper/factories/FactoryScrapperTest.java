@@ -15,11 +15,10 @@ class FactoryScrapperTest{
     private static Stream<AbstractScrapperFactory<?>> factoryProvider(){
         return Stream.of(
                 new CompanyDetailFactory(),
-                new ContractorCompletedFactory(),
                 new ProcurementDetailFactory(),
                 new ProcurementResultFactory(),
                 new ContractorDetailFactory(),
-                new ContractorListFactory());
+                new ProcurementListFactory());
         // Add other factory instances here
     }
 

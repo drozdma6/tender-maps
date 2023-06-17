@@ -40,7 +40,7 @@ class AddressControllerTest{
         Address address = new Address("SK", "Bratislava", "16000", "Bratislavska",
                 "65", 50.0799251615831, 14.394026044199839);
         when(addressService.readAddress(address)).thenReturn(Optional.of(address));
-        Address actualAddress = addressController.saveAddress(address);
+        Address actualAddress = addressController.save(address);
         verify(addressService, never()).create(any(Address.class));
         Assertions.assertEquals(address.getCountryCode(), actualAddress.getCountryCode());
         Assertions.assertEquals(address.getCity(), actualAddress.getCity());
@@ -56,7 +56,7 @@ class AddressControllerTest{
                 "65", 50.0799251615831, 14.394026044199839);
         when(addressService.readAddress(address)).thenReturn(Optional.empty());
         when(addressService.create(any(Address.class))).thenAnswer(i -> i.getArgument(0));
-        Address actualAddress = addressController.saveAddress(address);
+        Address actualAddress = addressController.save(address);
         verify(addressService).create(any(Address.class));
         Assertions.assertEquals(address.getCountryCode(), actualAddress.getCountryCode());
         Assertions.assertEquals(address.getCity(), actualAddress.getCity());

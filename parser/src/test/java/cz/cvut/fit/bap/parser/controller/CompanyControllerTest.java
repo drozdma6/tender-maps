@@ -45,8 +45,8 @@ class CompanyControllerTest{
         when(companyService.readByName(company.getName())).thenReturn(Optional.empty());
         when(companyService.create(company)).thenAnswer(i -> i.getArgument(0));
 
-        Company savedCompany = companyController.saveCompany(company);
-        verify(addressController).saveAddress(any(Address.class));
+        Company savedCompany = companyController.save(company);
+        verify(addressController).save(any(Address.class));
         verify(companyService).create(any(Company.class));
         Assertions.assertEquals(company.getName(), savedCompany.getName());
         Assertions.assertEquals(company.getOrganisationId(), savedCompany.getOrganisationId());
@@ -58,8 +58,8 @@ class CompanyControllerTest{
         Company company = new Company("Test company", address, "organisationId");
         when(companyService.readByName(company.getName())).thenReturn(Optional.of(company));
 
-        Company savedCompany = companyController.saveCompany(company);
-        verify(addressController, never()).saveAddress(any(Address.class));
+        Company savedCompany = companyController.save(company);
+        verify(addressController, never()).save(any(Address.class));
         verify(companyService, never()).create(any(Company.class));
         Assertions.assertEquals(company.getName(), savedCompany.getName());
         Assertions.assertEquals(company.getOrganisationId(), savedCompany.getOrganisationId());
@@ -71,7 +71,22 @@ class CompanyControllerTest{
         Company expectedCompany = new Company("Test company", address, "organisationId");
         String testUrl = "testUrl";
         when(companyService.readByName(expectedCompany.getName())).thenReturn(Optional.of(expectedCompany));
-        Company actualCompany = companyController.getCompany(testUrl, expectedCompany.getName()).join();
+        Company actualCompany = companyController.getCompany(testUrl, expectedCompany.getName());
+
+        verify(fetcher, never()).getCompanyDetail(testUrl);
+        verify(addressController, never()).geocode(any(AddressDto.class));
+
+        Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
+        Assertions.assertEquals(expectedCompany.getOrganisationId(), actualCompany.getOrganisationId());
+    }
+
+    @Test
+    void getCompanyAsyncExisting(){
+        Address address = new Address("CZ", "Praha", "16000", "Bratislavska", "65");
+        Company expectedCompany = new Company("Test company", address, "organisationId");
+        String testUrl = "testUrl";
+        when(companyService.readByName(expectedCompany.getName())).thenReturn(Optional.of(expectedCompany));
+        Company actualCompany = companyController.getCompanyAsync(testUrl, expectedCompany.getName()).join();
 
         verify(fetcher, never()).getCompanyDetail(testUrl);
         verify(addressController, never()).geocode(any(AddressDto.class));
@@ -96,7 +111,37 @@ class CompanyControllerTest{
         when(companyDetailScrapper.getOrganisationId()).thenReturn(expectedCompany.getOrganisationId());
         when(addressController.geocode(addressDto)).thenReturn(expetedAddress);
 
-        Company actualCompany = companyController.getCompany(testUrl, expectedCompany.getName()).join();
+        Company actualCompany = companyController.getCompany(testUrl, expectedCompany.getName());
+
+        verify(fetcher).getCompanyDetail(testUrl);
+        verify(addressController).geocode(any(AddressDto.class));
+
+        Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
+        Assertions.assertEquals(expectedCompany.getOrganisationId(), actualCompany.getOrganisationId());
+        Assertions.assertEquals(expectedCompany.getAddress().getCountryCode(), actualCompany.getAddress().getCountryCode());
+        Assertions.assertEquals(expectedCompany.getAddress().getCity(), actualCompany.getAddress().getCity());
+        Assertions.assertEquals(expectedCompany.getAddress().getPostalCode(), actualCompany.getAddress().getPostalCode());
+        Assertions.assertEquals(expectedCompany.getAddress().getStreet(), actualCompany.getAddress().getStreet());
+        Assertions.assertEquals(expectedCompany.getAddress().getBuildingNumber(), actualCompany.getAddress().getBuildingNumber());
+    }
+
+    @Test
+    void getCompanyAsyncNonExisting(){
+        AddressDto addressDto = new AddressDto("CZ", "Praha", "16000", "Bratislavska", "65");
+        Address expetedAddress = new Address("CZ", "Praha", "16000", "Bratislavska", "65");
+        Company expectedCompany = new Company("nameCompany", expetedAddress, "organisationId");
+        String testUrl = "testUrl";
+        Document testDoc = new Document(testUrl);
+        CompanyDetailScrapper companyDetailScrapper = mock(CompanyDetailScrapper.class);
+
+        when(fetcher.getCompanyDetail(testUrl)).thenReturn(testDoc);
+        when(companyDetailFactory.create(testDoc)).thenReturn(companyDetailScrapper);
+        when(companyService.readByName(expectedCompany.getName())).thenReturn(Optional.empty());
+        when(companyDetailScrapper.getCompanyAddress()).thenReturn(addressDto);
+        when(companyDetailScrapper.getOrganisationId()).thenReturn(expectedCompany.getOrganisationId());
+        when(addressController.geocode(addressDto)).thenReturn(expetedAddress);
+
+        Company actualCompany = companyController.getCompanyAsync(testUrl, expectedCompany.getName()).join();
 
         verify(fetcher).getCompanyDetail(testUrl);
         verify(addressController).geocode(any(AddressDto.class));

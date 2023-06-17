@@ -25,29 +25,24 @@ class ContractorAuthorityServiceTest{
 
     @Test
     void readByNameExisting(){
-        String profile = "profile";
-        ContractorAuthority contractorAuthority = new ContractorAuthority("name", profile,
-                new Address(), "url");
-        when(contractorAuthorityJpaRepository.findContractorAuthorityByProfile(
-                profile)).thenReturn(Optional.of(contractorAuthority));
-        Optional<ContractorAuthority> returnedContractorAuthority = contractorAuthorityService.readByProfile(
-                profile);
+        String name = "name";
+        ContractorAuthority contractorAuthority = new ContractorAuthority(name, new Address(), "url");
+        when(contractorAuthorityJpaRepository.findContractorAuthorityByName(
+                name)).thenReturn(Optional.of(contractorAuthority));
+        Optional<ContractorAuthority> returnedContractorAuthority = contractorAuthorityService.readByName(name);
+
         assertTrue(returnedContractorAuthority.isPresent());
         assertEquals(contractorAuthority, returnedContractorAuthority.get());
         assertEquals(contractorAuthority.getName(), returnedContractorAuthority.get().getName());
-        assertEquals(contractorAuthority.getProfile(),
-                returnedContractorAuthority.get().getProfile());
-        assertEquals(contractorAuthority.getAddress(),
-                returnedContractorAuthority.get().getAddress());
+        assertEquals(contractorAuthority.getAddress(), returnedContractorAuthority.get().getAddress());
     }
 
     @Test
     void readByNameNonExisting(){
-        String profile = "testProfile";
-        when(contractorAuthorityJpaRepository.findContractorAuthorityByProfile(profile)).thenReturn(
-                Optional.empty());
-        Optional<ContractorAuthority> returnContractorAuthority = contractorAuthorityService.readByProfile(
-                profile);
+        String name = "name";
+        when(contractorAuthorityJpaRepository.findContractorAuthorityByName(name)).thenReturn(Optional.empty());
+        Optional<ContractorAuthority> returnContractorAuthority = contractorAuthorityService.readByName(
+                name);
         assertTrue(returnContractorAuthority.isEmpty());
     }
 }

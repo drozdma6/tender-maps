@@ -26,38 +26,34 @@ class NenNipezFetcherTest{
 
     @Test
     void getContractorDetail() throws IOException{
-        String testUrl = "/testUrl";
-        String expectedUrl =
-                "https://nen.nipez.cz/en" + testUrl;
+        String expectedUrl = "https://nen.nipez.cz/testUrl";
 
         Document expectedDoc = new Document(expectedUrl);
 
         when(connection.get()).thenReturn(expectedDoc);
         try(MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
             jsoup.when(() -> Jsoup.connect(expectedUrl)).thenReturn(connection);
-            Assertions.assertEquals(expectedDoc, nenNipezFetcher.getContractorDetail(testUrl));
+            Assertions.assertEquals(expectedDoc, nenNipezFetcher.getContractorDetail("/testUrl"));
         }
     }
 
     @Test
-    void getContractorCompleted() throws IOException{
-        String testUrl = "/testUrl";
-        int page = 1;
-        String expectedUrl = "https://nen.nipez.cz/en" + testUrl + "/uzavrene-zakazky/p:puvz:stavZP=zadana&page=" + page;
+    void getProcurementListPage() throws IOException{
+        String expectedUrl = "https://nen.nipez.cz/en/verejne-zakazky/p:vz:stavZP=zadana,plneni&page=1";
         Document expectedDoc = new Document(expectedUrl);
 
         when(connection.get()).thenReturn(expectedDoc);
         try(MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
             jsoup.when(() -> Jsoup.connect(expectedUrl)).thenReturn(connection);
             Assertions.assertEquals(expectedDoc,
-                    nenNipezFetcher.getContractorCompleted(testUrl, page));
+                    nenNipezFetcher.getProcurementListPage(1));
         }
     }
 
     @Test
     void getProcurementResult() throws IOException{
         String testSystemNumber = "testSystemNumber";
-        String expectedUrl = "https://nen.nipez.cz/en/verejne-zakazky/detail-zakazky/testSystemNumber/vysledek/p:vys:page=1-10;uca:page=1-10";
+        String expectedUrl = "https://nen.nipez.cz/en/verejne-zakazky/detail-zakazky/testSystemNumber/vysledek/p:vys:page=1-50;uca:page=1-50";
         Document expectedDoc = new Document(expectedUrl);
 
         when(connection.get()).thenReturn(expectedDoc);

@@ -1,6 +1,7 @@
-package cz.cvut.fit.bap.parser.controller.geocoder;
+package cz.cvut.fit.bap.parser.integrated.geocoder;
 
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.geocoder.ProfinitGeocoder;
 import cz.cvut.fit.bap.parser.domain.Address;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -20,26 +20,23 @@ class ContractorAuthorityJpaRepositoryTest{
     private ContractorAuthorityJpaRepository contractorAuthorityJpaRepository;
 
     @Test
-    void readContractorByProfile(){
+    void findContractorAuthorityByName(){
         String name = "testName";
-        String profile = "testProfile";
-        ContractorAuthority contractorAuthority = new ContractorAuthority(name, profile, null, "url");
+        ContractorAuthority contractorAuthority = new ContractorAuthority(name, null, "url");
 
         contractorAuthorityJpaRepository.save(contractorAuthority);
 
-        Optional<ContractorAuthority> returnedContractor = contractorAuthorityJpaRepository.findContractorAuthorityByProfile(
-                profile);
+        Optional<ContractorAuthority> returnedContractor = contractorAuthorityJpaRepository.findContractorAuthorityByName(name);
 
         assertTrue(returnedContractor.isPresent());
         assertEquals(name, returnedContractor.get().getName());
-        assertEquals(profile, returnedContractor.get().getProfile());
+        assertEquals("url", returnedContractor.get().getUrl());
     }
 
     @Test
-    public void readContractorByProfileNonExisting(){
-        String profile = "testProfile";
-        Optional<ContractorAuthority> returnedContractor = contractorAuthorityJpaRepository.findContractorAuthorityByProfile(
-                profile);
+    public void findContractorAuthorityByNameNonExisting(){
+        String name = "name";
+        Optional<ContractorAuthority> returnedContractor = contractorAuthorityJpaRepository.findContractorAuthorityByName(name);
         assertTrue(returnedContractor.isEmpty());
     }
 }
