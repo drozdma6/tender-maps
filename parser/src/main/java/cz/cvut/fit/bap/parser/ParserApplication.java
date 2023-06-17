@@ -21,7 +21,8 @@ public class ParserApplication{
     private Integer corePoolSize;
 
     public static void main(String[] args){
-        SpringApplication.run(ParserApplication.class, args);
+        // close the application context to shut down the custom ExecutorService
+        SpringApplication.run(ParserApplication.class, args).close();
     }
 
     /*
@@ -48,7 +49,6 @@ public class ParserApplication{
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(corePoolSize);
-        executor.setQueueCapacity(50);
         executor.setThreadNamePrefix("NenNipezScrapper-");
         executor.initialize();
         return executor;
