@@ -1,5 +1,6 @@
-package cz.cvut.fit.bap.parser.controller;
+package cz.cvut.fit.bap.parser;
 
+import cz.cvut.fit.bap.parser.controller.ProcurementController;
 import cz.cvut.fit.bap.parser.controller.fetcher.FailedFetchException;
 import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import io.micrometer.core.instrument.Metrics;

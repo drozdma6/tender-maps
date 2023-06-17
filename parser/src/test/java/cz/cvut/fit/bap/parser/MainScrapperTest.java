@@ -1,5 +1,6 @@
-package cz.cvut.fit.bap.parser.controller;
+package cz.cvut.fit.bap.parser;
 
+import cz.cvut.fit.bap.parser.controller.ProcurementController;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
