@@ -24,7 +24,7 @@ public class Company implements DomainEntity<Long>{
     @OneToMany(mappedBy = "company")
     private Set<Offer> offers = new HashSet<>();
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
 
@@ -92,9 +92,9 @@ public class Company implements DomainEntity<Long>{
 
     @Override
     public boolean equals(Object o){
-        if (this == o)
+        if(this == o)
             return true;
-        if (!(o instanceof Company company))
+        if(!(o instanceof Company company))
             return false;
         return Objects.equals(id, company.id);
     }
@@ -107,6 +107,6 @@ public class Company implements DomainEntity<Long>{
     @Override
     public String toString(){
         return "Company{" + "id=" + id + ", name='" + name + '\'' + ", suppliedProcurements=" +
-               suppliedProcurements + ", offers=" + offers + ", address=" + address + '}';
+                suppliedProcurements + ", offers=" + offers + ", address=" + address + '}';
     }
 }
