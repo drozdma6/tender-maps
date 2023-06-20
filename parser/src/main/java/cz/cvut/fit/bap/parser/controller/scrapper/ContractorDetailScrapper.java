@@ -20,7 +20,7 @@ public class ContractorDetailScrapper extends AbstractScrapper{
      * @return contractor authority's nen.nipez profile url or null if information is missing
      */
     public String getContractorAuthorityUrl(){
-        return getNullIfEmpty(document.select("[title=\"Contracting authority's NEN profile\"] a").text());
+        return getNullIfEmpty(document.select("[title=\"Contracting authority's NEN profile\"] p").text());
     }
 
     /**
