@@ -2,8 +2,7 @@ import {Map} from 'react-map-gl';
 import maplibregl from 'maplibre-gl';
 import {HeatmapLayer} from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
-import axios from "axios";
-import { useState, useEffect} from 'react'
+
 
 const INITIAL_VIEW_STATE = {
     longitude: 15.301806,
@@ -16,26 +15,13 @@ const INITIAL_VIEW_STATE = {
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
-const DATA_URL =
-    'http://localhost:8081/procurements/exact-address-supplier';
-
 function HeatMap({
+    data,
     mapStyle = MAP_STYLE,
     intensity = 1,
     threshold = 0.03,
     radiusPixels = 30,}){
 
-    const [data, setData] = useState();
-
-    useEffect(() => {
-        console.log('Log pri inite appky');
-        fetchData();
-    }, []);
-
-    async function fetchData() {
-        const response = await axios.get(DATA_URL);
-        setData(response.data);
-    }
 
     const layers = [
       new HeatmapLayer({

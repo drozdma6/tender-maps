@@ -1,16 +1,38 @@
-import { useState } from 'react';
 import Navigation from './Navigation';
 import HeatMap from './HeatMap';
 import IconMap from "./IconMap.jsx";
 import HexagonMap from "./HexagonMap.jsx";
 import SideBar from "./SideBar.jsx";
 import {Box, CssBaseline} from "@mui/material";
+import axios from "axios";
+import {useState, useEffect} from 'react'
+
+const DATA_URL =
+    'http://localhost:8081/procurements/exact-address-supplier';
 
 function App() {
+    const [data, setData] = useState();
+    const [filterLocations, setFilterLocations] = useState([]);
+
     const [showHeatMap, setShowHeatMap] = useState(true);
     const [showIconMap, setShowIconMap] = useState(false);
     const [showHexagonMap, setShowHexagonMap] = useState(false);
     const [showSideMenu, setShowSideMenu] = useState(false);
+
+    useEffect(() => {
+        console.log('Log pri inite appky');
+        fetchData();
+    }, []);
+
+    async function fetchData() {
+        const placesOfPerformanceParam = filterLocations.join(',');
+        const response = await axios.get(DATA_URL, {
+            params: {
+                placesOfPerformance: placesOfPerformanceParam
+            }
+        });
+        setData(response.data);
+    }
 
     const handleHeatMapClick = () => {
         setShowHeatMap(true);
@@ -34,9 +56,14 @@ function App() {
         setShowSideMenu(!showSideMenu);
     }
 
+    const handleFilterButtonClick = () => {
+        fetchData()
+        console.log('Checked Items:', filterLocations);
+    }
+
     return (
-        <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
+        <Box sx={{display: 'flex'}}>
+            <CssBaseline/>
             <Navigation
                 onHeatMapClick={handleHeatMapClick}
                 onIconMapClick={handleIconMapClick}
@@ -51,11 +78,14 @@ function App() {
                     marginTop: '64px', // Assuming the AppBar has a height of 64px
                 }}
             >
-                {showHeatMap && <HeatMap />}
-                {showIconMap && <IconMap />}
-                {showHexagonMap && <HexagonMap />}
+                {showHeatMap && <HeatMap data={data}/>}
+                {showIconMap && <IconMap data={data}/>}
+                {showHexagonMap && <HexagonMap data={data}/>}
             </Box>
-            <SideBar opened={showSideMenu} />
+            <SideBar opened={showSideMenu}
+                     filterLocations={filterLocations}
+                     setFilterLocations={setFilterLocations}
+                     onFilterButtonClick={handleFilterButtonClick}/>
         </Box>
     );
 }

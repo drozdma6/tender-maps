@@ -1,14 +1,9 @@
-import {useEffect, useState} from 'react';
 import {Map} from 'react-map-gl';
 import maplibregl from 'maplibre-gl';
 import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
 import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
-import axios from "axios";
 
-
-const DATA_URL =
-    'http://localhost:8081/procurements/exact-address-supplier';
 
 const ambientLight = new AmbientLight({
     color: [255, 255, 255],
@@ -72,23 +67,12 @@ function getTooltip({object}) {
 
 /* eslint-disable react/no-deprecated */
 function HexagonMap({
-                                mapStyle = MAP_STYLE,
-                                radius = 1000,
-                                upperPercentile = 100,
-                                coverage = 1
-                            }) {
-    const [data, setData] = useState();
-
-    useEffect(() => {
-        console.log('Fetchujem data na hexagon mapu');
-        fetchData();
-    }, []);
-
-    async function fetchData() {
-        const response = await axios.get(DATA_URL);
-        setData(response.data);
-    }
-
+                        data,
+                        mapStyle = MAP_STYLE,
+                        radius = 1000,
+                        upperPercentile = 100,
+                        coverage = 1
+                    }) {
     const layers = [
         new HexagonLayer({
             id: 'heatmap',
@@ -119,7 +103,7 @@ function HexagonMap({
             controller={true}
             getTooltip={getTooltip}
         >
-            <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true} />
+            <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
         </DeckGL>
     );
 }

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
     Box,
     Drawer,
@@ -14,11 +13,9 @@ import {
 const drawerWidth = 350;
 
 function SideBar(props) {
-    const [checkedItems, setCheckedItems] = useState([]);
-
     const handleCheckboxToggle = (text) => () => {
-        const currentIndex = checkedItems.indexOf(text);
-        const newCheckedItems = [...checkedItems];
+        const currentIndex = props.filterLocations.indexOf(text);
+        const newCheckedItems = [...props.filterLocations];
 
         if (currentIndex === -1) {
             newCheckedItems.push(text);
@@ -26,11 +23,11 @@ function SideBar(props) {
             newCheckedItems.splice(currentIndex, 1);
         }
 
-        setCheckedItems(newCheckedItems);
+        props.setFilterLocations(newCheckedItems);
     };
 
     const handleFilterClick = () => {
-        console.log('Checked Items:', checkedItems);
+        props.onFilterButtonClick();
     };
 
     return (
@@ -47,14 +44,16 @@ function SideBar(props) {
                 anchor="left"
                 open={props.opened}
             >
-                <Box sx={{ overflow: 'auto', height: '100%', marginTop: 8, marginBottom: 5 }}>
+                <Box sx={{overflow: 'auto', height: '100%', marginTop: 8, marginBottom: 5}}>
                     <List>
                         {['Hlavní město Praha', 'Středočeský kraj', 'Jihočeský kraj', 'Plzeňský kraj', 'Karlovarský kraj', 'Ústecký kraj', 'Liberecký kraj', 'Královéhradecký kraj', 'Pardubický kraj', 'Kraj Vysočina', 'Jihomoravský kraj', 'Olomoucký kraj', 'Moravskoslezský kraj', 'Zlínský kraj'].map((text) => (
                             <ListItem key={text} disablePadding>
-                                <label style={{ display: 'block', width: '100%', height: '100%' }}>
+                                <label style={{display: 'block', width: '100%', height: '100%'}}>
                                     <ListItemButton>
                                         <FormControlLabel
-                                            control={<Checkbox size="small" checked={checkedItems.includes(text)} onChange={handleCheckboxToggle(text)} />}
+                                            control={<Checkbox size="small"
+                                                               checked={props.filterLocations.includes(text)}
+                                                               onChange={handleCheckboxToggle(text)}/>}
                                             label={text}
                                         />
                                     </ListItemButton>
@@ -62,12 +61,19 @@ function SideBar(props) {
                             </ListItem>
                         ))}
                     </List>
-                    <div style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', width: '100%' }}>
-                        <Fab variant="extended" color="primary" aria-label="add" style={{ width: '100%' }} onClick={handleFilterClick}>
+                    <div style={{
+                        position: 'absolute',
+                        bottom: '10px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '100%'
+                    }}>
+                        <Fab variant="extended" color="primary" aria-label="add" style={{width: '100%'}}
+                             onClick={handleFilterClick}>
                             Filter
                         </Fab>
                     </div>
-                    <Divider />
+                    <Divider/>
                 </Box>
             </Drawer>
         </Box>

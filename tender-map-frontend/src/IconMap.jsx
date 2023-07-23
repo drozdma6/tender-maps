@@ -7,9 +7,6 @@ import {IconLayer} from '@deck.gl/layers';
 
 import IconClusterLayer from './icon-cluster-layer';
 
-const DATA_URL =
-    'http://localhost:8081/procurements/exact-address-supplier';
-
 const MAP_VIEW = new MapView({repeat: true});
 const INITIAL_VIEW_STATE = {
     longitude: 15.301806,
@@ -58,7 +55,7 @@ function renderTooltip(info) {
 
 /* eslint-disable react/no-deprecated */
 function IconMap({
-                                data = DATA_URL,
+                                data,
                                 iconMapping = '/data/location-icon-mapping.json',
                                 iconAtlas = '/data/location-icon-atlas.png',
                                 showCluster = true,
