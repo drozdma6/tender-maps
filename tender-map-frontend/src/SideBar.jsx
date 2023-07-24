@@ -7,12 +7,22 @@ import {
     Divider,
     FormControlLabel,
     Checkbox,
-    Fab
+    Fab,
+    Autocomplete,
+    TextField
 } from '@mui/material';
+import axios from "axios";
+import ClearIcon from '@mui/icons-material/Clear';
+import {useEffect, useState} from "react";
+import { IconButton } from '@mui/material';
+
+
 
 const drawerWidth = 350;
 
 function SideBar(props) {
+    const [authoritiesData, setAuthoritiesData] = useState();
+
     const handleCheckboxToggle = (text) => () => {
         const currentIndex = props.filterLocations.indexOf(text);
         const newCheckedItems = [...props.filterLocations];
@@ -30,6 +40,32 @@ function SideBar(props) {
         props.onFilterButtonClick();
     };
 
+    useEffect(() => {
+        fetchContractorAuthority();
+    }, []);
+
+    async function fetchContractorAuthority(){
+        const url = 'http://localhost:8081/authorities';
+        const response = await axios.get(url)
+        setAuthoritiesData(response.data)
+    }
+
+    const handleAuthorityChange = (event, newValue) => {
+        if (newValue) {
+            props.setFilterAuthorities((prevSelectedAuthorities) =>
+                new Set([...prevSelectedAuthorities, newValue])
+            );
+        }
+    };
+
+    const handleAuthorityRemove = (authority) => {
+        props.setFilterAuthorities((prevSelectedAuthorities) => {
+                const newSelectedAuthorities = new Set(prevSelectedAuthorities);
+                newSelectedAuthorities.delete(authority);
+                return newSelectedAuthorities;
+        })
+    };
+
     return (
         <Box>
             <Drawer
@@ -45,6 +81,36 @@ function SideBar(props) {
                 open={props.opened}
             >
                 <Box sx={{overflow: 'auto', height: '100%', marginTop: 8, marginBottom: 5}}>
+                    <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        // options={authoritiesData ? authoritiesData.map(item => item.name) : []}
+                        options={authoritiesData ? authoritiesData : []}
+                        getOptionLabel={(option) => option.name || ""}
+                        sx={{width: 300, margin: 3}}
+                        renderInput={(params) =>
+                            <TextField {...params} label="Contractor Authority"/>}
+                        onChange={handleAuthorityChange}
+                        value={props.filterAuthorities.name} // Use the value prop to control the input value
+                    />
+                        {
+                            Array.from(props.filterAuthorities).map((authority) => (
+                                <div key={authority.name}
+                                    style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    marginLeft: 8
+                                }}>
+                                    <IconButton onClick={() => handleAuthorityRemove(authority)}>
+                                        <ClearIcon></ClearIcon>
+                                    </IconButton>
+                                    <span  style={{ wordBreak: 'break-all' }}>{authority.name}</span>
+                                </div>
+                            ))
+                        }
+
+                    <Divider/>
+
                     <List>
                         {['Hlavní město Praha', 'Středočeský kraj', 'Jihočeský kraj', 'Plzeňský kraj', 'Karlovarský kraj', 'Ústecký kraj', 'Liberecký kraj', 'Královéhradecký kraj', 'Pardubický kraj', 'Kraj Vysočina', 'Jihomoravský kraj', 'Olomoucký kraj', 'Moravskoslezský kraj', 'Zlínský kraj'].map((text) => (
                             <ListItem key={text} disablePadding>

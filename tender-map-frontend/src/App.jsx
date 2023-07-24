@@ -13,6 +13,7 @@ const DATA_URL =
 function App() {
     const [data, setData] = useState();
     const [filterLocations, setFilterLocations] = useState([]);
+    const [filterAuthorities, setFilterAuthorities] = useState(new Set());
 
     const [showHeatMap, setShowHeatMap] = useState(true);
     const [showIconMap, setShowIconMap] = useState(false);
@@ -26,9 +27,12 @@ function App() {
 
     async function fetchData() {
         const placesOfPerformanceParam = filterLocations.join(',');
+        //make array from set, transform into array of ids and join into string
+        const filterAuthoritiesIDsParam = [...filterAuthorities].map((authority) => authority.id).join(',');
         const response = await axios.get(DATA_URL, {
             params: {
-                placesOfPerformance: placesOfPerformanceParam
+                placesOfPerformance: placesOfPerformanceParam,
+                contractorAuthorityIds: filterAuthoritiesIDsParam
             }
         });
         setData(response.data);
@@ -85,7 +89,9 @@ function App() {
             <SideBar opened={showSideMenu}
                      filterLocations={filterLocations}
                      setFilterLocations={setFilterLocations}
-                     onFilterButtonClick={handleFilterButtonClick}/>
+                     onFilterButtonClick={handleFilterButtonClick}
+                     filterAuthorities={filterAuthorities}
+                     setFilterAuthorities={setFilterAuthorities}/>
         </Box>
     );
 }
