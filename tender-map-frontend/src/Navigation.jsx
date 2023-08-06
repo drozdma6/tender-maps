@@ -29,7 +29,7 @@ function Navigation({onHeatMapClick, onIconMapClick, onHexagonMapClick, onSideMe
             color: 'black',
             zIndex: 1400,
         }}>
-            <Container maxWidth="xl">
+            <Container maxWidth="false">
                 <Toolbar disableGutters>
                     <IconButton
                         color="inherit"
@@ -74,6 +74,14 @@ function Navigation({onHeatMapClick, onIconMapClick, onHexagonMapClick, onSideMe
                     >
                         Hexagon Map
                     </Button>
+                    <a href="https://github.com/opendatalabcz/analyzer_public_contracts" target="_blank" rel="noopener noreferrer"
+                       className="navbar__item navbar__link">GitHub
+                        <svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24"
+                             className="iconExternalLink">
+                            <path fill="currentColor"
+                                  d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path>
+                        </svg>
+                    </a>
                 </Toolbar>
             </Container>
         </AppBar>
