@@ -3,6 +3,7 @@ import maplibregl from 'maplibre-gl';
 import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
 import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
+import Legend from "./Legend.jsx";
 
 
 const ambientLight = new AmbientLight({
@@ -82,7 +83,7 @@ function HexagonMap({
             elevationRange: [0, 3000],
             elevationScale: data && data.length ? 50 : 0,
             extruded: true,
-            getPosition: d => [d.supplier.addressDto.longitude, d.supplier.addressDto.latitude],
+            getPosition: d => [d.supplier.address.longitude, d.supplier.address.latitude],
             getWeight: d => d.contractPrice,
             pickable: true,
             radius,
@@ -94,17 +95,68 @@ function HexagonMap({
             }
         })
     ];
+    const legendItems = [
+        { color: '#1896bb', label: 'Low number of tenders' },
+        { color: '#4de1ce', label: 'Moderate number of tenders' },
+        { color: '#d7feb9', label: 'High number of tenders' },
+        { color: '#feeeb6', label: 'Very high number of tenders' },
+        { color: '#fcb060', label: 'Extremely high number of tenders' },
+        { color: '#d04152', label: 'Highest number of tenders' },
+        // Add more legend items as needed
+    ];
 
     return (
-        <DeckGL
-            layers={layers}
-            effects={[lightingEffect]}
-            initialViewState={INITIAL_VIEW_STATE}
-            controller={true}
-            getTooltip={getTooltip}
-        >
-            <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
-        </DeckGL>
+        <div>
+            <DeckGL
+                layers={layers}
+                effects={[lightingEffect]}
+                initialViewState={INITIAL_VIEW_STATE}
+                controller={true}
+                getTooltip={getTooltip}
+            >
+                <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
+            </DeckGL>
+
+            <div style={{
+                position: 'absolute',
+                right: '10px',
+                backgroundColor: '#fff',
+                padding: '16px',
+                borderRadius: '8px',
+                boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)'
+            }}>
+
+                <Legend
+                    title="Public Procurements"
+                    text="Distribution of public procurement contracts."
+                    items={legendItems}
+                />
+
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginTop: '8px'
+                }}>
+                    <div style={{
+                        flex: 1,
+                        height: '16px',
+                        borderRadius: '8px',
+                        background: 'linear-gradient(to right, #1896bb, #4de1ce, #d7feb9, #feeeb6, #fcb060, #d04152)' }}>
+                    </div>
+                </div>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginTop: '8px',
+                    fontSize: '14px',
+                    fontWeight: 'bold'
+                }}>
+                    <span>More Tenders</span>
+                    <span>Fewer Tenders</span>
+                </div>
+            </div>
+        </div>
+
     );
 }
 

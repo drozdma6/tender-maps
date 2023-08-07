@@ -2,6 +2,7 @@ import {Map} from 'react-map-gl';
 import maplibregl from 'maplibre-gl';
 import {HeatmapLayer} from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
+import Legend from "./Legend.jsx";
 
 
 const INITIAL_VIEW_STATE = {
@@ -22,13 +23,19 @@ function HeatMap({
     threshold = 0.03,
     radiusPixels = 30,}){
 
+    // Sample data for the legend items
+    const legendItems = [
+        { color: '#ffffae', label: 'Low number of tenders' },
+        { color: '#bf0020', label: 'High number of tenders' },
+        // Add more legend items as needed
+    ];
 
     const layers = [
       new HeatmapLayer({
       data,
       id: 'heatmp-layer',
       pickable: false,
-      getPosition: d => [d.supplier.addressDto.longitude, d.supplier.addressDto.latitude],
+      getPosition: d => [d.supplier.address.longitude, d.supplier.address.latitude],
       getWeight: d => d.contractPrice,
       radiusPixels,
       intensity,
@@ -43,6 +50,28 @@ function HeatMap({
         layers={layers}>
             <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true} />
       </DeckGL>
+        {/* Add the Legend component */}
+        <div style={{
+            position: 'absolute',
+            right: '10px',
+            backgroundColor: '#fff',
+            padding: '16px',
+            borderRadius: '8px',
+            boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)'
+        }}>
+            <Legend
+                title="Public Procurements"
+                text="Distribution of public procurement contracts."
+                items={legendItems}
+            />
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
+                <div style={{ flex: 1, height: '16px', borderRadius: '8px', background: 'linear-gradient(to right, #ffffae, #bf0020)' }}></div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', fontSize: '14px', fontWeight: 'bold' }}>
+                <span>Low</span>
+                <span>High</span>
+            </div>
+        </div>
     </div>
 
   )
