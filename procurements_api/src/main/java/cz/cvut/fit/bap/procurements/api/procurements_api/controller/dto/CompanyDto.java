@@ -1,18 +1,18 @@
 package cz.cvut.fit.bap.procurements.api.procurements_api.controller.dto;
 
 /**
- * Class represents company dto
+ * Class represents company data transfer object
  */
 public class CompanyDto{
     private Long id;
     private String name;
-    private AddressDto addressDto;
+    private AddressDto address;
     private String organisationId;
 
-    public CompanyDto(Long id, String name, AddressDto addressDto, String organisationId){
+    public CompanyDto(Long id, String name, AddressDto address, String organisationId) {
         this.id = id;
         this.name = name;
-        this.addressDto = addressDto;
+        this.address = address;
         this.organisationId = organisationId;
     }
 
@@ -32,12 +32,12 @@ public class CompanyDto{
         this.name = name;
     }
 
-    public AddressDto getAddressDto(){
-        return addressDto;
+    public AddressDto getAddress() {
+        return address;
     }
 
-    public void setAddressDto(AddressDto addressDto){
-        this.addressDto = addressDto;
+    public void setAddress(AddressDto address) {
+        this.address = address;
     }
 
     public String getOrganisationId(){

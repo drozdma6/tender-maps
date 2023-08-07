@@ -3,18 +3,18 @@ package cz.cvut.fit.bap.procurements.api.procurements_api.controller.dto;
 import java.math.BigDecimal;
 
 /**
- * Class represents offer dto
+ * Class represents offer data transfer object
  */
 public class OfferDto{
     private Long id;
     private BigDecimal price;
-    private Long procurementId;
+    private ProcurementDto procurement;
     private Long companyId;
 
-    public OfferDto(Long id, BigDecimal price, Long procurementId, Long companyId){
+    public OfferDto(Long id, BigDecimal price, ProcurementDto procurement, Long companyId){
         this.id = id;
         this.price = price;
-        this.procurementId = procurementId;
+        this.procurement = procurement;
         this.companyId = companyId;
     }
 
@@ -34,12 +34,12 @@ public class OfferDto{
         this.price = price;
     }
 
-    public Long getProcurementId(){
-        return procurementId;
+    public ProcurementDto getProcurement() {
+        return procurement;
     }
 
-    public void setProcurementId(Long procurementId){
-        this.procurementId = procurementId;
+    public void setProcurement(ProcurementDto procurement) {
+        this.procurement = procurement;
     }
 
     public Long getCompanyId(){

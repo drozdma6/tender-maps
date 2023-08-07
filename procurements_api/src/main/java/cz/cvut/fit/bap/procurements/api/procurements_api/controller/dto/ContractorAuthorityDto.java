@@ -1,19 +1,27 @@
 package cz.cvut.fit.bap.procurements.api.procurements_api.controller.dto;
 
 /**
- * Class represents contractor authority dto
+ * Class represents contractor authority data transfer object
  */
 public class ContractorAuthorityDto{
     private Long id;
     private String name;
-    private Long addressId;
+    private AddressDto address;
     private String url;
 
-    public ContractorAuthorityDto(Long id, String name, Long addressId, String url){
+    public ContractorAuthorityDto(Long id, String name, AddressDto address, String url) {
         this.id = id;
         this.name = name;
-        this.addressId = addressId;
+        this.address = address;
         this.url = url;
+    }
+
+    public AddressDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDto address) {
+        this.address = address;
     }
 
     public Long getId(){
@@ -30,14 +38,6 @@ public class ContractorAuthorityDto{
 
     public void setName(String name){
         this.name = name;
-    }
-
-    public Long getAddressId(){
-        return addressId;
-    }
-
-    public void setAddressId(Long addressId){
-        this.addressId = addressId;
     }
 
     public String getUrl(){

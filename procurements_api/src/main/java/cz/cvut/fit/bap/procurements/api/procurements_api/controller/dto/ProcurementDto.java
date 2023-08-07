@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
- * Class represents procurement dto
+ * Class represents procurement data transfer object
  */
 public class ProcurementDto{
     private Long id;
@@ -14,9 +14,10 @@ public class ProcurementDto{
     private String placeOfPerformance;
     private LocalDate dateOfPublication;
     private String systemNumber;
+    private String contractorAuthorityName;
 
     public ProcurementDto(Long id, String name, BigDecimal contractPrice, String placeOfPerformance,
-                          LocalDate dateOfPublication, String systemNumber, CompanyDto supplier){
+                          LocalDate dateOfPublication, String systemNumber, CompanyDto supplier, String contractorAuthorityName){
         this.id = id;
         this.name = name;
         this.contractPrice = contractPrice;
@@ -24,6 +25,15 @@ public class ProcurementDto{
         this.dateOfPublication = dateOfPublication;
         this.systemNumber = systemNumber;
         this.supplier = supplier;
+        this.contractorAuthorityName = contractorAuthorityName;
+    }
+
+    public String getContractorAuthorityName() {
+        return contractorAuthorityName;
+    }
+
+    public void setContractorAuthorityName(String contractorAuthorityName) {
+        this.contractorAuthorityName = contractorAuthorityName;
     }
 
     public CompanyDto getSupplier(){

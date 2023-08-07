@@ -6,10 +6,19 @@ import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
 
+/**
+ * Domain entity to dto converter
+ */
 @Component
-public class AddressToDtoConverter implements Function<Address,AddressDto>{
+public class AddressToDtoConverter implements Function<Address, AddressDto> {
+    /**
+     * Converts address to dto
+     *
+     * @param address which is supposed to be converted
+     * @return address dto
+     */
     @Override
-    public AddressDto apply(Address address){
+    public AddressDto apply(Address address) {
         return new AddressDto(address.getId(), address.getBuildingNumber(), address.getCity(), address.getStreet(),
                 address.getCountryCode(), address.getPostalCode(), address.getLatitude(), address.getLongitude());
     }
