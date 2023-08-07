@@ -1,0 +1,27 @@
+.tooltip {
+    position: absolute;
+    z-index: 9;
+    font-size: 12px;
+    padding: 8px;
+    min-width: 200px;
+    pointer-events: all;
+    background: #fcfcfc;
+    color: #444;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.navbar__item {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+}
+
+.navbar__brand, .navbar__link {
+    color: black;
+    font-weight: 500;
+    text-decoration: none;
+    margin-left: auto;
+}
+.iconExternalLink{
+    margin-left: 5px;
+}

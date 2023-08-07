@@ -3,11 +3,15 @@ import {Map} from 'react-map-gl';
 import maplibregl from 'maplibre-gl';
 import DeckGL from '@deck.gl/react';
 import {MapView} from '@deck.gl/core';
-import {IconLayer} from '@deck.gl/layers';
-
 import IconClusterLayer from './icon-cluster-layer';
+import Legend from "./Legend.jsx";
+import axios from "axios";
+import './styles.css';
+import {FormControlLabel, FormGroup, Switch} from "@mui/material";
+import Tooltip from "./Tooltip.jsx";
 
 const MAP_VIEW = new MapView({repeat: true});
+
 const INITIAL_VIEW_STATE = {
     longitude: 15.301806,
     latitude: 49.868280,
@@ -18,95 +22,135 @@ const INITIAL_VIEW_STATE = {
 };
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json';
 
-function renderTooltip(info) {
-    const {object, x, y} = info;
+const DATA_SUPPLIERS_URL = 'http://localhost:8081/companies/suppliers';
 
-    if (info.objects) {
-        return (
-            <div className="tooltip interactive" style={{left: x, top: y}}>
-                {info.objects.map(({name, year, mass, class: meteorClass}) => {
-                    return (
-                        <div key={name}>
-                            <h5>{name}</h5>
-                            <div>Year: {year || 'unknown'}</div>
-                            <div>Class: {meteorClass}</div>
-                            <div>Mass: {mass}g</div>
-                        </div>
-                    );
-                })}
-            </div>
-        );
-    }
+const DATA_NON_SUPPLIERS_URL = 'http://localhost:8081/companies/non-suppliers';
 
-    if (!object) {
-        return null;
-    }
-
-    return object.cluster ? (
-        <div className="tooltip" style={{left: x, top: y}}>
-            {object.point_count} records
-        </div>
-    ) : (
-        <div className="tooltip" style={{left: x, top: y}}>
-            {object.name} {object.year ? `(${object.year})` : ''}
-        </div>
-    );
-}
-
-/* eslint-disable react/no-deprecated */
 function IconMap({
-                                data,
-                                iconMapping = '/data/location-icon-mapping.json',
-                                iconAtlas = '/data/location-icon-atlas.png',
-                                showCluster = true,
-                                mapStyle = MAP_STYLE
-                            }) {
+                     dataSuppliers = DATA_SUPPLIERS_URL,
+                     dataNonSuppliers = DATA_NON_SUPPLIERS_URL,
+                     iconMapping = '/data/location-icon-mapping.json',
+                     mapStyle = MAP_STYLE
+                 }) {
     const [hoverInfo, setHoverInfo] = useState({});
+    const [suppliedProcurements, setSuppliedProcurements] = useState([]);
+    const [companyOffers, setCompanyOffers] = useState([]);
+    const [showLayers, setShowLayers] = useState({suppliers: true, nonSuppliers: true});
 
     const hideTooltip = () => {
         setHoverInfo({});
     };
+
+    async function fetchOffers(companyId) {
+        try {
+            const procurementsDataUrl = `http://localhost:8081/offers/companies/${companyId}`;
+            const response = await axios.get(procurementsDataUrl);
+            setCompanyOffers(response.data);
+        } catch (error) {
+            console.error(`Error fetching offers of ${companyId}:`, error);
+        }
+    }
+
+    async function fetchSuppliedProcurements(companyId) {
+        try {
+            const procurementsDataUrl = `http://localhost:8081/procurements/supplier/${companyId}`;
+            const response = await axios.get(procurementsDataUrl);
+            setSuppliedProcurements(response.data);
+        } catch (error) {
+            console.error(`Error fetching supplied procurements of ${companyId}:`, error);
+        }
+    }
+
     const expandTooltip = info => {
-        if (info.picked && showCluster) {
-            setHoverInfo(info);
+        if (info.picked) {
+            if (info.objects) {
+                setHoverInfo({})
+            } else {
+                fetchOffers(info.object.id);
+                fetchSuppliedProcurements(info.object.id);
+                setHoverInfo(info);
+            }
         } else {
             setHoverInfo({});
         }
     };
 
     const layerProps = {
-        data,
         pickable: true,
-        getPosition: d => [d.supplier.addressDto.longitude, d.supplier.addressDto.latitude],
-        iconAtlas,
+        getPosition: d => [d.address.longitude, d.address.latitude],
         iconMapping,
-        onHover: !hoverInfo.objects && setHoverInfo
     };
 
-    const layer = showCluster
-        ? new IconClusterLayer({...layerProps, id: 'icon-cluster', sizeScale: 40})
-        : new IconLayer({
+    // Create the IconClusterLayer instances based on the switch status
+    const layers = [
+        showLayers.suppliers && new IconClusterLayer({
+            data: dataSuppliers,
+            iconAtlas: '/data/location-icon-atlas.png',
             ...layerProps,
-            id: 'icon',
-            getIcon: 'marker',
-            sizeUnits: 'meters',
-            sizeScale: 2000,
-            sizeMinPixels: 6
-        });
+            id: 'icon-cluster-suppliers',
+            sizeScale: 40
+        }),
+        showLayers.nonSuppliers && new IconClusterLayer({
+            data: dataNonSuppliers, ...layerProps,
+            id: 'icon-cluster-nonsuppliers',
+            iconAtlas: '/data/location-icon-blue1.png',
+            sizeScale: 40
+        }),
+    ].filter(Boolean);
+
+    // Handlers for switch changes
+    const handleSwitchChange = (layerType) => () => {
+        setShowLayers((prev) => ({...prev, [layerType]: !prev[layerType]}));
+    };
+
+    const legendItems = [
+        {color: '#f09236', label: 'Cluster'},
+    ];
 
     return (
-        <DeckGL
-            layers={[layer]}
-            views={MAP_VIEW}
-            initialViewState={INITIAL_VIEW_STATE}
-            controller={{dragRotate: false}}
-            onViewStateChange={hideTooltip}
-            onClick={expandTooltip}
-        >
-            <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true} />
+        <div>
+            <DeckGL
+                layers={layers}
+                views={MAP_VIEW}
+                initialViewState={INITIAL_VIEW_STATE}
+                controller={{dragRotate: false}}
+                onViewStateChange={hideTooltip}
+                onClick={expandTooltip}
+            >
+                <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
+            </DeckGL>
 
-            {renderTooltip(hoverInfo)}
-        </DeckGL>
+            <Tooltip info={hoverInfo} suppliedProcurements={suppliedProcurements} offers={companyOffers}/>
+
+            <div style={{
+                position: 'absolute',
+                right: '10px',
+                backgroundColor: '#fff',
+                padding: '16px',
+                borderRadius: '8px',
+                boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)'
+            }}>
+                <Legend
+                    title="Icon map of suppliers"
+                    text="Suppliers of public procurements" items={legendItems}
+                />
+                <FormGroup>
+                    {/* Supplier Switch */}
+                    <FormControlLabel
+                        control={<Switch checked={showLayers.suppliers} onChange={handleSwitchChange('suppliers')}
+                                         color="warning"/>}
+                        label="Show suppliers"
+                    />
+
+                    {/* Non-Supplier Switch */}
+                    <FormControlLabel
+                        control={<Switch checked={showLayers.nonSuppliers}
+                                         onChange={handleSwitchChange('nonSuppliers')}/>}
+                        label="Show non-suppliers"
+                    />
+                </FormGroup>
+            </div>
+        </div>
     );
 }
 

@@ -83,7 +83,7 @@ function App() {
                 }}
             >
                 {showHeatMap && <HeatMap data={data}/>}
-                {showIconMap && <IconMap data={data}/>}
+                {showIconMap && <IconMap/>}
                 {showHexagonMap && <HexagonMap data={data}/>}
             </Box>
             <SideBar opened={showSideMenu}
