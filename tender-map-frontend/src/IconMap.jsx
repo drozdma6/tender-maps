@@ -85,7 +85,7 @@ function IconMap({
     const layers = [
         showLayers.suppliers && new IconClusterLayer({
             data: dataSuppliers,
-            iconAtlas: '/data/location-icon-atlas.png',
+            iconAtlas: '/data/location-icon-orange.png',
             ...layerProps,
             id: 'icon-cluster-suppliers',
             sizeScale: 40
@@ -93,7 +93,7 @@ function IconMap({
         showLayers.nonSuppliers && new IconClusterLayer({
             data: dataNonSuppliers, ...layerProps,
             id: 'icon-cluster-nonsuppliers',
-            iconAtlas: '/data/location-icon-blue1.png',
+            iconAtlas: '/data/location-icon-blue.png',
             sizeScale: 40
         }),
     ].filter(Boolean);
