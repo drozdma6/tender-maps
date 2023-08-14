@@ -2,12 +2,12 @@ package cz.cvut.fit.bap.procurements.api.procurements_api.bussiness;
 
 import cz.cvut.fit.bap.procurements.api.procurements_api.dao.ProcurementRepository;
 import cz.cvut.fit.bap.procurements.api.procurements_api.domain.Procurement;
+import cz.cvut.fit.bap.procurements.api.procurements_api.specifications.ProcurementSpecification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 /*
     Class handling business logic with procurements
@@ -23,18 +23,11 @@ public class ProcurementService extends AbstractService<Procurement, Long> {
      * and contractor authority is in a list.
      *
      * @param placesOfPerformance    filtering by place of performance
-     * @param contractorAuthorityIds filtering by contracotorAuthorityIds
+     * @param contractorAuthorityIds filtering by contractor authorities Ids
      * @return All procurements satisfying filtering.
      */
-    public Collection<Procurement> getProcurementsWithExactAddress(Optional<List<String>> placesOfPerformance, Optional<List<Long>> contractorAuthorityIds) {
-        if (placesOfPerformance.isEmpty() && contractorAuthorityIds.isEmpty()) {
-            return ((ProcurementRepository) repository).getProcurementsWithNonNullSupplierAddress();
-        } else if (placesOfPerformance.isEmpty()) {
-            return ((ProcurementRepository) repository).getProcurementsWithNonNullSupplierAddressContractor(contractorAuthorityIds.get());
-        } else if (contractorAuthorityIds.isEmpty()) {
-            return ((ProcurementRepository) repository).getProcurementsWithNonNullSupplierAddressPlace(placesOfPerformance.get());
-        }
-        return ((ProcurementRepository) repository).getProcurementsWithNonNullSupplierAddress(placesOfPerformance.get(), contractorAuthorityIds.get());
+    public Collection<Procurement> getProcurementsWithExactAddress(List<String> placesOfPerformance, List<Long> contractorAuthorityIds) {
+        return ((ProcurementRepository) repository).findAll(new ProcurementSpecification(placesOfPerformance, contractorAuthorityIds));
     }
 
     /**

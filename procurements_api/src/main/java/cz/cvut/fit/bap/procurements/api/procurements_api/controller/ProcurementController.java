@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -23,17 +24,18 @@ public class ProcurementController extends AbstractController<Procurement, Long,
     }
 
     /**
-     * Gets all procurements with exact supplier address and matching filtering.
+     * Gets all procurements with supplier address latitude and longitude is not null and matching filtering.
      *
      * @param contractorAuthorityIds filtering by contractor authority ids
      * @param placesOfPerformance    filtering by places of performance
      * @return collection of procurement dtos with exact supplier address
      */
     @CrossOrigin
-    @GetMapping("/exact-address-supplier")
+    @GetMapping("/suppliers/exact-address")
     public Collection<ProcurementDto> getProcurementsWithExactAddress(@RequestParam Optional<List<String>> placesOfPerformance,
                                                                       @RequestParam Optional<List<Long>> contractorAuthorityIds) {
-        return ((ProcurementService) service).getProcurementsWithExactAddress(placesOfPerformance, contractorAuthorityIds)
+        return ((ProcurementService) service).getProcurementsWithExactAddress(placesOfPerformance.orElse(Collections.emptyList()),
+                        contractorAuthorityIds.orElse(Collections.emptyList()))
                 .stream().map(toDtoConverter).toList();
     }
 
@@ -50,9 +52,6 @@ public class ProcurementController extends AbstractController<Procurement, Long,
                 .stream()
                 .map(toDtoConverter)
                 .toList();
-        if (procurements.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(procurements);
     }
 }
