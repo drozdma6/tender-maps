@@ -4,12 +4,11 @@ import cz.cvut.fit.bap.procurements.api.procurements_api.bussiness.AbstractServi
 import cz.cvut.fit.bap.procurements.api.procurements_api.bussiness.CompanyService;
 import cz.cvut.fit.bap.procurements.api.procurements_api.controller.dto.CompanyDto;
 import cz.cvut.fit.bap.procurements.api.procurements_api.domain.Company;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 /*
@@ -29,8 +28,13 @@ public class CompanyController extends AbstractController<Company, Long, Company
      */
     @CrossOrigin
     @GetMapping("/suppliers")
-    public List<CompanyDto> getSuppliers() {
-        return ((CompanyService) service).getSuppliers().stream().map(toDtoConverter).toList();
+    public List<CompanyDto> getSuppliers(@RequestParam Optional<List<String>> placesOfPerformance,
+                                         @RequestParam Optional<List<Long>> contractorAuthorityIds) {
+        return ((CompanyService) service).getSuppliers(placesOfPerformance.orElse(Collections.emptyList()),
+                        contractorAuthorityIds.orElse(Collections.emptyList()))
+                .stream()
+                .map(toDtoConverter)
+                .toList();
     }
 
     /**
@@ -40,7 +44,12 @@ public class CompanyController extends AbstractController<Company, Long, Company
      */
     @CrossOrigin
     @GetMapping("/non-suppliers")
-    public List<CompanyDto> getCompaniesWithoutWonProcurements() {
-        return ((CompanyService) service).getCompaniesWithoutWonProcurements().stream().map(toDtoConverter).toList();
+    public List<CompanyDto> getNonSuppliers(@RequestParam Optional<List<String>> placesOfPerformance, @RequestParam Optional<List<Long>> contractorAuthorityIds) {
+        return ((CompanyService) service).getNonSuppliers(
+                        placesOfPerformance.orElse(Collections.emptyList()),
+                        contractorAuthorityIds.orElse(Collections.emptyList()))
+                .stream()
+                .map(toDtoConverter)
+                .toList();
     }
 }
