@@ -7,25 +7,22 @@ import {
     Divider,
     FormControlLabel,
     Checkbox,
-    Fab,
     Autocomplete,
     TextField
 } from '@mui/material';
 import axios from "axios";
 import ClearIcon from '@mui/icons-material/Clear';
 import {useEffect, useState} from "react";
-import { IconButton } from '@mui/material';
-
-
+import {IconButton} from '@mui/material';
 
 const drawerWidth = 350;
 
-function SideBar(props) {
+function SideBar({filterLocations, setFilterLocations, filterAuthorities, setFilterAuthorities, opened}) {
     const [authoritiesData, setAuthoritiesData] = useState();
 
     const handleCheckboxToggle = (text) => () => {
-        const currentIndex = props.filterLocations.indexOf(text);
-        const newCheckedItems = [...props.filterLocations];
+        const currentIndex = filterLocations.indexOf(text);
+        const newCheckedItems = [...filterLocations];
 
         if (currentIndex === -1) {
             newCheckedItems.push(text);
@@ -33,18 +30,14 @@ function SideBar(props) {
             newCheckedItems.splice(currentIndex, 1);
         }
 
-        props.setFilterLocations(newCheckedItems);
-    };
-
-    const handleFilterClick = () => {
-        props.onFilterButtonClick();
+        setFilterLocations(newCheckedItems);
     };
 
     useEffect(() => {
         fetchContractorAuthority();
     }, []);
 
-    async function fetchContractorAuthority(){
+    async function fetchContractorAuthority() {
         const url = 'http://localhost:8081/authorities';
         const response = await axios.get(url)
         setAuthoritiesData(response.data)
@@ -52,17 +45,17 @@ function SideBar(props) {
 
     const handleAuthorityChange = (event, newValue) => {
         if (newValue) {
-            props.setFilterAuthorities((prevSelectedAuthorities) =>
+            setFilterAuthorities((prevSelectedAuthorities) =>
                 new Set([...prevSelectedAuthorities, newValue])
             );
         }
     };
 
     const handleAuthorityRemove = (authority) => {
-        props.setFilterAuthorities((prevSelectedAuthorities) => {
-                const newSelectedAuthorities = new Set(prevSelectedAuthorities);
-                newSelectedAuthorities.delete(authority);
-                return newSelectedAuthorities;
+        setFilterAuthorities((prevSelectedAuthorities) => {
+            const newSelectedAuthorities = new Set(prevSelectedAuthorities);
+            newSelectedAuthorities.delete(authority);
+            return newSelectedAuthorities;
         })
     };
 
@@ -78,9 +71,9 @@ function SideBar(props) {
                 }}
                 variant="persistent"
                 anchor="left"
-                open={props.opened}
+                open={opened}
             >
-                <Box sx={{overflow: 'auto', height: '100%', marginTop: 8, marginBottom: 5}}>
+                <Box sx={{overflow: 'auto', height: '100%', marginTop: 8}}>
                     <Autocomplete
                         disablePortal
                         id="combo-box-demo"
@@ -91,23 +84,23 @@ function SideBar(props) {
                         renderInput={(params) =>
                             <TextField {...params} label="Contractor Authority"/>}
                         onChange={handleAuthorityChange}
-                        value={props.filterAuthorities.name} // Use the value prop to control the input value
+                        value={filterAuthorities.name} // Use the value prop to control the input value
                     />
-                        {
-                            Array.from(props.filterAuthorities).map((authority) => (
-                                <div key={authority.name}
-                                    style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    marginLeft: 8
-                                }}>
-                                    <IconButton onClick={() => handleAuthorityRemove(authority)}>
-                                        <ClearIcon></ClearIcon>
-                                    </IconButton>
-                                    <span  style={{ wordBreak: 'break-all' }}>{authority.name}</span>
-                                </div>
-                            ))
-                        }
+                    {
+                        Array.from(filterAuthorities).map((authority) => (
+                            <div key={authority.name}
+                                 style={{
+                                     display: 'flex',
+                                     alignItems: 'center',
+                                     marginLeft: 8
+                                 }}>
+                                <IconButton onClick={() => handleAuthorityRemove(authority)}>
+                                    <ClearIcon></ClearIcon>
+                                </IconButton>
+                                <span style={{wordBreak: 'break-all'}}>{authority.name}</span>
+                            </div>
+                        ))
+                    }
 
                     <Divider/>
 
@@ -118,7 +111,7 @@ function SideBar(props) {
                                     <ListItemButton>
                                         <FormControlLabel
                                             control={<Checkbox size="small"
-                                                               checked={props.filterLocations.includes(text)}
+                                                               checked={filterLocations.includes(text)}
                                                                onChange={handleCheckboxToggle(text)}/>}
                                             label={text}
                                         />
@@ -127,19 +120,6 @@ function SideBar(props) {
                             </ListItem>
                         ))}
                     </List>
-                    <div style={{
-                        position: 'absolute',
-                        bottom: '10px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '100%'
-                    }}>
-                        <Fab variant="extended" color="primary" aria-label="add" style={{width: '100%'}}
-                             onClick={handleFilterClick}>
-                            Filter
-                        </Fab>
-                    </div>
-                    <Divider/>
                 </Box>
             </Drawer>
         </Box>
