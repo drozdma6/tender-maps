@@ -61,12 +61,17 @@ function IconMap({
     }
 
     const expandTooltip = info => {
+        setSuppliedProcurements([]);
+        setCompanyOffers([]);
         if (info.picked) {
             if (info.objects) {
                 setHoverInfo({})
             } else {
-                fetchOffers(info.object.id);
-                fetchSuppliedProcurements(info.object.id);
+                //fetch supplied procurements only if click is on supplier company
+                if(info.layer.id === "suppliers"){
+                    fetchSuppliedProcurements(info.object.id);
+                }
+                fetchOffers(info.object.id); //fetch for both suppliers / non-suppliers
                 setHoverInfo(info);
             }
         } else {
