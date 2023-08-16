@@ -27,8 +27,7 @@ const DATA_SUPPLIERS_URL = 'http://localhost:8081/companies/suppliers';
 const DATA_NON_SUPPLIERS_URL = 'http://localhost:8081/companies/non-suppliers';
 
 function IconMap({
-                     dataSuppliers = DATA_SUPPLIERS_URL,
-                     dataNonSuppliers = DATA_NON_SUPPLIERS_URL,
+                     buildDataUrl,
                      iconMapping = '/data/location-icon-mapping.json',
                      mapStyle = MAP_STYLE
                  }) {
@@ -84,15 +83,16 @@ function IconMap({
     // Create the IconClusterLayer instances based on the switch status
     const layers = [
         showLayers.suppliers && new IconClusterLayer({
-            data: dataSuppliers,
+            data: buildDataUrl(DATA_SUPPLIERS_URL),
             iconAtlas: '/data/location-icon-orange.png',
             ...layerProps,
-            id: 'icon-cluster-suppliers',
+            id: 'suppliers',
             sizeScale: 40
         }),
         showLayers.nonSuppliers && new IconClusterLayer({
-            data: dataNonSuppliers, ...layerProps,
-            id: 'icon-cluster-nonsuppliers',
+            data: buildDataUrl(DATA_NON_SUPPLIERS_URL),
+            ...layerProps,
+            id: 'nonSuppliers',
             iconAtlas: '/data/location-icon-blue.png',
             sizeScale: 40
         }),

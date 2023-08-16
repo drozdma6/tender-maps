@@ -43,6 +43,9 @@ const INITIAL_VIEW_STATE = {
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
+const DATA_URL =
+    'http://localhost:8081/procurements/suppliers/exact-address';
+
 const colorRange = [
     [1, 152, 189],
     [73, 227, 206],
@@ -68,7 +71,7 @@ function getTooltip({object}) {
 
 /* eslint-disable react/no-deprecated */
 function HexagonMap({
-                        data,
+                        buildDataUrl,
                         mapStyle = MAP_STYLE,
                         radius = 1000,
                         upperPercentile = 100,
@@ -79,9 +82,9 @@ function HexagonMap({
             id: 'heatmap',
             colorRange,
             coverage,
-            data,
+            data: buildDataUrl(DATA_URL),
             elevationRange: [0, 3000],
-            elevationScale: data && data.length ? 50 : 0,
+            elevationScale: buildDataUrl(DATA_URL) && buildDataUrl(DATA_URL).length ? 50 : 0,
             extruded: true,
             getPosition: d => [d.supplier.address.longitude, d.supplier.address.latitude],
             getWeight: d => d.contractPrice,
