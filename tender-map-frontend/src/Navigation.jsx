@@ -7,17 +7,17 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from '@mui/icons-material/Menu';
 
 
-function Navigation({onHeatMapClick, onIconMapClick, onHexagonMapClick, onSideMenuClick}) {
+function Navigation({setActiveMap, onSideMenuClick}) {
     const handleHeatMapButtonClick = () => {
-        onHeatMapClick();
+        setActiveMap("heatMap");
     };
 
     const handleIconMapButtonClick = () => {
-        onIconMapClick();
+        setActiveMap("iconMap");
     };
 
     const handleHexagonMapButtonClick = () => {
-        onHexagonMapClick();
+        setActiveMap("hexagonMap");
     };
 
     const handleSideMenuOpener = () => {

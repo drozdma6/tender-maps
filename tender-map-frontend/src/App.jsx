@@ -12,11 +12,20 @@ function App() {
     const [filterAuthorities, setFilterAuthorities] = useState(new Set());
 
     const [showSideMenu, setShowSideMenu] = useState(false);
+    const [activeMap, setActiveMap] = useState('heatMap');
 
-    useEffect(() => {
-        console.log('Log pri inite appky');
-        fetchData();
-    }, []);
+    const renderActiveComponent = () => {
+        switch (activeMap) {
+            case 'heatMap':
+                return <HeatMap buildDataUrl={buildDataUrl}/>;
+            case 'hexagonMap':
+                return <HexagonMap buildDataUrl={buildDataUrl}/>;
+            case 'iconMap':
+                return <IconMap buildDataUrl={buildDataUrl}/>;
+            default:
+                return null;
+        }
+    };
 
     function buildDataUrl(url) {
         const placesOfPerformanceParam = filterLocations.join(',');
@@ -38,9 +47,7 @@ function App() {
         <Box sx={{display: 'flex'}}>
             <CssBaseline/>
             <Navigation
-                onHeatMapClick={handleHeatMapClick}
-                onIconMapClick={handleIconMapClick}
-                onHexagonMapClick={handleHexagonMapClick}
+                setActiveMap={setActiveMap}
                 onSideMenuClick={handleSideMenuIconClick}
             />
             <Box
@@ -51,9 +58,7 @@ function App() {
                     marginTop: '64px',
                 }}
             >
-                {showHeatMap && <HeatMap data={data}/>}
-                {showIconMap && <IconMap/>}
-                {showHexagonMap && <HexagonMap data={data}/>}
+                {renderActiveComponent()}
             </Box>
             <SideBar opened={showSideMenu}
                      filterLocations={filterLocations}
