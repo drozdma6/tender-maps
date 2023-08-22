@@ -68,7 +68,7 @@ function IconMap({
                 setHoverInfo({})
             } else {
                 //fetch supplied procurements only if click is on supplier company
-                if(info.layer.id === "suppliers"){
+                if (info.layer.id === "suppliers") {
                     fetchSuppliedProcurements(info.object.id);
                 }
                 fetchOffers(info.object.id); //fetch for both suppliers / non-suppliers
@@ -127,18 +127,9 @@ function IconMap({
 
             <Tooltip info={hoverInfo} suppliedProcurements={suppliedProcurements} offers={companyOffers}/>
 
-            <div style={{
-                position: 'absolute',
-                right: '10px',
-                backgroundColor: '#fff',
-                padding: '16px',
-                borderRadius: '8px',
-                boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)'
-            }}>
-                <Legend
-                    title="Icon map of suppliers"
-                    text="Suppliers of public procurements" items={legendItems}
-                />
+            <Legend
+                title="Icon map of suppliers"
+                text="Suppliers of public procurements" items={legendItems}>
                 <FormGroup>
                     {/* Supplier Switch */}
                     <FormControlLabel
@@ -154,7 +145,7 @@ function IconMap({
                         label="Show non-suppliers"
                     />
                 </FormGroup>
-            </div>
+            </Legend>
         </div>
     );
 }

@@ -53,39 +53,29 @@ function HeatMap({
                 layers={layers}>
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
             </DeckGL>
-
-            <div style={{
-                position: 'absolute',
-                right: '10px',
-                backgroundColor: '#fff',
-                padding: '16px',
-                borderRadius: '8px',
-                boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)'
-            }}>
-                <Legend
-                    title="Public Procurements"
-                    text="Distribution of public procurement contracts."
-                    items={legendItems}
-                />
-                <div style={{display: 'flex', alignItems: 'center', marginTop: '8px'}}>
+                <Legend title="Public Procurements"
+                        text="Distribution of public procurement contracts."
+                        items={legendItems}
+                >
+                    <div style={{display: 'flex', alignItems: 'center', marginTop: '8px'}}>
+                        <div style={{
+                            flex: 1,
+                            height: '16px',
+                            borderRadius: '8px',
+                            background: 'linear-gradient(to right, #ffffae, #bf0020)'
+                        }}></div>
+                    </div>
                     <div style={{
-                        flex: 1,
-                        height: '16px',
-                        borderRadius: '8px',
-                        background: 'linear-gradient(to right, #ffffae, #bf0020)'
-                    }}></div>
-                </div>
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    marginTop: '8px',
-                    fontSize: '14px',
-                    fontWeight: 'bold'
-                }}>
-                    <span>Low</span>
-                    <span>High</span>
-                </div>
-            </div>
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginTop: '8px',
+                        fontSize: '14px',
+                        fontWeight: 'bold'
+                    }}>
+                        <span>Low</span>
+                        <span>High</span>
+                    </div>
+                </Legend>
         </div>
 
     )

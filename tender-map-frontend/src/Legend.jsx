@@ -1,43 +1,24 @@
-const Legend = ({ title, text, items }) => {
-  const legendStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    marginTop: '20px',
-    width: '20vw', // Set the fixed width here
-  };
+import './styles.css';
 
-  const legendItemStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '8px',
-  };
-
-  const legendColorStyle = {
-    width: '16px',
-    height: '16px',
-    borderRadius: '50%',
-    marginRight: '8px',
-  };
-
-  const legendLabelStyle = {
-    fontSize: '14px',
-  };
-
-  return (
-    <div style={legendStyle}>
-      <h3>{title}</h3>
-      <p>{text}</p>
-      {items.map((item, index) => (
-        <div key={index} style={legendItemStyle}>
-          <span
-            style={{ ...legendColorStyle, backgroundColor: item.color }}
-          ></span>
-          <span style={legendLabelStyle}>{item.label}</span>
+function Legend({title, text, items, children}){
+    return (
+        <div className="container">
+            <h3>{title}</h3>
+            <p>{text}</p>
+            {items.map((item, index) => (
+                <div key={index} className="legend-item">
+                    <span style={{ backgroundColor: item.color }} className="legend-color"></span>
+                    <span className="legend-label">{item.label}</span>
+                </div>
+            ))}
+            {children}
         </div>
-      ))}
-
-    </div>
-  );
-};
+    );
+}
 
 export default Legend;
+
+
+
+
+

@@ -99,12 +99,12 @@ function HexagonMap({
         })
     ];
     const legendItems = [
-        { color: '#1896bb', label: 'Low number of tenders' },
-        { color: '#4de1ce', label: 'Moderate number of tenders' },
-        { color: '#d7feb9', label: 'High number of tenders' },
-        { color: '#feeeb6', label: 'Very high number of tenders' },
-        { color: '#fcb060', label: 'Extremely high number of tenders' },
-        { color: '#d04152', label: 'Highest number of tenders' },
+        {color: '#1896bb', label: 'Low number of tenders'},
+        {color: '#4de1ce', label: 'Moderate number of tenders'},
+        {color: '#d7feb9', label: 'High number of tenders'},
+        {color: '#feeeb6', label: 'Very high number of tenders'},
+        {color: '#fcb060', label: 'Extremely high number of tenders'},
+        {color: '#d04152', label: 'Highest number of tenders'},
         // Add more legend items as needed
     ];
 
@@ -119,22 +119,10 @@ function HexagonMap({
             >
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
             </DeckGL>
-
-            <div style={{
-                position: 'absolute',
-                right: '10px',
-                backgroundColor: '#fff',
-                padding: '16px',
-                borderRadius: '8px',
-                boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)'
-            }}>
-
-                <Legend
-                    title="Public Procurements"
-                    text="Distribution of public procurement contracts."
-                    items={legendItems}
-                />
-
+            <Legend
+                title="Public Procurements"
+                text="Distribution of public procurement contracts."
+                items={legendItems}>
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -144,7 +132,8 @@ function HexagonMap({
                         flex: 1,
                         height: '16px',
                         borderRadius: '8px',
-                        background: 'linear-gradient(to right, #1896bb, #4de1ce, #d7feb9, #feeeb6, #fcb060, #d04152)' }}>
+                        background: 'linear-gradient(to right, #1896bb, #4de1ce, #d7feb9, #feeeb6, #fcb060, #d04152)'
+                    }}>
                     </div>
                 </div>
                 <div style={{
@@ -157,9 +146,8 @@ function HexagonMap({
                     <span>More Tenders</span>
                     <span>Fewer Tenders</span>
                 </div>
-            </div>
+            </Legend>
         </div>
-
     );
 }
 

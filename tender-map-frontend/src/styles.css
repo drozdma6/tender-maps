@@ -11,17 +11,41 @@
     max-height: 300px;
 }
 
-.navbar__item {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-}
-
-.navbar__brand, .navbar__link {
-    color: black;
-    font-weight: 500;
-    text-decoration: none;
+.navbarLogoLinks {
     margin-left: auto;
 }
-.iconExternalLink{
-    margin-left: 5px;
+
+.imageLogo {
+    width: 50px;
+    height: 45px;
+    margin-right: 5px;
+}
+
+.container {
+    position: absolute;
+    right: 10px;
+    background-color: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.legend-label {
+    font-size: 14px;
 }
