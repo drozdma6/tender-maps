@@ -25,7 +25,7 @@ function Navigation({setActiveMap, onSideMenuClick}) {
     };
 
     return (
-        <AppBar position="fixed" style={{
+        <AppBar position="static" style={{
             backgroundColor: 'white',
             color: 'black',
             zIndex: 1400,
