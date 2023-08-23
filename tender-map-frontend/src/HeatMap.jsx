@@ -53,29 +53,29 @@ function HeatMap({
                 layers={layers}>
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
             </DeckGL>
-                <Legend title="Public Procurements"
-                        text="Distribution of public procurement contracts."
-                        items={legendItems}
-                >
-                    <div style={{display: 'flex', alignItems: 'center', marginTop: '8px'}}>
-                        <div style={{
-                            flex: 1,
-                            height: '16px',
-                            borderRadius: '8px',
-                            background: 'linear-gradient(to right, #ffffae, #bf0020)'
-                        }}></div>
-                    </div>
+            <Legend title="Public Procurements"
+                    text="Distribution of public procurement contracts."
+                    items={legendItems}
+            >
+                <div style={{display: 'flex', alignItems: 'center', marginTop: '8px'}}>
                     <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        marginTop: '8px',
-                        fontSize: '14px',
-                        fontWeight: 'bold'
-                    }}>
-                        <span>Low</span>
-                        <span>High</span>
-                    </div>
-                </Legend>
+                        flex: 1,
+                        height: '16px',
+                        borderRadius: '8px',
+                        background: 'linear-gradient(to right, #ffffae, #bf0020)'
+                    }}></div>
+                </div>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginTop: '8px',
+                    fontSize: '14px',
+                    fontWeight: 'bold'
+                }}>
+                    <span>Low</span>
+                    <span>High</span>
+                </div>
+            </Legend>
         </div>
 
     )
