@@ -8,17 +8,20 @@ import {
     FormControlLabel,
     Checkbox,
     Autocomplete,
-    TextField
+    TextField, useMediaQuery
 } from '@mui/material';
 import axios from "axios";
 import ClearIcon from '@mui/icons-material/Clear';
 import {useEffect, useState} from "react";
 import {IconButton} from '@mui/material';
-
-const drawerWidth = 350;
+import {CZECH_REGIONS, MOBILE_BREAKPOINT} from "./constants.js";
 
 function SideBar({filterLocations, setFilterLocations, filterAuthorities, setFilterAuthorities, opened}) {
     const [authoritiesData, setAuthoritiesData] = useState();
+
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+
+    const drawerWidth = isMobile ? '100%' : 350;
 
     const handleCheckboxToggle = (text) => () => {
         const currentIndex = filterLocations.indexOf(text);
@@ -73,24 +76,22 @@ function SideBar({filterLocations, setFilterLocations, filterAuthorities, setFil
                 anchor="left"
                 open={opened}
             >
-                <Box sx={{overflow: 'auto', height: '100%', marginTop: 8}}>
+                <Box className='sidebar'>
                     <Autocomplete
                         disablePortal
                         id="combo-box-demo"
-                        // options={authoritiesData ? authoritiesData.map(item => item.name) : []}
                         options={authoritiesData ? authoritiesData : []}
                         getOptionLabel={(option) => option.name || ""}
                         sx={{width: 300, margin: 3}}
                         renderInput={(params) =>
                             <TextField {...params} label="Contractor Authority"/>}
                         onChange={handleAuthorityChange}
-                        value={filterAuthorities.name} // Use the value prop to control the input value
+                        value={filterAuthorities.name}
                     />
                     {
                         Array.from(filterAuthorities).map((authority) => (
                             <div key={authority.name}
                                  style={{
-                                     display: 'flex',
                                      alignItems: 'center',
                                      marginLeft: 8
                                  }}>
@@ -105,7 +106,7 @@ function SideBar({filterLocations, setFilterLocations, filterAuthorities, setFil
                     <Divider/>
 
                     <List>
-                        {['Hlavní město Praha', 'Středočeský kraj', 'Jihočeský kraj', 'Plzeňský kraj', 'Karlovarský kraj', 'Ústecký kraj', 'Liberecký kraj', 'Královéhradecký kraj', 'Pardubický kraj', 'Kraj Vysočina', 'Jihomoravský kraj', 'Olomoucký kraj', 'Moravskoslezský kraj', 'Zlínský kraj'].map((text) => (
+                        {CZECH_REGIONS.map((text) => (
                             <ListItem key={text} disablePadding>
                                 <label style={{display: 'block', width: '100%', height: '100%'}}>
                                     <ListItemButton>

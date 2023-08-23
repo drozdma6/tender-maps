@@ -44,27 +44,17 @@ function App() {
     }
 
     return (
-        <Box sx={{display: 'flex'}}>
+        <Box sx={{display: 'flex', flexDirection: 'column'}}>
             <CssBaseline/>
-            <Navigation
-                setActiveMap={setActiveMap}
-                onSideMenuClick={handleSideMenuIconClick}
-            />
-            <Box
-                component="main"
-                sx={{
-                    flexGrow: 1,
-                    p: 3,
-                    marginTop: '64px',
-                }}
-            >
+            <Navigation setActiveMap={setActiveMap} onSideMenuClick={handleSideMenuIconClick}/>
+            <Box component="main">
+                <SideBar opened={showSideMenu}
+                         filterLocations={filterLocations}
+                         setFilterLocations={setFilterLocations}
+                         filterAuthorities={filterAuthorities}
+                         setFilterAuthorities={setFilterAuthorities}/>
                 {renderActiveComponent()}
             </Box>
-            <SideBar opened={showSideMenu}
-                     filterLocations={filterLocations}
-                     setFilterLocations={setFilterLocations}
-                     filterAuthorities={filterAuthorities}
-                     setFilterAuthorities={setFilterAuthorities}/>
         </Box>
     );
 }
