@@ -1,13 +1,17 @@
-import './styles.css';
 import {useEffect, useState} from "react";
-import {IconButton} from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
-import {useMediaQuery} from "@mui/material";
-import {MOBILE_BREAKPOINT} from './constants';
+import {
+    IconButton,
+    useTheme,
+    useMediaQuery,
+    Typography,
+    Box,
+} from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 
 function Legend({title, text, items, children}) {
     const [minimized, setMinimized] = useState(false);
-    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     useEffect(() => {
         if (!isMobile) {
@@ -16,33 +20,43 @@ function Legend({title, text, items, children}) {
     }, [isMobile]);
 
     const toggleMinimized = () => {
-        setMinimized(prevMinimized => !prevMinimized);
+        setMinimized((prevMinimized) => !prevMinimized);
     };
 
     return (
-        <div className={`container ${minimized ? "minimized" : ''}`}>
-            <div className="legend-header">
-                <h3>
+        <Box className={`container ${minimized ? "minimized" : ""} ${isMobile ? "container-mobile" : ""}`}>
+            <Box className="legend-header">
+                <Typography variant="h6" fontWeight="bold">
                     {title}
-                    {isMobile && <IconButton className="minimize-button" onClick={toggleMinimized}>
+                </Typography>
+                {isMobile && (
+                    <IconButton
+                        className="minimize-button"
+                        onClick={toggleMinimized}
+                    >
                         <InfoIcon/>
-                    </IconButton>}
-                </h3>
-            </div>
+                    </IconButton>
+                )}
+            </Box>
 
             {!minimized && (
                 <>
-                    <p>{text}</p>
+                    <Typography variant="body1">{text}</Typography>
                     {items.map((item, index) => (
                         <div key={index} className="legend-item">
-                            <span style={{backgroundColor: item.color}} className="legend-color"></span>
-                            <span className="legend-label">{item.label}</span>
+                            <span
+                                className="legend-color"
+                                style={{
+                                    backgroundColor: item.color,
+                                }}
+                            ></span>
+                            <Typography variant="body2">{item.label}</Typography>
                         </div>
                     ))}
                     {children}
                 </>
             )}
-        </div>
+        </Box>
     );
 }
 
