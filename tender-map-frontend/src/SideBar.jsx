@@ -1,5 +1,5 @@
+import {useEffect, useState} from "react";
 import {
-    Box,
     Drawer,
     List,
     ListItem,
@@ -8,20 +8,28 @@ import {
     FormControlLabel,
     Checkbox,
     Autocomplete,
-    TextField, useMediaQuery
-} from '@mui/material';
+    TextField,
+    useMediaQuery,
+    useTheme,
+    Box,
+    IconButton,
+} from "@mui/material";
 import axios from "axios";
-import ClearIcon from '@mui/icons-material/Clear';
-import {useEffect, useState} from "react";
-import {IconButton} from '@mui/material';
-import {CZECH_REGIONS, MOBILE_BREAKPOINT} from "./constants.js";
+import ClearIcon from "@mui/icons-material/Clear";
+import {CZECH_REGIONS} from "./constants.js";
 
-function SideBar({filterLocations, setFilterLocations, filterAuthorities, setFilterAuthorities, opened}) {
+function SideBar({
+                     filterLocations,
+                     setFilterLocations,
+                     filterAuthorities,
+                     setFilterAuthorities,
+                     opened,
+                 }) {
     const [authoritiesData, setAuthoritiesData] = useState();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
-
-    const drawerWidth = isMobile ? '100%' : 350;
+    const drawerWidth = isMobile ? "100%" : 350;
 
     const handleCheckboxToggle = (text) => () => {
         const currentIndex = filterLocations.indexOf(text);
@@ -41,9 +49,9 @@ function SideBar({filterLocations, setFilterLocations, filterAuthorities, setFil
     }, []);
 
     async function fetchContractorAuthority() {
-        const url = 'http://localhost:8081/authorities';
-        const response = await axios.get(url)
-        setAuthoritiesData(response.data)
+        const url = "http://localhost:8081/authorities";
+        const response = await axios.get(url);
+        setAuthoritiesData(response.data);
     }
 
     const handleAuthorityChange = (event, newValue) => {
@@ -59,7 +67,7 @@ function SideBar({filterLocations, setFilterLocations, filterAuthorities, setFil
             const newSelectedAuthorities = new Set(prevSelectedAuthorities);
             newSelectedAuthorities.delete(authority);
             return newSelectedAuthorities;
-        })
+        });
     };
 
     return (
@@ -76,44 +84,63 @@ function SideBar({filterLocations, setFilterLocations, filterAuthorities, setFil
                 anchor="left"
                 open={opened}
             >
-                <Box className='sidebar'>
+                <Box sx={{overflow: "auto", marginTop: isMobile ? 11 : 8}}>
                     <Autocomplete
                         disablePortal
                         id="combo-box-demo"
                         options={authoritiesData ? authoritiesData : []}
                         getOptionLabel={(option) => option.name || ""}
                         sx={{width: 300, margin: 3}}
-                        renderInput={(params) =>
-                            <TextField {...params} label="Contractor Authority"/>}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Contractor Authority"/>
+                        )}
                         onChange={handleAuthorityChange}
                         value={filterAuthorities.name}
                     />
-                    {
-                        Array.from(filterAuthorities).map((authority) => (
-                            <div key={authority.name}
-                                 style={{
-                                     alignItems: 'center',
-                                     marginLeft: 8
-                                 }}>
-                                <IconButton onClick={() => handleAuthorityRemove(authority)}>
-                                    <ClearIcon></ClearIcon>
-                                </IconButton>
-                                <span style={{wordBreak: 'break-all'}}>{authority.name}</span>
-                            </div>
-                        ))
-                    }
+                    {Array.from(filterAuthorities).map((authority) => (
+                        <Box
+                            key={authority.name}
+                            sx={{
+                                alignItems: "center",
+                                marginLeft: 8,
+                            }}
+                        >
+                            <IconButton
+                                onClick={() => handleAuthorityRemove(authority)}
+                            >
+                                <ClearIcon/>
+                            </IconButton>
+                            <span style={{wordBreak: "break-all"}}>
+                                {authority.name}
+                            </span>
+                        </Box>
+                    ))}
 
                     <Divider/>
 
                     <List>
                         {CZECH_REGIONS.map((text) => (
                             <ListItem key={text} disablePadding>
-                                <label style={{display: 'block', width: '100%', height: '100%'}}>
+                                <label
+                                    style={{
+                                        display: "block",
+                                        width: "100%",
+                                        height: "100%",
+                                    }}
+                                >
                                     <ListItemButton>
                                         <FormControlLabel
-                                            control={<Checkbox size="small"
-                                                               checked={filterLocations.includes(text)}
-                                                               onChange={handleCheckboxToggle(text)}/>}
+                                            control={
+                                                <Checkbox
+                                                    size="small"
+                                                    checked={filterLocations.includes(
+                                                        text
+                                                    )}
+                                                    onChange={handleCheckboxToggle(
+                                                        text
+                                                    )}
+                                                />
+                                            }
                                             label={text}
                                         />
                                     </ListItemButton>
