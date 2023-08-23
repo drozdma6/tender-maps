@@ -24,7 +24,7 @@ function Legend({title, text, items, children}) {
     };
 
     return (
-        <Box className={`container ${minimized ? "minimized" : ""} ${isMobile ? "container-mobile" : ""}`}>
+        <Box className={`container ${isMobile ? "container-mobile" : ""}`}>
             <Box className="legend-header">
                 <Typography variant="h6" fontWeight="bold">
                     {title}
