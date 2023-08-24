@@ -40,6 +40,7 @@ function HeatMap({
             pickable: false,
             getPosition: d => [d.supplier.address.longitude, d.supplier.address.latitude],
             getWeight: d => d.contractPrice,
+            aggregation: 'SUM',
             radiusPixels,
             intensity,
             threshold
