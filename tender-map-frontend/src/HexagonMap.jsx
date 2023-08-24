@@ -4,6 +4,8 @@ import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
 import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
 import Legend from "./Legend.jsx";
+import {Slider, Typography} from "@mui/material";
+import {useState} from "react";
 
 
 const ambientLight = new AmbientLight({
@@ -75,10 +77,11 @@ function getTooltip({object}) {
 function HexagonMap({
                         buildDataUrl,
                         mapStyle = MAP_STYLE,
-                        radius = 1000,
                         upperPercentile = 100,
                         coverage = 1
                     }) {
+    const [sliderValue, setSliderValue] = useState(1000); // Initial slider value
+
     const layers = [
         new HexagonLayer({
             id: 'heatmap',
@@ -92,7 +95,7 @@ function HexagonMap({
             getElevationWeight: d => d.contractPrice,
             getColorWeight: d => d.contractPrice,
             pickable: true,
-            radius,
+            radius: sliderValue,
             upperPercentile,
             material,
 
@@ -148,6 +151,26 @@ function HexagonMap({
                 }}>
                     <span>More Tenders</span>
                     <span>Fewer Tenders</span>
+                </div>
+
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: '8px'
+                }}>
+                    <Typography variant="body1"> Radius </Typography>
+                    <Slider style={{width: '50%'}}
+                            defaultValue={1000}
+                            step={100}
+                            min={100}
+                            max={5500}
+                            aria-label="Radius"
+                            valueLabelFormat={(value) => `Radius: ${value}`}
+                            valueLabelDisplay="auto"
+                            onChange={(event, newValue) => {
+                                setSliderValue(newValue);
+                            }}/>
                 </div>
             </Legend>
         </div>
