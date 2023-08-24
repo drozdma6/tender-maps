@@ -61,12 +61,14 @@ function getTooltip({object}) {
     }
     const lat = object.position[1];
     const lng = object.position[0];
-    const count = object.points.length;
+    const companiesCount = object.points.length;
+    const totalContractPrice = object.colorValue; //colorValue represents sum of all tenders contract prices
 
     return `\
     latitude: ${Number.isFinite(lat) ? lat.toFixed(6) : ''}
     longitude: ${Number.isFinite(lng) ? lng.toFixed(6) : ''}
-    ${count} Accidents`;
+    ${companiesCount} Companies
+    ${totalContractPrice} CZK Tenders price`;
 }
 
 /* eslint-disable react/no-deprecated */
