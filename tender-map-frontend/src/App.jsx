@@ -5,6 +5,7 @@ import HexagonMap from "./HexagonMap.jsx";
 import SideBar from "./SideBar.jsx";
 import {Box, CssBaseline} from "@mui/material";
 import {useState} from 'react'
+import AboutProject from "./AboutProject.jsx";
 
 
 function App() {
@@ -12,16 +13,18 @@ function App() {
     const [filterAuthorities, setFilterAuthorities] = useState(new Set());
 
     const [showSideMenu, setShowSideMenu] = useState(false);
-    const [activeMap, setActiveMap] = useState('heatMap');
+    const [activeNavComponent, setActiveNavComponent] = useState('heatMap');
 
     const renderActiveComponent = () => {
-        switch (activeMap) {
+        switch (activeNavComponent) {
             case 'heatMap':
                 return <HeatMap buildDataUrl={buildDataUrl}/>;
             case 'hexagonMap':
                 return <HexagonMap buildDataUrl={buildDataUrl}/>;
             case 'iconMap':
                 return <IconMap buildDataUrl={buildDataUrl}/>;
+            case 'aboutProject':
+                return <AboutProject/>
             default:
                 return null;
         }
@@ -46,7 +49,7 @@ function App() {
     return (
         <Box sx={{display: 'flex', flexDirection: 'column'}}>
             <CssBaseline/>
-            <Navigation setActiveMap={setActiveMap} onSideMenuClick={handleSideMenuIconClick}/>
+            <Navigation setActiveMap={setActiveNavComponent} onSideMenuClick={handleSideMenuIconClick}/>
             <Box component="main">
                 <SideBar opened={showSideMenu}
                          filterLocations={filterLocations}

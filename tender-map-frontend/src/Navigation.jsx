@@ -24,12 +24,19 @@ function Navigation({setActiveMap, onSideMenuClick}) {
         onSideMenuClick();
     };
 
+    const handleAboutProjectButtonClick = () => {
+        setActiveMap("aboutProject");
+    };
+
     return (
-        <AppBar position="static" style={{
-            backgroundColor: 'white',
-            color: 'black',
-            zIndex: 1400,
-        }}>
+        <AppBar position="static"
+                style={{
+                    backgroundColor: 'white',
+                    color: 'black',
+                    zIndex: 1400,
+                    maxHeight: 'var(--app-bar-height)'
+                }}
+        >
             <Container maxWidth="false">
                 <Toolbar disableGutters>
                     <IconButton
@@ -74,6 +81,12 @@ function Navigation({setActiveMap, onSideMenuClick}) {
                         sx={{my: 2, color: 'inherit', display: 'block'}}
                     >
                         Hexagon Map
+                    </Button>
+                    <Button
+                        onClick={handleAboutProjectButtonClick}
+                        sx={{my: 2, color: 'inherit', display: 'block'}}
+                    >
+                        About Project
                     </Button>
                     <div className="navbarLogoLinks">
                         <a href="https://github.com/opendatalabcz/" target="_blank" rel="noopener noreferrer">

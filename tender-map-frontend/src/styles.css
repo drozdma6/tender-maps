@@ -1,3 +1,7 @@
+:root {
+    --app-bar-height: 64px;
+}
+
 .tooltip {
     position: absolute;
     z-index: 9;
@@ -34,7 +38,6 @@
     right: 4vw;
     margin-top: 4vw;
 }
-
 
 .legend-item {
     display: flex;
