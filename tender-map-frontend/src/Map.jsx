@@ -7,6 +7,11 @@ import IconButton from "@mui/material/IconButton";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import {useMediaQuery, useTheme} from "@mui/material";
 import Footer from "./Footer.jsx";
+import {toast, ToastContainer} from "react-toastify";
+import axios from "axios";
+import 'react-toastify/dist/ReactToastify.css';
+
+const URL_DOMAIN = "http://localhost:8081/"
 
 function Map({activeMap}) {
     const [filterLocations, setFilterLocations] = useState([]);
@@ -17,13 +22,19 @@ function Map({activeMap}) {
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const renderActiveMap = () => {
+        const props = {
+            fetchData: fetchData,
+            addFiltersToPath: addFiltersToPath,
+            filterLocations: filterLocations,
+            filterAuthorities: filterAuthorities
+        };
         switch (activeMap) {
             case 'HEATMAP':
-                return <HeatMap buildDataUrl={buildDataUrl}/>;
+                return <HeatMap {...props}/>;
             case 'HEXAGONMAP':
-                return <HexagonMap buildDataUrl={buildDataUrl}/>;
+                return <HexagonMap {...props}/>;
             case 'ICONMAP':
-                return <IconMap buildDataUrl={buildDataUrl}/>;
+                return <IconMap {...props}/>;
             default:
                 return null;
         }
@@ -33,7 +44,27 @@ function Map({activeMap}) {
         setShowFilterMenu(!showFilterMenu);
     }
 
-    function buildDataUrl(url) {
+    async function fetchData(path, setFetchedData){
+        try {
+            const url = URL_DOMAIN + path;
+            const response = await axios.get(url);
+            setFetchedData(response.data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            toast.error("Failed to fetch data.", {
+                position: "top-center",
+                autoClose: 1500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+    }
+
+    function addFiltersToPath(path) {
         const placesOfPerformanceParam = filterLocations.join(',');
         const filterAuthoritiesIDsParam = [...filterAuthorities].map((authority) => authority.id).join(',');
 
@@ -41,8 +72,7 @@ function Map({activeMap}) {
             placesOfPerformance: placesOfPerformanceParam,
             contractorAuthorityIds: filterAuthoritiesIDsParam
         });
-
-        return `${url}?${params.toString()}`;
+        return `${path}?${params.toString()}`;
     }
 
     return (
@@ -75,6 +105,19 @@ function Map({activeMap}) {
                         <FilterAltIcon/>
             </IconButton>
             <Footer/>
+            <ToastContainer
+                position="top-center"
+                autoClose={1500}
+                limit={2}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss={false}
+                draggable
+                pauseOnHover={false}
+                theme="light"
+            />
         </div>
     );
 }

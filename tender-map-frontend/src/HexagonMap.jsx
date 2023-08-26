@@ -5,8 +5,7 @@ import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
 import Legend from "./Legend.jsx";
 import {Slider, Typography} from "@mui/material";
-import {useState} from "react";
-
+import {useEffect, useState} from "react";
 
 const ambientLight = new AmbientLight({
     color: [255, 255, 255],
@@ -45,8 +44,7 @@ const INITIAL_VIEW_STATE = {
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
-const DATA_URL =
-    'http://localhost:8081/procurements/suppliers/exact-address';
+const DATA_PATH = 'procurements/suppliers/exact-address';
 
 const colorRange = [
     [1, 152, 189],
@@ -61,35 +59,39 @@ function getTooltip({object}) {
     if (!object) {
         return null;
     }
-    const lat = object.position[1];
-    const lng = object.position[0];
     const companiesCount = object.points.length;
     const totalContractPrice = object.colorValue; //colorValue represents sum of all tenders contract prices
 
     return `\
-    latitude: ${Number.isFinite(lat) ? lat.toFixed(6) : ''}
-    longitude: ${Number.isFinite(lng) ? lng.toFixed(6) : ''}
     ${companiesCount} Companies
-    ${totalContractPrice} CZK Tenders price`;
+    ${totalContractPrice} CZK total price`;
 }
 
-/* eslint-disable react/no-deprecated */
 function HexagonMap({
-                        buildDataUrl,
+                        fetchData,
+                        addFiltersToPath,
+                        filterLocations,
+                        filterAuthorities,
                         mapStyle = MAP_STYLE,
                         upperPercentile = 100,
                         coverage = 1
                     }) {
-    const [sliderValue, setSliderValue] = useState(1000); // Initial slider value
+    const [sliderValue, setSliderValue] = useState(1000);
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        console.log(filterLocations)
+        fetchData(addFiltersToPath(DATA_PATH), setData);
+    }, [filterLocations, filterAuthorities]);
 
     const layers = [
         new HexagonLayer({
             id: 'heatmap',
             colorRange,
             coverage,
-            data: buildDataUrl(DATA_URL),
+            data: data,
             elevationRange: [0, 3000],
-            elevationScale: buildDataUrl(DATA_URL) && buildDataUrl(DATA_URL).length ? 50 : 0,
+            elevationScale: data && data.length ? 50 : 0,
             extruded: true,
             getPosition: d => [d.supplier.address.longitude, d.supplier.address.latitude],
             getElevationWeight: d => d.contractPrice,
@@ -98,7 +100,6 @@ function HexagonMap({
             radius: sliderValue,
             upperPercentile,
             material,
-
             transitions: {
                 elevationScale: 3000
             }

@@ -1,11 +1,10 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Map} from 'react-map-gl';
 import maplibregl from 'maplibre-gl';
 import DeckGL from '@deck.gl/react';
 import {MapView} from '@deck.gl/core';
 import IconClusterLayer from './icon-cluster-layer';
 import Legend from "./Legend.jsx";
-import axios from "axios";
 import './styles.css';
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
 import Tooltip from "./Tooltip.jsx";
@@ -22,42 +21,42 @@ const INITIAL_VIEW_STATE = {
 };
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json';
 
-const DATA_SUPPLIERS_URL = 'http://localhost:8081/companies/suppliers';
+const DATA_SUPPLIERS_PATH = 'companies/suppliers';
 
-const DATA_NON_SUPPLIERS_URL = 'http://localhost:8081/companies/non-suppliers';
+const DATA_NON_SUPPLIERS_PATH = 'companies/non-suppliers';
 
 function IconMap({
-                     buildDataUrl,
+                     fetchData,
+                     addFiltersToPath,
+                     filterLocations,
+                     filterAuthorities,
                      iconMapping = '/data/location-icon-mapping.json',
                      mapStyle = MAP_STYLE
                  }) {
+    const [suppliersData, setSuppliersData] = useState([]);
+    const [nonSuppliersData, setNonSuppliersData] = useState([]);
     const [hoverInfo, setHoverInfo] = useState({});
     const [suppliedProcurements, setSuppliedProcurements] = useState([]);
     const [companyOffers, setCompanyOffers] = useState([]);
     const [showLayers, setShowLayers] = useState({suppliers: true, nonSuppliers: true});
+
+    useEffect(() => {
+        fetchData(addFiltersToPath(DATA_SUPPLIERS_PATH), setSuppliersData);
+        fetchData(addFiltersToPath(DATA_NON_SUPPLIERS_PATH), setNonSuppliersData);
+    }, [filterLocations, filterAuthorities])
 
     const hideTooltip = () => {
         setHoverInfo({});
     };
 
     async function fetchOffers(companyId) {
-        try {
-            const procurementsDataUrl = `http://localhost:8081/offers/companies/${companyId}`;
-            const response = await axios.get(procurementsDataUrl);
-            setCompanyOffers(response.data);
-        } catch (error) {
-            console.error(`Error fetching offers of ${companyId}:`, error);
-        }
+        const path = `offers/companies/${companyId}`;
+        fetchData(path, setCompanyOffers);
     }
 
     async function fetchSuppliedProcurements(companyId) {
-        try {
-            const procurementsDataUrl = `http://localhost:8081/procurements/supplier/${companyId}`;
-            const response = await axios.get(procurementsDataUrl);
-            setSuppliedProcurements(response.data);
-        } catch (error) {
-            console.error(`Error fetching supplied procurements of ${companyId}:`, error);
-        }
+        const path = `procurements/supplier/${companyId}`;
+        fetchData(path, setSuppliedProcurements);
     }
 
     const expandTooltip = info => {
@@ -88,14 +87,14 @@ function IconMap({
     // Create the IconClusterLayer instances based on the switch status
     const layers = [
         showLayers.suppliers && new IconClusterLayer({
-            data: buildDataUrl(DATA_SUPPLIERS_URL),
+            data: suppliersData,
             iconAtlas: '/data/location-icon-orange.png',
             ...layerProps,
             id: 'suppliers',
             sizeScale: 40
         }),
         showLayers.nonSuppliers && new IconClusterLayer({
-            data: buildDataUrl(DATA_NON_SUPPLIERS_URL),
+            data: nonSuppliersData,
             ...layerProps,
             id: 'nonSuppliers',
             iconAtlas: '/data/location-icon-blue.png',

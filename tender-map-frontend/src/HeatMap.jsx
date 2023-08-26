@@ -3,6 +3,7 @@ import maplibregl from 'maplibre-gl';
 import {HeatmapLayer} from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
 import Legend from "./Legend.jsx";
+import {useEffect, useState} from "react";
 
 const INITIAL_VIEW_STATE = {
     longitude: 15.301806,
@@ -15,16 +16,23 @@ const INITIAL_VIEW_STATE = {
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
-const DATA_URL =
-    'http://localhost:8081/procurements/suppliers/exact-address';
+const DATA_PATH = 'procurements/suppliers/exact-address';
 
 function HeatMap({
-                     buildDataUrl,
+                     fetchData,
+                     addFiltersToPath,
+                     filterLocations,
+                     filterAuthorities,
                      mapStyle = MAP_STYLE,
                      intensity = 1,
                      threshold = 0.03,
                      radiusPixels = 30,
                  }) {
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        fetchData(addFiltersToPath(DATA_PATH), setData);
+    }, [filterLocations, filterAuthorities]);
 
     // Sample data for the legend items
     const legendItems = [
@@ -35,7 +43,7 @@ function HeatMap({
 
     const layers = [
         new HeatmapLayer({
-            data: buildDataUrl(DATA_URL),
+            data: data,
             id: 'heatmp-layer',
             pickable: false,
             getPosition: d => [d.supplier.address.longitude, d.supplier.address.latitude],
@@ -78,7 +86,6 @@ function HeatMap({
                 </div>
             </Legend>
         </div>
-
     )
 }
 
