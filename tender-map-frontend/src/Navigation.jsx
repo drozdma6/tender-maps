@@ -46,6 +46,8 @@ function Navigation({setActiveMap}) {
                             textDecoration: 'none',
                         }}
                     >
+                        <img src="/map_icon.svg" alt="Map Icon" style={{marginRight: '10px', marginLeft: '10px', width: '24px'}}/>
+
                         Tender Maps
                     </Typography>
                     <Button
