@@ -6,6 +6,7 @@ import FilterSideBar from "./FilterSideBar.jsx";
 import IconButton from "@mui/material/IconButton";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import {useMediaQuery, useTheme} from "@mui/material";
+import Footer from "./Footer.jsx";
 
 function Map({activeMap}) {
     const [filterLocations, setFilterLocations] = useState([]);
@@ -73,6 +74,7 @@ function Map({activeMap}) {
                     >
                         <FilterAltIcon/>
             </IconButton>
+            <Footer/>
         </div>
     );
 }
