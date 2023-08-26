@@ -114,13 +114,12 @@ function FilterSideBar({
                             key={authority.name}
                             sx={{
                                 alignItems: "center",
-                                marginLeft: 8,
                             }}
                         >
                             <IconButton
                                 onClick={() => handleAuthorityRemove(authority)}
                             >
-                                <CloseIcon/>
+                                <CloseIcon fontSize="medium"/>
                             </IconButton>
                             <span style={{wordBreak: "break-all"}}>
                                 {authority.name}
