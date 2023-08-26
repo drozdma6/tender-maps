@@ -9,13 +9,11 @@ This project was developed as a bachelor's thesis for [CTU FIT](https://fit.cvut
 The primary objective was to create an application capable of web scraping, storing, providing, and visualizing data related to public procurements in the Czech Republic. 
 
 ## Data Information
-The tender data for this research was gathered from the Czech Republic's public procurement portal, [nen.nipez.cz](https://nen.nipez.cz/en/).    
-The project included the development of a REST API to seamlessly integrate the dataset into various applications and projects. A publicly accessible
+The tender data for this research was gathered from the Czech Republic's public procurement portal, [nen.nipez.cz](https://nen.nipez.cz/en/). The project included the development of a REST API to seamlessly integrate the dataset into various applications and projects. A publicly accessible
  API Swagger documentation is provided in order to simplify integration for other developers.
 
 ## Maps Information
-Applying filters based on the place where procurements are executed and the organization (contracting authority) responsible for initiating a 
-particular procurement is possible for every map type.
+Applying filters based on the place where procurements are executed and the organization (contracting authority) responsible for initiating a particular procurement is possible for every map type.
 
 ### Heat Map
 This map visually illustrates the distribution of suppliers involved in public procurements across different locations. By utilizing the
@@ -37,11 +35,12 @@ one set of information, while its color may represent another. Furthermore, user
 
 ## Contact Information
   - Author Name: Marek Drozdik
-  - Author Email: drozdma6@cvut.cz
+  - Author Email: [drozdma6@cvut.cz](mailto:drozdma6@cvut.cz)
+  - [Github](https://github.com/opendatalabcz/analyzer_public_contracts)
 `;
 
 
-const ProjectInfo = () => {
+const Info = () => {
     return (
         <Paper style={{paddingBottom: "var(--app-bar-height)", maxHeight: "100vh", overflow: 'auto', paddingLeft:30, paddingRight:30}}>
             <ReactMarkdown>{markdownContent}</ReactMarkdown>
@@ -49,4 +48,4 @@ const ProjectInfo = () => {
     );
 };
 
-export default ProjectInfo;
+export default Info;

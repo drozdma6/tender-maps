@@ -2,7 +2,7 @@ import Navigation from './Navigation';
 import Map from "./Map.jsx";
 import {Box, CssBaseline} from "@mui/material";
 import {useState} from 'react'
-import AboutProject from "./AboutProject.jsx";
+import Info from "./Info.jsx";
 
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
             case 'ICONMAP':
                 return <Map activeMap={selectedPage}/>;
             case 'INFO':
-                return <AboutProject/>
+                return <Info/>
             default:
                 return null;
         }
