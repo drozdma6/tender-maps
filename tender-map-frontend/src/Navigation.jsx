@@ -3,11 +3,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from '@mui/icons-material/Menu';
 
-
-function Navigation({setActiveMap, onSideMenuClick}) {
+function Navigation({setActiveMap}) {
     const handleHeatMapButtonClick = () => {
         setActiveMap("heatMap");
     };
@@ -20,33 +17,20 @@ function Navigation({setActiveMap, onSideMenuClick}) {
         setActiveMap("hexagonMap");
     };
 
-    const handleSideMenuOpener = () => {
-        onSideMenuClick();
-    };
 
     const handleAboutProjectButtonClick = () => {
         setActiveMap("aboutProject");
     };
 
     return (
-        <AppBar position="static"
-                style={{
-                    backgroundColor: 'white',
-                    color: 'black',
-                    zIndex: 1400,
-                    maxHeight: 'var(--app-bar-height)'
-                }}
-        >
+        <AppBar position="static" style={{
+            backgroundColor: 'white',
+            color: 'black',
+            zIndex: 1400,
+            maxHeight: 'var(--app-bar-height)'
+        }}>
             <Container maxWidth="false">
                 <Toolbar disableGutters>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleSideMenuOpener}
-                        edge="start"
-                    >
-                        <MenuIcon/>
-                    </IconButton>
                     <Typography
                         variant="h6"
                         noWrap

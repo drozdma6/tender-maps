@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import {
     Drawer,
     List,
@@ -15,15 +15,17 @@ import {
     IconButton,
 } from "@mui/material";
 import axios from "axios";
-import ClearIcon from "@mui/icons-material/Clear";
-import {CZECH_REGIONS} from "./constants.js";
+import CloseIcon from "@mui/icons-material/Clear";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { CZECH_REGIONS } from "./constants.js";
 
-function SideBar({
+function FilterSideBar({
                      filterLocations,
                      setFilterLocations,
                      filterAuthorities,
                      setFilterAuthorities,
                      opened,
+                     setShowFilterMenu
                  }) {
     const [authoritiesData, setAuthoritiesData] = useState();
     const theme = useTheme();
@@ -70,6 +72,10 @@ function SideBar({
         });
     };
 
+    const handleCloseFilterMenuButton = () => {
+        setShowFilterMenu(false);
+    }
+
     return (
         <Box>
             <Drawer
@@ -84,19 +90,25 @@ function SideBar({
                 anchor="left"
                 open={opened}
             >
-                <Box sx={{overflow: "auto", marginTop: isMobile ? 11 : 8}}>
-                    <Autocomplete
-                        disablePortal
-                        id="combo-box-demo"
-                        options={authoritiesData ? authoritiesData : []}
-                        getOptionLabel={(option) => option.name || ""}
-                        sx={{width: 300, margin: 3}}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Contractor Authority"/>
-                        )}
-                        onChange={handleAuthorityChange}
-                        value={filterAuthorities.name}
-                    />
+                <Box sx={{ overflow: "auto", marginTop: isMobile ? 11 : 8 }}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
+                        <Autocomplete
+                            disablePortal
+                            id="combo-box-demo"
+                            options={authoritiesData ? authoritiesData : []}
+                            getOptionLabel={(option) => option.name || ""}
+                            sx={{ flexGrow: 1, marginRight: 2 }}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Contractor Authority" />
+                            )}
+                            onChange={handleAuthorityChange}
+                            value={filterAuthorities.name}
+                        />
+                        <IconButton onClick={handleCloseFilterMenuButton}>
+                            <ArrowBackIosNewIcon />
+                        </IconButton>
+                    </Box>
+
                     {Array.from(filterAuthorities).map((authority) => (
                         <Box
                             key={authority.name}
@@ -108,7 +120,7 @@ function SideBar({
                             <IconButton
                                 onClick={() => handleAuthorityRemove(authority)}
                             >
-                                <ClearIcon/>
+                                <CloseIcon/>
                             </IconButton>
                             <span style={{wordBreak: "break-all"}}>
                                 {authority.name}
@@ -133,12 +145,8 @@ function SideBar({
                                             control={
                                                 <Checkbox
                                                     size="small"
-                                                    checked={filterLocations.includes(
-                                                        text
-                                                    )}
-                                                    onChange={handleCheckboxToggle(
-                                                        text
-                                                    )}
+                                                    checked={filterLocations.includes(text)}
+                                                    onChange={handleCheckboxToggle(text)}
                                                 />
                                             }
                                             label={text}
@@ -154,4 +162,4 @@ function SideBar({
     );
 }
 
-export default SideBar;
+export default FilterSideBar;
