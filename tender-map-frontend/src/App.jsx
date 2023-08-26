@@ -6,15 +6,19 @@ import AboutProject from "./AboutProject.jsx";
 
 
 function App() {
-    const [activeNavComponent, setActiveNavComponent] = useState('heatMap');
+    const [selectedPage, setSelectedPage] = useState('HEATMAP');
+
+    const handlePageChange = (page) => {
+        setSelectedPage(page);
+    };
 
     const renderActiveComponent = () => {
-        switch (activeNavComponent) {
-            case 'heatMap':
-            case 'hexagonMap':
-            case 'iconMap':
-                return <Map activeMap={activeNavComponent}/>;
-            case 'aboutProject':
+        switch (selectedPage) {
+            case 'HEATMAP':
+            case 'HEXAGONMAP':
+            case 'ICONMAP':
+                return <Map activeMap={selectedPage}/>;
+            case 'INFO':
                 return <AboutProject/>
             default:
                 return null;
@@ -24,7 +28,7 @@ function App() {
     return (
         <Box sx={{display: 'flex', flexDirection: 'column'}}>
             <CssBaseline/>
-            <Navigation setActiveMap={setActiveNavComponent}/>
+            <Navigation onPageChange={handlePageChange}/>
             <Box component='main'>
                 {renderActiveComponent()}
             </Box>

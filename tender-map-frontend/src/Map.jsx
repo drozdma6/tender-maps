@@ -17,11 +17,11 @@ function Map({activeMap}) {
 
     const renderActiveMap = () => {
         switch (activeMap) {
-            case 'heatMap':
+            case 'HEATMAP':
                 return <HeatMap buildDataUrl={buildDataUrl}/>;
-            case 'hexagonMap':
+            case 'HEXAGONMAP':
                 return <HexagonMap buildDataUrl={buildDataUrl}/>;
-            case 'iconMap':
+            case 'ICONMAP':
                 return <IconMap buildDataUrl={buildDataUrl}/>;
             default:
                 return null;
