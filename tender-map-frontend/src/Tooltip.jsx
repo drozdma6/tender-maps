@@ -46,7 +46,7 @@ function Tooltip({info, suppliedProcurements, offers}) {
                                             </Link>
                                         </TableCell>
                                         <TableCell align="right">
-                                            {row.contractPrice}
+                                            {row.contractPrice} CZK
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -77,7 +77,7 @@ function Tooltip({info, suppliedProcurements, offers}) {
                                     </Link>
                                 </TableCell>
                                 <TableCell align="right">
-                                    {row.price}
+                                    {row.price} CZK
                                 </TableCell>
                             </TableRow>
                         ))}
