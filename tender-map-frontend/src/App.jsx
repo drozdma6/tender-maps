@@ -4,7 +4,7 @@ import {Box, CssBaseline} from "@mui/material";
 import {useState} from 'react'
 import Info from "./Info.jsx";
 
-const API_URL = "http://localhost:8081/"
+const API_URL = "http://localhost:8081/" + "api/"
 
 function App() {
     const [selectedPage, setSelectedPage] = useState('HEATMAP');

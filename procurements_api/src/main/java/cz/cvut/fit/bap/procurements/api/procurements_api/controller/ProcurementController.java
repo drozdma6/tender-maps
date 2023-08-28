@@ -17,7 +17,7 @@ import java.util.function.Function;
     Rest controller for procurements
  */
 @RestController
-@RequestMapping("/procurements")
+@RequestMapping("/api/procurements")
 public class ProcurementController extends AbstractController<Procurement, Long, ProcurementDto> {
     protected ProcurementController(AbstractService<Procurement, Long> service, Function<Procurement, ProcurementDto> toDtoConverter) {
         super(service, toDtoConverter);

@@ -15,7 +15,7 @@ import java.util.function.Function;
     Rest controller for companies
  */
 @RestController
-@RequestMapping("/companies")
+@RequestMapping("/api/companies")
 public class CompanyController extends AbstractController<Company, Long, CompanyDto> {
     protected CompanyController(AbstractService<Company, Long> service, Function<Company, CompanyDto> toDtoConverter) {
         super(service, toDtoConverter);

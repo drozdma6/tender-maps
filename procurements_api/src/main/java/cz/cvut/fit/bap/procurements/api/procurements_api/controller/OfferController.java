@@ -15,7 +15,7 @@ import java.util.function.Function;
     Rest controller for offers.
  */
 @RestController
-@RequestMapping("/offers")
+@RequestMapping("/api/offers")
 public class OfferController extends AbstractController<Offer,Long,OfferDto>{
     protected OfferController(AbstractService<Offer,Long> service, Function<Offer,OfferDto> toDtoConverter){
         super(service, toDtoConverter);

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.function.Function;
 
 @RestController
-@RequestMapping("/authorities")
+@RequestMapping("/api/authorities")
 public class ContractorAuthorityController extends AbstractController<ContractorAuthority, Long,ContractorAuthorityDto>{
     protected ContractorAuthorityController(AbstractService<ContractorAuthority,Long> service, Function<ContractorAuthority,ContractorAuthorityDto> toDtoConverter){
         super(service, toDtoConverter);
