@@ -11,9 +11,8 @@ import {toast, ToastContainer} from "react-toastify";
 import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css';
 
-const URL_DOMAIN = "http://localhost:8081/"
 
-function Map({activeMap}) {
+function Map({activeMap, apiBaseUrl}) {
     const [filterLocations, setFilterLocations] = useState([]);
     const [filterAuthorities, setFilterAuthorities] = useState(new Set());
     const [showFilterMenu, setShowFilterMenu] = useState(false);
@@ -46,7 +45,7 @@ function Map({activeMap}) {
 
     async function fetchData(path, setFetchedData){
         try {
-            const url = URL_DOMAIN + path;
+            const url = apiBaseUrl + path;
             const response = await axios.get(url);
             setFetchedData(response.data);
         } catch (error) {

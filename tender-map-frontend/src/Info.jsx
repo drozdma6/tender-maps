@@ -2,7 +2,10 @@ import {Paper} from "@mui/material";
 import ReactMarkdown from "react-markdown";
 
 
-const markdownContent = `
+function Info({apiBaseUrl}) {
+    const apiDocs = apiBaseUrl + "/swagger-ui/index.html";
+
+    const markdownContent = `
 # Tender Maps
 
 This project was developed as a bachelor's thesis for [CTU FIT](https://fit.cvut.cz/en) in collaboration with [OpenDataLab](https://opendatalab.cz/).
@@ -10,7 +13,7 @@ The primary objective was to create an application capable of web scraping, stor
 
 ## Data Information
 The tender data for this research was gathered from the Czech Republic's public procurement portal, [nen.nipez.cz](https://nen.nipez.cz/en/). The project included the development of a REST API to seamlessly integrate the dataset into various applications and projects. A publicly accessible
- API Swagger documentation is provided in order to simplify integration for other developers.
+ [API Swagger documentation](${apiDocs}) is provided in order to simplify integration for other developers.
 
 ## Maps Information
 Applying filters based on the place where procurements are executed and the organization (contracting authority) responsible for initiating a particular procurement is possible for every map type.
@@ -40,12 +43,17 @@ one set of information, while its color may represent another. Furthermore, user
 `;
 
 
-const Info = () => {
     return (
-        <Paper style={{paddingBottom: "var(--app-bar-height)", maxHeight: "100vh", overflow: 'auto', paddingLeft:30, paddingRight:30}}>
+        <Paper style={{
+            paddingBottom: "var(--app-bar-height)",
+            maxHeight: "100vh",
+            overflow: 'auto',
+            paddingLeft: 30,
+            paddingRight: 30
+        }}>
             <ReactMarkdown>{markdownContent}</ReactMarkdown>
         </Paper>
     );
-};
+}
 
 export default Info;

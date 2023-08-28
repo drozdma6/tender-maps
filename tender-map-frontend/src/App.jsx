@@ -4,6 +4,7 @@ import {Box, CssBaseline} from "@mui/material";
 import {useState} from 'react'
 import Info from "./Info.jsx";
 
+const API_URL = "http://localhost:8081/"
 
 function App() {
     const [selectedPage, setSelectedPage] = useState('HEATMAP');
@@ -17,9 +18,9 @@ function App() {
             case 'HEATMAP':
             case 'HEXAGONMAP':
             case 'ICONMAP':
-                return <Map activeMap={selectedPage}/>;
+                return <Map activeMap={selectedPage} apiBaseUrl={API_URL}/>;
             case 'INFO':
-                return <Info/>
+                return <Info apiBaseUrl={API_URL}/>
             default:
                 return null;
         }
