@@ -38,12 +38,12 @@ function Map({activeMap, apiBaseUrl}) {
                 return null;
         }
     };
-    
+
     const handleFilterMenuIconClick = () => {
         setShowFilterMenu(!showFilterMenu);
     }
 
-    async function fetchData(path, setFetchedData){
+    async function fetchData(path, setFetchedData) {
         try {
             const url = apiBaseUrl + path;
             const response = await axios.get(url);
@@ -63,11 +63,12 @@ function Map({activeMap, apiBaseUrl}) {
         }
     }
 
-    function addFiltersToPath(path) {
+    function addFiltersToPath(path, additionalParams) {
         const placesOfPerformanceParam = filterLocations.join(',');
         const filterAuthoritiesIDsParam = [...filterAuthorities].map((authority) => authority.id).join(',');
 
         const params = new URLSearchParams({
+            ...additionalParams,
             placesOfPerformance: placesOfPerformanceParam,
             contractorAuthorityIds: filterAuthoritiesIDsParam
         });
@@ -77,33 +78,35 @@ function Map({activeMap, apiBaseUrl}) {
     return (
         <div>
             {renderActiveMap()}
-            <FilterSideBar opened={showFilterMenu}
-                           filterLocations={filterLocations}
-                           setFilterLocations={setFilterLocations}
-                           filterAuthorities={filterAuthorities}
-                           setFilterAuthorities={setFilterAuthorities}
-                           setShowFilterMenu={setShowFilterMenu}/>
-            <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleFilterMenuIconClick}
-                        edge="start"
-                        style={{
-                            marginLeft: 10,
-                            marginTop: 'var(--app-bar-height)', //height of appbar
-                            backgroundColor: 'white',
-                            borderRadius: '50%',
-                            padding: '13px',
-                            boxShadow: '0px 8px 12px rgba(0, 0, 0, 0.3)',
-                            position: 'fixed',
-                            bottom: isMobile ? 10 : 'auto', // Only apply "bottom" when isMobile is true
-                            top: isMobile ? 'auto' : 10,     // Only apply "top" when isMobile is false
-                        }}
-                        className="filter-button"
-                    >
-                        <FilterAltIcon/>
-            </IconButton>
             <Footer/>
+            <FilterSideBar
+                apiBaseUrl={apiBaseUrl}
+                opened={showFilterMenu}
+                filterLocations={filterLocations}
+                setFilterLocations={setFilterLocations}
+                filterAuthorities={filterAuthorities}
+                setFilterAuthorities={setFilterAuthorities}
+                setShowFilterMenu={setShowFilterMenu}/>
+            <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleFilterMenuIconClick}
+                edge="start"
+                style={{
+                    marginLeft: 10,
+                    marginTop: 'var(--app-bar-height)', //height of appbar
+                    backgroundColor: 'white',
+                    borderRadius: '50%',
+                    padding: '13px',
+                    boxShadow: '0px 8px 12px rgba(0, 0, 0, 0.3)',
+                    position: 'fixed',
+                    bottom: isMobile ? 10 : 'auto', // Only apply "bottom" when isMobile is true
+                    top: isMobile ? 'auto' : 10,     // Only apply "top" when isMobile is false
+                }}
+                className="filter-button"
+            >
+                <FilterAltIcon/>
+            </IconButton>
             <ToastContainer
                 position="top-center"
                 autoClose={1500}

@@ -6,8 +6,10 @@ import {MapView} from '@deck.gl/core';
 import IconClusterLayer from './icon-cluster-layer';
 import Legend from "./Legend.jsx";
 import './styles.css';
-import {FormControlLabel, FormGroup, Switch} from "@mui/material";
+import {Switch} from "@mui/material";
 import Tooltip from "./Tooltip.jsx";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 const MAP_VIEW = new MapView({repeat: true});
 
@@ -21,9 +23,9 @@ const INITIAL_VIEW_STATE = {
 };
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json';
 
-const DATA_SUPPLIERS_PATH = 'companies/suppliers';
+const DATA_SUPPLIERS_PATH = '/companies/suppliers';
 
-const DATA_NON_SUPPLIERS_PATH = 'companies/non-suppliers';
+const DATA_NON_SUPPLIERS_PATH = '/companies/non-suppliers';
 
 function IconMap({
                      fetchData,
@@ -41,8 +43,8 @@ function IconMap({
     const [showLayers, setShowLayers] = useState({suppliers: true, nonSuppliers: true});
 
     useEffect(() => {
-        fetchData(addFiltersToPath(DATA_SUPPLIERS_PATH), setSuppliersData);
-        fetchData(addFiltersToPath(DATA_NON_SUPPLIERS_PATH), setNonSuppliersData);
+        fetchData(addFiltersToPath(DATA_SUPPLIERS_PATH, {"hasExactAddress": true}), setSuppliersData);
+        fetchData(addFiltersToPath(DATA_NON_SUPPLIERS_PATH, {"hasExactAddress": true}), setNonSuppliersData);
     }, [filterLocations, filterAuthorities])
 
     const hideTooltip = () => {
@@ -50,12 +52,12 @@ function IconMap({
     };
 
     async function fetchOffers(companyId) {
-        const path = `offers/companies/${companyId}`;
+        const path = `/offers/companies/${companyId}`;
         fetchData(path, setCompanyOffers);
     }
 
     async function fetchSuppliedProcurements(companyId) {
-        const path = `procurements/supplier/${companyId}`;
+        const path = `/procurements/supplier/${companyId}`;
         fetchData(path, setSuppliedProcurements);
     }
 

@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 
 
 function Info({apiBaseUrl}) {
-    const apiDocs = apiBaseUrl + "/swagger-ui/index.html";
+    const apiDocs = apiBaseUrl + "-docs";
 
     const markdownContent = `
 # Tender Maps

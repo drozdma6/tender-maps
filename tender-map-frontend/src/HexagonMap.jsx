@@ -4,8 +4,9 @@ import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
 import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
 import Legend from "./Legend.jsx";
-import {Slider, Typography} from "@mui/material";
+import {Slider, Switch, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
+import Box from "@mui/material/Box";
 
 const ambientLight = new AmbientLight({
     color: [255, 255, 255],
@@ -44,7 +45,7 @@ const INITIAL_VIEW_STATE = {
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
-const DATA_PATH = 'procurements/suppliers/exact-address';
+const DATA_PATH = '/procurements';
 
 const colorRange = [
     [1, 152, 189],
@@ -81,8 +82,7 @@ function HexagonMap({
     const [showNumOfTendersByElevation, setShowNumOfTendersByElevation] = useState(false);
 
     useEffect(() => {
-        console.log(filterLocations)
-        fetchData(addFiltersToPath(DATA_PATH), setData);
+        fetchData(addFiltersToPath(DATA_PATH, {"supplierHasExactAddress": true}), setData);
     }, [filterLocations, filterAuthorities]);
 
     function handleElevationSwitchChange() {

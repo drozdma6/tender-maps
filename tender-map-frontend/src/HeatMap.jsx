@@ -16,7 +16,7 @@ const INITIAL_VIEW_STATE = {
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
-const DATA_PATH = 'procurements/suppliers/exact-address';
+const DATA_PATH = '/procurements';
 
 function HeatMap({
                      fetchData,
@@ -31,7 +31,7 @@ function HeatMap({
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        fetchData(addFiltersToPath(DATA_PATH), setData);
+        fetchData(addFiltersToPath(DATA_PATH, {"supplierHasExactAddress": true}), setData);
     }, [filterLocations, filterAuthorities]);
 
     const layers = [

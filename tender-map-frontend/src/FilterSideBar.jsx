@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {
     Drawer,
     List,
@@ -17,16 +17,17 @@ import {
 import axios from "axios";
 import CloseIcon from "@mui/icons-material/Clear";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { CZECH_REGIONS } from "./constants.js";
+import {CZECH_REGIONS} from "./constants.js";
 
 function FilterSideBar({
-                     filterLocations,
-                     setFilterLocations,
-                     filterAuthorities,
-                     setFilterAuthorities,
-                     opened,
-                     setShowFilterMenu
-                 }) {
+                           apiBaseUrl,
+                           filterLocations,
+                           setFilterLocations,
+                           filterAuthorities,
+                           setFilterAuthorities,
+                           opened,
+                           setShowFilterMenu
+                       }) {
     const [authoritiesData, setAuthoritiesData] = useState();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -51,7 +52,7 @@ function FilterSideBar({
     }, []);
 
     async function fetchContractorAuthority() {
-        const url = "http://localhost:8081/authorities";
+        const url = apiBaseUrl + "/authorities"
         const response = await axios.get(url);
         setAuthoritiesData(response.data);
     }
@@ -90,22 +91,22 @@ function FilterSideBar({
                 anchor="left"
                 open={opened}
             >
-                <Box sx={{ overflow: "auto", marginTop: isMobile ? 11 : 8 }}>
+                <Box sx={{overflow: "auto", marginTop: isMobile ? 11 : 8}}>
                     <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
                         <Autocomplete
                             disablePortal
                             id="combo-box-demo"
                             options={authoritiesData ? authoritiesData : []}
                             getOptionLabel={(option) => option.name || ""}
-                            sx={{ flexGrow: 1, marginRight: 2 }}
+                            sx={{flexGrow: 1, marginRight: 2}}
                             renderInput={(params) => (
-                                <TextField {...params} label="Contractor Authority" />
+                                <TextField {...params} label="Contractor Authority"/>
                             )}
                             onChange={handleAuthorityChange}
                             value={filterAuthorities.name}
                         />
                         <IconButton onClick={handleCloseFilterMenuButton}>
-                            <ArrowBackIosNewIcon />
+                            <ArrowBackIosNewIcon/>
                         </IconButton>
                     </Box>
 
