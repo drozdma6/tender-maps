@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 
-function Legend({title, text, items, children}) {
+function Legend({title, text, children}) {
     const [minimized, setMinimized] = useState(false);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -41,18 +41,9 @@ function Legend({title, text, items, children}) {
 
             {!minimized && (
                 <>
-                    <Typography variant="body1">{text}</Typography>
-                    {items.map((item, index) => (
-                        <div key={index} className="legend-item">
-                            <span
-                                className="legend-color"
-                                style={{
-                                    backgroundColor: item.color,
-                                }}
-                            ></span>
-                            <Typography variant="body2">{item.label}</Typography>
-                        </div>
-                    ))}
+                    <Box maxWidth={380} textAlign={"justify"}>
+                        <Typography variant="body1" >{text}</Typography>
+                    </Box>
                     {children}
                 </>
             )}

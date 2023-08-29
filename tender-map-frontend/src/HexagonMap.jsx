@@ -78,47 +78,50 @@ function HexagonMap({
                     }) {
     const [sliderValue, setSliderValue] = useState(1000);
     const [data, setData] = useState([]);
+    const [showNumOfTendersByElevation, setShowNumOfTendersByElevation] = useState(false);
 
     useEffect(() => {
         console.log(filterLocations)
         fetchData(addFiltersToPath(DATA_PATH), setData);
     }, [filterLocations, filterAuthorities]);
 
-    const layers = [
-        new HexagonLayer({
-            id: 'heatmap',
-            colorRange,
-            coverage,
-            data: data,
-            elevationRange: [0, 3000],
-            elevationScale: data && data.length ? 50 : 0,
-            extruded: true,
-            getPosition: d => [d.supplier.address.longitude, d.supplier.address.latitude],
+    function handleElevationSwitchChange() {
+        setShowNumOfTendersByElevation(!showNumOfTendersByElevation);
+    }
+
+    const commonLayerConfig = {
+        colorRange,
+        coverage,
+        data,
+        elevationRange: [0, 3000],
+        elevationScale: data && data.length ? 50 : 0,
+        extruded: true,
+        getPosition: d => [d.supplier.address.longitude, d.supplier.address.latitude],
+        pickable: true,
+        radius: sliderValue,
+        upperPercentile,
+        material,
+        transitions: {
+            elevationScale: 3000
+        }
+    };
+
+    const layer = showNumOfTendersByElevation
+        ? new HexagonLayer({
+            ...commonLayerConfig,
+            id: 'heatmap1',
+            getColorWeight: d => d.contractPrice,
+        })
+        : new HexagonLayer({
+            ...commonLayerConfig,
+            id: 'heatmap2',
             getElevationWeight: d => d.contractPrice,
             getColorWeight: d => d.contractPrice,
-            pickable: true,
-            radius: sliderValue,
-            upperPercentile,
-            material,
-            transitions: {
-                elevationScale: 3000
-            }
-        })
-    ];
-    const legendItems = [
-        {color: '#1896bb', label: 'Low number of tenders'},
-        {color: '#4de1ce', label: 'Moderate number of tenders'},
-        {color: '#d7feb9', label: 'High number of tenders'},
-        {color: '#feeeb6', label: 'Very high number of tenders'},
-        {color: '#fcb060', label: 'Extremely high number of tenders'},
-        {color: '#d04152', label: 'Highest number of tenders'},
-        // Add more legend items as needed
-    ];
-
+        });
     return (
         <div>
             <DeckGL
-                layers={layers}
+                layers={layer}
                 effects={[lightingEffect]}
                 initialViewState={INITIAL_VIEW_STATE}
                 controller={true}
@@ -127,13 +130,13 @@ function HexagonMap({
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
             </DeckGL>
             <Legend
-                title="Public Procurements"
-                text="Distribution of public procurement contracts."
-                items={legendItems}>
+                title="Hexagon map"
+                text="Distribution of suppliers and price of their tenders. Both color and elevation of hexagon show cumulative price of tenders. Elevation can show number of companies in hexagon."
+            >
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    marginTop: '8px'
+                    marginTop: '12px'
                 }}>
                     <div style={{
                         flex: 1,
@@ -146,19 +149,19 @@ function HexagonMap({
                 <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    marginTop: '8px',
+                    marginTop: '6px',
                     fontSize: '14px',
                     fontWeight: 'bold'
                 }}>
-                    <span>More Tenders</span>
-                    <span>Fewer Tenders</span>
+                    <span>Lower total price</span>
+                    <span>Higher total price</span>
                 </div>
 
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    marginTop: '8px'
+                    marginTop: '12px'
                 }}>
                     <Typography variant="body1"> Radius </Typography>
                     <Slider style={{width: '50%'}}
@@ -173,6 +176,13 @@ function HexagonMap({
                                 setSliderValue(newValue);
                             }}/>
                 </div>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="body1" style={{flex: 1}}>
+                        Show number of companies by elevation
+                    </Typography>
+                    <Switch checked={showNumOfTendersByElevation} onChange={handleElevationSwitchChange}
+                            style={{flexShrink: 0}}/>
+                </Box>
             </Legend>
         </div>
     );

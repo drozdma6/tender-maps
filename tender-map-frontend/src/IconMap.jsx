@@ -107,9 +107,10 @@ function IconMap({
         setShowLayers((prev) => ({...prev, [layerType]: !prev[layerType]}));
     };
 
-    const legendItems = [
-        {color: '#f09236', label: 'Cluster'},
-    ];
+    const legendItems = {
+        suppliers: {color: '#f09236'},
+        nonSuppliers: {color: '#55A2CF'}
+    };
 
     return (
         <div>
@@ -127,23 +128,29 @@ function IconMap({
             <Tooltip info={hoverInfo} suppliedProcurements={suppliedProcurements} offers={companyOffers}/>
 
             <Legend
-                title="Icon map of suppliers"
-                text="Suppliers of public procurements" items={legendItems}>
-                <FormGroup>
-                    {/* Supplier Switch */}
-                    <FormControlLabel
-                        control={<Switch checked={showLayers.suppliers} onChange={handleSwitchChange('suppliers')}
-                                         color="warning"/>}
-                        label="Show suppliers"
-                    />
-
-                    {/* Non-Supplier Switch */}
-                    <FormControlLabel
-                        control={<Switch checked={showLayers.nonSuppliers}
-                                         onChange={handleSwitchChange('nonSuppliers')}/>}
-                        label="Show non-suppliers"
-                    />
-                </FormGroup>
+                title="Icon map"
+                text="Data set of all participants in tenders." items={[]}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" marginTop={2}>
+                    <Box textAlign="center" marginLeft={4}>
+                        <Typography variant="body1" fontWeight="bold" style={{color: legendItems.suppliers.color}}>
+                            Suppliers
+                        </Typography>
+                        <Switch checked={showLayers.suppliers} onChange={handleSwitchChange('suppliers')}
+                                color="warning"/>
+                        <Typography variant="h6" fontWeight="bold" style={{color: legendItems.suppliers.color}}>
+                            {suppliersData.length}
+                        </Typography>
+                    </Box>
+                    <Box textAlign="center" marginRight={4}>
+                        <Typography variant="body1" fontWeight="bold" style={{color: legendItems.nonSuppliers.color}}>
+                            Non-suppliers
+                        </Typography>
+                        <Switch checked={showLayers.nonSuppliers} onChange={handleSwitchChange('nonSuppliers')}/>
+                        <Typography variant="h6" fontWeight="bold" style={{color: legendItems.nonSuppliers.color}}>
+                            {nonSuppliersData.length}
+                        </Typography>
+                    </Box>
+                </Box>
             </Legend>
         </div>
     );

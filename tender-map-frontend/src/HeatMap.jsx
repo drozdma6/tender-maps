@@ -34,13 +34,6 @@ function HeatMap({
         fetchData(addFiltersToPath(DATA_PATH), setData);
     }, [filterLocations, filterAuthorities]);
 
-    // Sample data for the legend items
-    const legendItems = [
-        {color: '#ffffae', label: 'Low number of tenders'},
-        {color: '#bf0020', label: 'High number of tenders'},
-        // Add more legend items as needed
-    ];
-
     const layers = [
         new HeatmapLayer({
             data: data,
@@ -62,9 +55,8 @@ function HeatMap({
                 layers={layers}>
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
             </DeckGL>
-            <Legend title="Public Procurements"
-                    text="Distribution of public procurement contracts."
-                    items={legendItems}
+            <Legend title="Heat map"
+                    text="Distribution of suppliers and price of their tenders. Darker colors indicate areas of significant economic growth."
             >
                 <div style={{display: 'flex', alignItems: 'center', marginTop: '8px'}}>
                     <div style={{
