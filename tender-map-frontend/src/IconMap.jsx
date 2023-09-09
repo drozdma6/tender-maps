@@ -21,7 +21,6 @@ const INITIAL_VIEW_STATE = {
     pitch: 0,
     bearing: 0
 };
-const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json';
 
 const DATA_SUPPLIERS_PATH = '/companies/suppliers';
 
@@ -33,7 +32,7 @@ function IconMap({
                      filterLocations,
                      filterAuthorities,
                      iconMapping = '/data/location-icon-mapping.json',
-                     mapStyle = MAP_STYLE
+                     mapStyle
                  }) {
     const [suppliersData, setSuppliersData] = useState([]);
     const [nonSuppliersData, setNonSuppliersData] = useState([]);

@@ -8,6 +8,7 @@ const API_URL = "http://localhost:8081" + "/api"
 
 function App() {
     const [selectedPage, setSelectedPage] = useState('HEATMAP');
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     const handlePageChange = (page) => {
         setSelectedPage(page);
@@ -18,7 +19,7 @@ function App() {
             case 'HEATMAP':
             case 'HEXAGONMAP':
             case 'ICONMAP':
-                return <Map activeMap={selectedPage} apiBaseUrl={API_URL}/>;
+                return <Map activeMap={selectedPage} apiBaseUrl={API_URL} isDarkMode={isDarkMode}/>;
             case 'INFO':
                 return <Info apiBaseUrl={API_URL}/>
             default:
@@ -29,7 +30,7 @@ function App() {
     return (
         <Box sx={{display: 'flex', flexDirection: 'column'}}>
             <CssBaseline/>
-            <Navigation onPageChange={handlePageChange}/>
+            <Navigation onPageChange={handlePageChange} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode}/>
             <Box component='main'>
                 {renderActiveComponent()}
             </Box>

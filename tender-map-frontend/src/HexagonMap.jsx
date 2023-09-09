@@ -43,8 +43,6 @@ const INITIAL_VIEW_STATE = {
     bearing: 0
 };
 
-const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
-
 const DATA_PATH = '/procurements';
 
 const colorRange = [
@@ -73,7 +71,7 @@ function HexagonMap({
                         addFiltersToPath,
                         filterLocations,
                         filterAuthorities,
-                        mapStyle = MAP_STYLE,
+                        mapStyle,
                         upperPercentile = 100,
                         coverage = 1
                     }) {

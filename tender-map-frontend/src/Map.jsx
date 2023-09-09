@@ -11,8 +11,17 @@ import {toast, ToastContainer} from "react-toastify";
 import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css';
 
+const MAP_STYLES = {
+    withLabels : {
+        light: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+        dark: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+    },
+    noLabels: {
+        dark: "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json"
+    }
+};
 
-function Map({activeMap, apiBaseUrl}) {
+function Map({activeMap, apiBaseUrl, isDarkMode}) {
     const [filterLocations, setFilterLocations] = useState([]);
     const [filterAuthorities, setFilterAuthorities] = useState(new Set());
     const [showFilterMenu, setShowFilterMenu] = useState(false);
@@ -29,11 +38,11 @@ function Map({activeMap, apiBaseUrl}) {
         };
         switch (activeMap) {
             case 'HEATMAP':
-                return <HeatMap {...props}/>;
+                return <HeatMap {...props} mapStyle={isDarkMode ? MAP_STYLES.withLabels.dark : MAP_STYLES.withLabels.light}/>;
             case 'HEXAGONMAP':
-                return <HexagonMap {...props}/>;
+                return <HexagonMap {...props} mapStyle={MAP_STYLES.noLabels.dark}/>;
             case 'ICONMAP':
-                return <IconMap {...props}/>;
+                return <IconMap {...props} mapStyle={isDarkMode ? MAP_STYLES.withLabels.dark : MAP_STYLES.withLabels.light}/>;
             default:
                 return null;
         }

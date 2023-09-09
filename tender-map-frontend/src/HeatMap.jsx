@@ -14,8 +14,6 @@ const INITIAL_VIEW_STATE = {
     bearing: 0
 };
 
-const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
-
 const DATA_PATH = '/procurements';
 
 function HeatMap({
@@ -23,7 +21,7 @@ function HeatMap({
                      addFiltersToPath,
                      filterLocations,
                      filterAuthorities,
-                     mapStyle = MAP_STYLE,
+                     mapStyle,
                      intensity = 1,
                      threshold = 0.03,
                      radiusPixels = 30,
