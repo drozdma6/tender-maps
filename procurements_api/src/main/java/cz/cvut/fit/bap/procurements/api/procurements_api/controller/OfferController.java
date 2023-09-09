@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 /*
@@ -16,27 +18,32 @@ import java.util.function.Function;
  */
 @RestController
 @RequestMapping("/api/offers")
-public class OfferController extends AbstractController<Offer,Long,OfferDto>{
-    protected OfferController(AbstractService<Offer,Long> service, Function<Offer,OfferDto> toDtoConverter){
+public class OfferController extends AbstractController<Offer, Long, OfferDto> {
+    protected OfferController(AbstractService<Offer, Long> service, Function<Offer, OfferDto> toDtoConverter) {
         super(service, toDtoConverter);
     }
 
     /**
-     * Gets all offers created by provided company id.
+     * Gets all offers created by provided companyID matching optional filtering.
      *
-     * @param companyId id of company
-     * @return offers created by companyId.
+     * @param companyId              of searched company
+     * @param placesOfPerformance    filtering by places of performance
+     * @param contractorAuthorityIds filtering by contracting authority ids
+     * @return offers created by company matching filtering
      */
     @CrossOrigin
-    @GetMapping("/companies/{companyId}")
-    public ResponseEntity<Collection<OfferDto>> getOffersByCompanyId(@PathVariable Long companyId){
-        List<OfferDto> offerDtos = ((OfferService) service).getOffersByCompanyId(companyId)
+    @GetMapping
+    public ResponseEntity<Collection<OfferDto>> getOffersByCompanyId(@RequestParam Optional<List<String>> placesOfPerformance,
+                                                                     @RequestParam Optional<List<Long>> contractorAuthorityIds,
+                                                                     @RequestParam Long companyId) {
+        List<OfferDto> offerDtos = ((OfferService) service).getOffersByCompanyId(
+                        companyId,
+                        placesOfPerformance.orElse(Collections.emptyList()),
+                        contractorAuthorityIds.orElse(Collections.emptyList())
+                )
                 .stream()
                 .map(toDtoConverter)
                 .toList();
-        if (offerDtos.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(offerDtos);
     }
 }
