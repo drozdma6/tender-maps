@@ -1,49 +1,72 @@
 package cz.cvut.fit.bap.procurements.api.procurements_api.specifications;
 
 import cz.cvut.fit.bap.procurements.api.procurements_api.domain.Procurement;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
+import java.util.Objects;
 
-/**
- * Specification to get all procurements which suppliers have geo-location is not null and fulfilling desired filtering.
+/*
+    Utility class for procurement specifications.
  */
-public class ProcurementSpecification extends AbstractFilterSpecification<Procurement> {
-    public ProcurementSpecification(List<String> placesOfPerformance, List<Long> authoritiesIDs) {
-        super(placesOfPerformance, authoritiesIDs);
+public class ProcurementSpecification {
+    private ProcurementSpecification() {
+        throw new IllegalStateException("Utility class");
     }
 
     /**
-     * Get predicate for procurements which suppliers have not null latitude and longitude and place of performance is in
-     * getPlacesOfPerformance() and contractor authority is in getContractingAuthorityIds().
+     * Gets procurement specification with implementation of filtering.
      *
-     * @param root            must not be {@literal null}.
-     * @param query           must not be {@literal null}.
-     * @param criteriaBuilder must not be {@literal null}.
-     * @return predicate matching desired select
+     * @param placesOfPerformance filtering by places of performance
+     * @param contractingAuthorityIds filtering by contracting authorities
+     * @param supplierHasExactAddress supplier has to have non null latitude and longitude
+     * @param supplierId id of procurement's supplier
+     * @return specification matching desired filtering
      */
-    @Override
-    public Predicate toPredicate(Root<Procurement> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        Predicate predicate = criteriaBuilder.and(
-                criteriaBuilder.isNotNull(root.get("supplier").get("address").get("latitude")),
-                criteriaBuilder.isNotNull(root.get("supplier").get("address").get("longitude"))
-        );
+    public static Specification<Procurement> getProcurementSpecification(List<String> placesOfPerformance,
+                                                                         List<Long> contractingAuthorityIds,
+                                                                         Boolean supplierHasExactAddress,
+                                                                         Long supplierId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.and(
+                buildGeoLocationPredicate(root, criteriaBuilder, supplierHasExactAddress),
+                buildPlaceOfPerformancePredicate(root, criteriaBuilder, placesOfPerformance),
+                buildContractingAuthorityPredicate(root, criteriaBuilder, contractingAuthorityIds),
+                buildSupplierIdPredicate(root, criteriaBuilder, supplierId));
+    }
 
-        if (getPlacesOfPerformance() != null && !getPlacesOfPerformance().isEmpty()) {
-            predicate = criteriaBuilder.and(predicate,
-                    root.get("placeOfPerformance").in(getPlacesOfPerformance())
-            );
+    private static Predicate buildGeoLocationPredicate(Root<Procurement> root, CriteriaBuilder criteriaBuilder, Boolean supplierHasExactAddress) {
+        if (Objects.nonNull(supplierHasExactAddress)) {
+            Path<Double> supplierLatitude = root.get("supplier").get("address").get("latitude");
+            Path<Double> supplierLongitude = root.get("supplier").get("address").get("longitude");
+            return supplierHasExactAddress ?
+                    criteriaBuilder.and(
+                            criteriaBuilder.isNotNull(supplierLatitude),
+                            criteriaBuilder.isNotNull(supplierLongitude)
+                    ) :
+                    criteriaBuilder.and(
+                            criteriaBuilder.isNull(supplierLatitude),
+                            criteriaBuilder.isNull(supplierLongitude)
+                    );
         }
+        return criteriaBuilder.conjunction();
+    }
 
-        if (getContractingAuthorityIds() != null && !getContractingAuthorityIds().isEmpty()) {
-            predicate = criteriaBuilder.and(predicate,
-                    root.get("contractorAuthority").get("id").in(getContractingAuthorityIds())
-            );
-        }
+    private static Predicate buildPlaceOfPerformancePredicate(Root<Procurement> root, CriteriaBuilder criteriaBuilder, List<String> placesOfPerformance) {
+        return placesOfPerformance != null && !placesOfPerformance.isEmpty() ?
+                root.get("placeOfPerformance").in(placesOfPerformance) :
+                criteriaBuilder.conjunction();
+    }
 
-        return predicate;
+    private static Predicate buildContractingAuthorityPredicate(Root<Procurement> root, CriteriaBuilder criteriaBuilder, List<Long> contractingAuthorityIds) {
+        return contractingAuthorityIds != null && !contractingAuthorityIds.isEmpty() ?
+                root.get("contractorAuthority").get("id").in(contractingAuthorityIds) :
+                criteriaBuilder.conjunction();
+    }
+
+    private static Predicate buildSupplierIdPredicate(Root<Procurement> root, CriteriaBuilder criteriaBuilder, Long supplierId) {
+        return supplierId != null ?
+                criteriaBuilder.equal(root.get("supplier").get("id"), supplierId) :
+                criteriaBuilder.conjunction();
     }
 }
