@@ -12,7 +12,7 @@ import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css';
 
 const MAP_STYLES = {
-    withLabels : {
+    withLabels: {
         light: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
         dark: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
     },
@@ -38,11 +38,13 @@ function Map({activeMap, apiBaseUrl, isDarkMode}) {
         };
         switch (activeMap) {
             case 'HEATMAP':
-                return <HeatMap {...props} mapStyle={isDarkMode ? MAP_STYLES.withLabels.dark : MAP_STYLES.withLabels.light}/>;
+                return <HeatMap {...props}
+                                mapStyle={isDarkMode ? MAP_STYLES.withLabels.dark : MAP_STYLES.withLabels.light}/>;
             case 'HEXAGONMAP':
                 return <HexagonMap {...props} mapStyle={MAP_STYLES.noLabels.dark}/>;
             case 'ICONMAP':
-                return <IconMap {...props} mapStyle={isDarkMode ? MAP_STYLES.withLabels.dark : MAP_STYLES.withLabels.light}/>;
+                return <IconMap {...props}
+                                mapStyle={isDarkMode ? MAP_STYLES.withLabels.dark : MAP_STYLES.withLabels.light}/>;
             default:
                 return null;
         }
@@ -73,14 +75,17 @@ function Map({activeMap, apiBaseUrl, isDarkMode}) {
     }
 
     function addFiltersToPath(path, additionalParams) {
-        const placesOfPerformanceParam = filterLocations.join(',');
-        const filterAuthoritiesIDsParam = [...filterAuthorities].map((authority) => authority.id).join(',');
-
         const params = new URLSearchParams({
             ...additionalParams,
-            placesOfPerformance: placesOfPerformanceParam,
-            contractorAuthorityIds: filterAuthoritiesIDsParam
         });
+        if (filterLocations.length !== 0) {
+            const placesOfPerformanceParam = filterLocations.join(',');
+            params.append("placesOfPerformance", placesOfPerformanceParam);
+        }
+        if (filterAuthorities.size !== 0) {
+            const filterAuthoritiesIDsParam = [...filterAuthorities].map((authority) => authority.id).join(',');
+            params.append("contractorAuthorityIds", filterAuthoritiesIDsParam);
+        }
         return `${path}?${params.toString()}`;
     }
 
