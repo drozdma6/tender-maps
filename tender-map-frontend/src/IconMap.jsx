@@ -23,8 +23,9 @@ const INITIAL_VIEW_STATE = {
 };
 
 const DATA_SUPPLIERS_PATH = '/companies/suppliers';
-
 const DATA_NON_SUPPLIERS_PATH = '/companies/non-suppliers';
+const PROCUREMENTS_PATH = '/procurements';
+const OFFERS_PATH = '/offers'
 
 function IconMap({
                      fetchData,
@@ -51,13 +52,11 @@ function IconMap({
     };
 
     async function fetchOffers(companyId) {
-        const path = `/offers/companies/${companyId}`;
-        fetchData(path, setCompanyOffers);
+        fetchData(addFiltersToPath(OFFERS_PATH, {"companyId" : companyId}), setCompanyOffers);
     }
 
     async function fetchSuppliedProcurements(companyId) {
-        const path = `/procurements/supplier/${companyId}`;
-        fetchData(path, setSuppliedProcurements);
+        fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierId" : companyId}), setSuppliedProcurements);
     }
 
     const expandTooltip = info => {
