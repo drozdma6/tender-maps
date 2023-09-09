@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -29,12 +28,12 @@ public abstract class AbstractController<E extends DomainEntity<K>, K, DTO>{
         this.toDtoConverter = toDtoConverter;
     }
 
-    @CrossOrigin
-    @GetMapping
-    public Collection<DTO> readAll(){
-        return service.readAll().stream().map(toDtoConverter).toList();
-    }
-
+    /**
+     * Retrieve a single item as a DTO by its ID.
+     *
+     * @param id ID of the item.
+     * @return ResponseEntity containing the DTO if the item exists, or a "not found" response if not.
+     */
     @CrossOrigin
     @GetMapping("/{id}")
     public ResponseEntity<DTO> readOne(@PathVariable K id){

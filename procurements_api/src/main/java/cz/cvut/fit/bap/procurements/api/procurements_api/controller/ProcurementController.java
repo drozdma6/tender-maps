@@ -4,7 +4,6 @@ import cz.cvut.fit.bap.procurements.api.procurements_api.bussiness.AbstractServi
 import cz.cvut.fit.bap.procurements.api.procurements_api.bussiness.ProcurementService;
 import cz.cvut.fit.bap.procurements.api.procurements_api.controller.dto.ProcurementDto;
 import cz.cvut.fit.bap.procurements.api.procurements_api.domain.Procurement;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -24,34 +23,24 @@ public class ProcurementController extends AbstractController<Procurement, Long,
     }
 
     /**
-     * Gets all procurements with supplier address latitude and longitude is not null and matching filtering.
+     * Gets all procurements matching filtering by parameters.
      *
      * @param contractorAuthorityIds filtering by contractor authority ids
      * @param placesOfPerformance    filtering by places of performance
-     * @return collection of procurement dtos with exact supplier address
+     * @param supplierHasExactAddress filtering whether supplier's address is exact (latitude and longitude is not null)
+     * @return procurements matching filtering
      */
     @CrossOrigin
-    @GetMapping("/suppliers/exact-address")
-    public Collection<ProcurementDto> getProcurementsWithExactAddress(@RequestParam Optional<List<String>> placesOfPerformance,
-                                                                      @RequestParam Optional<List<Long>> contractorAuthorityIds) {
-        return ((ProcurementService) service).getProcurementsWithExactAddress(placesOfPerformance.orElse(Collections.emptyList()),
-                        contractorAuthorityIds.orElse(Collections.emptyList()))
+    @GetMapping
+    public Collection<ProcurementDto> readAll(@RequestParam Optional<List<String>> placesOfPerformance,
+                                              @RequestParam Optional<List<Long>> contractorAuthorityIds,
+                                              @RequestParam Optional<Boolean> supplierHasExactAddress,
+                                              @RequestParam Optional<Long> supplierId) {
+        return ((ProcurementService) service).readAll(
+                        placesOfPerformance.orElse(Collections.emptyList()),
+                        contractorAuthorityIds.orElse(Collections.emptyList()),
+                        supplierHasExactAddress.orElse(null),
+                        supplierId.orElse(null))
                 .stream().map(toDtoConverter).toList();
-    }
-
-    /**
-     * Gets procurements supplied by provided company id.
-     *
-     * @param supplierId id of supplier
-     * @return procurements supplied by company id.
-     */
-    @CrossOrigin
-    @GetMapping("/supplier/{supplierId}")
-    public ResponseEntity<Collection<ProcurementDto>> getProcurementsBySupplierId(@PathVariable Long supplierId) {
-        List<ProcurementDto> procurements = ((ProcurementService) service).getProcurementsBySupplierId(supplierId)
-                .stream()
-                .map(toDtoConverter)
-                .toList();
-        return ResponseEntity.ok(procurements);
     }
 }

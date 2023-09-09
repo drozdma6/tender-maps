@@ -19,24 +19,22 @@ public class ProcurementService extends AbstractService<Procurement, Long> {
     }
 
     /**
-     * Gets all procurements which supplier has exact address and place of performance is in provided list
-     * and contractor authority is in a list.
+     * Gets all procurements matching filtering by parameters.
      *
-     * @param placesOfPerformance    filtering by place of performance
-     * @param contractorAuthorityIds filtering by contractor authorities Ids
+     * @param placesOfPerformance     filtering by place of performance
+     * @param contractorAuthorityIds  filtering by contractor authorities Ids
+     * @param supplierHasExactAddress if supplier has exact geolocation
+     * @param supplierId              filtering by supplierId
      * @return All procurements satisfying filtering.
      */
-    public Collection<Procurement> getProcurementsWithExactAddress(List<String> placesOfPerformance, List<Long> contractorAuthorityIds) {
-        return ((ProcurementRepository) repository).findAll(new ProcurementSpecification(placesOfPerformance, contractorAuthorityIds));
-    }
-
-    /**
-     * Gets all procurements supplied by company with provided id.
-     *
-     * @param supplierId of supplier
-     * @return all procurements supplied by supplierId
-     */
-    public Collection<Procurement> getProcurementsBySupplierId(Long supplierId) {
-        return ((ProcurementRepository) repository).findBySupplierId(supplierId);
+    public Collection<Procurement> readAll(List<String> placesOfPerformance,
+                                           List<Long> contractorAuthorityIds,
+                                           Boolean supplierHasExactAddress,
+                                           Long supplierId) {
+        return ((ProcurementRepository) repository).findAll(ProcurementSpecification.getProcurementSpecification(
+                placesOfPerformance,
+                contractorAuthorityIds,
+                supplierHasExactAddress,
+                supplierId));
     }
 }
