@@ -22,32 +22,44 @@ public class CompanyController extends AbstractController<Company, Long, Company
     }
 
     /**
-     * Gets all companies which are suppliers for at least one procurement.
+     * Gets all companies which are suppliers for at least one procurement and match filtering
      *
-     * @return suppliers
+     * @param placesOfPerformance    of supplied procurements or of procurements for which company made offers for
+     * @param contractorAuthorityIds of supplied procurements or of procurements for which company made offers for
+     * @param hasExactAddress        if company has exact geolocation, default is true
+     * @return suppliers which match filtering
      */
     @CrossOrigin
     @GetMapping("/suppliers")
     public List<CompanyDto> getSuppliers(@RequestParam Optional<List<String>> placesOfPerformance,
-                                         @RequestParam Optional<List<Long>> contractorAuthorityIds) {
-        return ((CompanyService) service).getSuppliers(placesOfPerformance.orElse(Collections.emptyList()),
-                        contractorAuthorityIds.orElse(Collections.emptyList()))
+                                         @RequestParam Optional<List<Long>> contractorAuthorityIds,
+                                         @RequestParam Optional<Boolean> hasExactAddress) {
+        return ((CompanyService) service).getSuppliers(
+                        placesOfPerformance.orElse(Collections.emptyList()),
+                        contractorAuthorityIds.orElse(Collections.emptyList()),
+                        hasExactAddress.orElse(null))
                 .stream()
                 .map(toDtoConverter)
                 .toList();
     }
 
     /**
-     * Gets all companies which have not yet won any procurements.
+     * Gets all companies which are not yet suppliers and match filtering
      *
-     * @return companies which are not suppliers
+     * @param placesOfPerformance    of procurements for which company made offers for
+     * @param contractorAuthorityIds of procurements for which company made offers for
+     * @param hasExactAddress        if company has exact geolocation, default is true
+     * @return non-suppliers which match filtering
      */
     @CrossOrigin
     @GetMapping("/non-suppliers")
-    public List<CompanyDto> getNonSuppliers(@RequestParam Optional<List<String>> placesOfPerformance, @RequestParam Optional<List<Long>> contractorAuthorityIds) {
+    public List<CompanyDto> getNonSuppliers(@RequestParam Optional<List<String>> placesOfPerformance,
+                                            @RequestParam Optional<List<Long>> contractorAuthorityIds,
+                                            @RequestParam Optional<Boolean> hasExactAddress) {
         return ((CompanyService) service).getNonSuppliers(
                         placesOfPerformance.orElse(Collections.emptyList()),
-                        contractorAuthorityIds.orElse(Collections.emptyList()))
+                        contractorAuthorityIds.orElse(Collections.emptyList()),
+                        hasExactAddress.orElse(null))
                 .stream()
                 .map(toDtoConverter)
                 .toList();
