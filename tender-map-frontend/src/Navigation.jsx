@@ -85,7 +85,7 @@ function Navigation({ onPageChange, isDarkMode, setIsDarkMode }) {
             zIndex: 1400,
             maxHeight: 'var(--app-bar-height)'
         }}>
-            <Container maxWidth="xl">
+            <Container maxWidth="false">
                 <Toolbar disableGutters>
                     <Typography
                         variant="h6"
