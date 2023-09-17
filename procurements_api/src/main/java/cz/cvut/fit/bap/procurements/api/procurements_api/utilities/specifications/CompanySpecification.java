@@ -1,4 +1,4 @@
-package cz.cvut.fit.bap.procurements.api.procurements_api.specifications;
+package cz.cvut.fit.bap.procurements.api.procurements_api.utilities.specifications;
 
 import cz.cvut.fit.bap.procurements.api.procurements_api.domain.Company;
 import jakarta.persistence.criteria.*;

@@ -2,7 +2,7 @@ package cz.cvut.fit.bap.procurements.api.procurements_api.bussiness;
 
 import cz.cvut.fit.bap.procurements.api.procurements_api.dao.CompanyRepository;
 import cz.cvut.fit.bap.procurements.api.procurements_api.domain.Company;
-import cz.cvut.fit.bap.procurements.api.procurements_api.specifications.CompanySpecification;
+import cz.cvut.fit.bap.procurements.api.procurements_api.utilities.specifications.CompanySpecification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
