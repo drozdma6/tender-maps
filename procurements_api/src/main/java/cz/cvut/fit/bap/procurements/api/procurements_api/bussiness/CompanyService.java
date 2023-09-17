@@ -19,38 +19,23 @@ public class CompanyService extends AbstractService<Company, Long> {
     }
 
     /**
-     * Gets all companies which are suppliers for at least one procurement and match filtering
+     * Gets all companies matching filtering
      *
      * @param placesOfPerformance    of supplied procurements or of procurements for which company made offers for
      * @param contractorAuthorityIds of supplied procurements or of procurements for which company made offers for
      * @param hasExactAddress        if company has exact geolocation
+     * @param isSupplier             if company has already supplied some procurements
      * @return suppliers which match filtering
      */
-    public Collection<Company> getSuppliers(List<String> placesOfPerformance,
+    public Collection<Company> readAll(List<String> placesOfPerformance,
                                             List<Long> contractorAuthorityIds,
-                                            Boolean hasExactAddress) {
-        return ((CompanyRepository) repository).findAll(CompanySpecification.getSuppliers(
+                                            Boolean hasExactAddress,
+                                            Boolean isSupplier) {
+        return ((CompanyRepository) repository).findAll(CompanySpecification.getCompanies(
                 placesOfPerformance,
                 contractorAuthorityIds,
-                hasExactAddress
-        ));
-    }
-
-    /**
-     * Gets all companies which are not yet suppliers and match filtering
-     *
-     * @param placesOfPerformance    of procurements for which company made offers for
-     * @param contractorAuthorityIds of procurements for which company made offers for
-     * @param hasExactAddress        if company has exact geolocation
-     * @return non-suppliers which match filtering
-     */
-    public Collection<Company> getNonSuppliers(List<String> placesOfPerformance,
-                                               List<Long> contractorAuthorityIds,
-                                               Boolean hasExactAddress) {
-        return ((CompanyRepository) repository).findAll(CompanySpecification.getNonSuppliers(
-                placesOfPerformance,
-                contractorAuthorityIds,
-                hasExactAddress
+                hasExactAddress,
+                isSupplier
         ));
     }
 }

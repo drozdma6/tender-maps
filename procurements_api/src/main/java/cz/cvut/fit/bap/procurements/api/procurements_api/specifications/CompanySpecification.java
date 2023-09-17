@@ -16,40 +16,24 @@ public class CompanySpecification {
     }
 
     /**
-     * Gets supplier specification with filtering.
+     * Gets companies specification with filtering.
      *
-     * @param placesOfPerformance filtering by places of performance
+     * @param placesOfPerformance     filtering by places of performance
      * @param contractingAuthorityIds filtering by contracting authorities
-     * @param hasExactAddress if latitude/longitude is not null
+     * @param hasExactAddress         if latitude/longitude is not null
+     * @param isSupplier              filters only companies which are supplier for at least one procurement
      * @return company specification matching desired filtering
      */
-    public static Specification<Company> getSuppliers(List<String> placesOfPerformance, List<Long> contractingAuthorityIds, Boolean hasExactAddress) {
+    public static Specification<Company> getCompanies(List<String> placesOfPerformance, List<Long> contractingAuthorityIds, Boolean hasExactAddress, boolean isSupplier) {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
-            Predicate supplierPredicate = criteriaBuilder.isNotEmpty(root.get("suppliedProcurements")); //is supplier
-            return criteriaBuilder.and(supplierPredicate,
-                    buildPlaceOfPerformancePredicate(root, criteriaBuilder, placesOfPerformance, true),
+            Predicate supplierStatusPredicate = isSupplier
+                    ? criteriaBuilder.isNotEmpty(root.get("suppliedProcurements"))  // is supplier
+                    : criteriaBuilder.isEmpty(root.get("suppliedProcurements"));    // is not supplier
+            return criteriaBuilder.and(supplierStatusPredicate,
+                    buildPlaceOfPerformancePredicate(root, criteriaBuilder, placesOfPerformance),
                     buildGeoLocationPredicate(root, criteriaBuilder, hasExactAddress),
-                    buildContractingAuthorityPredicate(root, criteriaBuilder, contractingAuthorityIds, true));
-        };
-    }
-
-    /**
-     * Gets non-supplier specification with filtering.
-     *
-     * @param placesOfPerformance filtering by places of performance
-     * @param contractingAuthorityIds filtering by contracting authorities
-     * @param hasExactAddress if latitude/longitude is not null
-     * @return company specification matching desired filtering
-     */
-    public static Specification<Company> getNonSuppliers(List<String> placesOfPerformance, List<Long> contractingAuthorityIds, Boolean hasExactAddress) {
-        return (root, query, criteriaBuilder) -> {
-            query.distinct(true);
-            Predicate nonSupplierPredicate = criteriaBuilder.isEmpty(root.get("suppliedProcurements")); //is not supplier
-            return criteriaBuilder.and(nonSupplierPredicate,
-                    buildPlaceOfPerformancePredicate(root, criteriaBuilder, placesOfPerformance, false),
-                    buildGeoLocationPredicate(root, criteriaBuilder, hasExactAddress),
-                    buildContractingAuthorityPredicate(root, criteriaBuilder, contractingAuthorityIds, false));
+                    buildContractingAuthorityPredicate(root, criteriaBuilder, contractingAuthorityIds));
         };
     }
 
@@ -64,25 +48,17 @@ public class CompanySpecification {
                 criteriaBuilder.and(criteriaBuilder.isNull(lat), criteriaBuilder.isNull(lng));
     }
 
-    private static Predicate buildPlaceOfPerformancePredicate(Root<Company> root, CriteriaBuilder criteriaBuilder, List<String> placesOfPerformance, boolean forSupplier) {
+    private static Predicate buildPlaceOfPerformancePredicate(Root<Company> root, CriteriaBuilder criteriaBuilder, List<String> placesOfPerformance) {
         if (placesOfPerformance == null || placesOfPerformance.isEmpty()) {
             return criteriaBuilder.conjunction();
         }
-        Predicate predicate = root.get("offers").get("procurement").get("placeOfPerformance").in(placesOfPerformance);
-        if(forSupplier){
-            return criteriaBuilder.or(predicate, root.get("suppliedProcurements").get("placeOfPerformance").in(placesOfPerformance));
-        }
-        return predicate;
+        return root.get("offers").get("procurement").get("placeOfPerformance").in(placesOfPerformance);
     }
 
-    private static Predicate buildContractingAuthorityPredicate(Root<Company> root, CriteriaBuilder criteriaBuilder, List<Long> contractingAuthorityIds, boolean forSupplier) {
+    private static Predicate buildContractingAuthorityPredicate(Root<Company> root, CriteriaBuilder criteriaBuilder, List<Long> contractingAuthorityIds) {
         if (contractingAuthorityIds == null || contractingAuthorityIds.isEmpty()) {
             return criteriaBuilder.conjunction();
         }
-        Predicate predicate = root.get("offers").get("procurement").get("contractorAuthority").get("id").in(contractingAuthorityIds);
-        if(forSupplier){
-            return criteriaBuilder.or(predicate, root.get("suppliedProcurements").get("contractorAuthority").get("id").in(contractingAuthorityIds));
-        }
-        return predicate;
+        return root.get("offers").get("procurement").get("contractorAuthority").get("id").in(contractingAuthorityIds);
     }
 }
