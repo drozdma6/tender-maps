@@ -6,18 +6,18 @@ import java.time.LocalDate;
 /**
  * Class represents procurement data transfer object
  */
-public class ProcurementDto{
-    private Long id;
-    private String name;
-    private CompanyDto supplier;
-    private BigDecimal contractPrice;
-    private String placeOfPerformance;
-    private LocalDate dateOfPublication;
-    private String systemNumber;
-    private String contractorAuthorityName;
+public class ProcurementDto {
+    private final Long id;
+    private final String name;
+    private final CompanyDto supplier;
+    private final BigDecimal contractPrice;
+    private final String placeOfPerformance;
+    private final LocalDate dateOfPublication;
+    private final String systemNumber;
+    private final String contractorAuthorityName;
 
     public ProcurementDto(Long id, String name, BigDecimal contractPrice, String placeOfPerformance,
-                          LocalDate dateOfPublication, String systemNumber, CompanyDto supplier, String contractorAuthorityName){
+                          LocalDate dateOfPublication, String systemNumber, CompanyDto supplier, String contractorAuthorityName) {
         this.id = id;
         this.name = name;
         this.contractPrice = contractPrice;
@@ -32,63 +32,31 @@ public class ProcurementDto{
         return contractorAuthorityName;
     }
 
-    public void setContractorAuthorityName(String contractorAuthorityName) {
-        this.contractorAuthorityName = contractorAuthorityName;
-    }
-
-    public CompanyDto getSupplier(){
+    public CompanyDto getSupplier() {
         return supplier;
     }
 
-    public void setSupplier(CompanyDto supplier){
-        this.supplier = supplier;
-    }
-
-    public Long getId(){
+    public Long getId() {
         return id;
     }
 
-    public void setId(Long id){
-        this.id = id;
-    }
-
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public BigDecimal getContractPrice(){
+    public BigDecimal getContractPrice() {
         return contractPrice;
     }
 
-    public void setContractPrice(BigDecimal contractPrice){
-        this.contractPrice = contractPrice;
-    }
-
-    public String getPlaceOfPerformance(){
+    public String getPlaceOfPerformance() {
         return placeOfPerformance;
     }
 
-    public void setPlaceOfPerformance(String placeOfPerformance){
-        this.placeOfPerformance = placeOfPerformance;
-    }
-
-    public LocalDate getDateOfPublication(){
+    public LocalDate getDateOfPublication() {
         return dateOfPublication;
     }
 
-    public void setDateOfPublication(LocalDate dateOfPublication){
-        this.dateOfPublication = dateOfPublication;
-    }
-
-    public String getSystemNumber(){
+    public String getSystemNumber() {
         return systemNumber;
-    }
-
-    public void setSystemNumber(String systemNumber){
-        this.systemNumber = systemNumber;
     }
 }

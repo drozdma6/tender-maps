@@ -6,10 +6,10 @@ import java.math.BigDecimal;
  * Class represents offer data transfer object
  */
 public class OfferDto{
-    private Long id;
-    private BigDecimal price;
-    private ProcurementDto procurement;
-    private Long companyId;
+    private final Long id;
+    private final BigDecimal price;
+    private final ProcurementDto procurement;
+    private final Long companyId;
 
     public OfferDto(Long id, BigDecimal price, ProcurementDto procurement, Long companyId){
         this.id = id;
@@ -22,31 +22,15 @@ public class OfferDto{
         return id;
     }
 
-    public void setId(Long id){
-        this.id = id;
-    }
-
     public BigDecimal getPrice(){
         return price;
-    }
-
-    public void setPrice(BigDecimal price){
-        this.price = price;
     }
 
     public ProcurementDto getProcurement() {
         return procurement;
     }
 
-    public void setProcurement(ProcurementDto procurement) {
-        this.procurement = procurement;
-    }
-
     public Long getCompanyId(){
         return companyId;
-    }
-
-    public void setCompanyId(Long companyId){
-        this.companyId = companyId;
     }
 }
