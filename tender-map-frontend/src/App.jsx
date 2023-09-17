@@ -4,7 +4,7 @@ import {Box, CssBaseline} from "@mui/material";
 import {useState} from 'react'
 import Info from "./Info.jsx";
 
-const API_URL = "http://localhost:8081" + "/api"
+const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
     const [selectedPage, setSelectedPage] = useState('HEATMAP');
