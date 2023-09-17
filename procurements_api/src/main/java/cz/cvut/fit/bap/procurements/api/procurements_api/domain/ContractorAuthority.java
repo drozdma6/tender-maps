@@ -36,12 +36,6 @@ public class ContractorAuthority implements DomainEntity<Long>{
         this.address = address;
     }
 
-    public ContractorAuthority(String name, Address address, String url){
-        this.name = name;
-        this.address = address;
-        this.url = url;
-    }
-
     public ContractorAuthority(){
     }
 

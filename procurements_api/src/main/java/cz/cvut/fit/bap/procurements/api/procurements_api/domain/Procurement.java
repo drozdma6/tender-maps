@@ -47,17 +47,6 @@ public class Procurement implements DomainEntity<Long>{
     public Procurement(){
     }
 
-    public Procurement(String name, Company supplier, ContractorAuthority contractorAuthority,
-                       BigDecimal contractPrice, String placeOfPerformance, LocalDate dateOfPublication, String systemNumber){
-        this.name = name;
-        this.supplier = supplier;
-        this.contractorAuthority = contractorAuthority;
-        this.contractPrice = contractPrice;
-        this.placeOfPerformance = placeOfPerformance;
-        this.dateOfPublication = dateOfPublication;
-        this.systemNumber = systemNumber;
-    }
-
     public String getSystemNumber(){
         return systemNumber;
     }

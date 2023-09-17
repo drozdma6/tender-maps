@@ -42,12 +42,6 @@ public class Company implements DomainEntity<Long>{
     public Company(){
     }
 
-    public Company(String name, Address address, String organisationId){
-        this.name = name;
-        this.address = address;
-        this.organisationId = organisationId;
-    }
-
     public String getOrganisationId(){
         return organisationId;
     }

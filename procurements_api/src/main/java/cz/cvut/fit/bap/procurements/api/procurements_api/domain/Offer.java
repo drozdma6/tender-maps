@@ -30,12 +30,6 @@ public class Offer implements DomainEntity<Long>{
     public Offer(){
     }
 
-    public Offer(BigDecimal price, Procurement procurement, Company company){
-        this.price = price;
-        this.procurement = procurement;
-        this.company = company;
-    }
-
     public Procurement getProcurement(){
         return procurement;
     }

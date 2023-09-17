@@ -28,28 +28,7 @@ public class Address implements DomainEntity<Long>{
     @Column
     private Double longitude;
 
-
     public Address(){
-    }
-
-    public Address(String countryCode, String city, String postalCode, String street,
-                   String buildingNumber){
-        this.buildingNumber = buildingNumber;
-        this.city = city;
-        this.street = street;
-        this.countryCode = countryCode;
-        this.postalCode = postalCode;
-    }
-
-    public Address(String countryCode, String city, String postalCode, String street,
-                   String buildingNumber, Double latitude, Double longitude){
-        this.buildingNumber = buildingNumber;
-        this.city = city;
-        this.street = street;
-        this.countryCode = countryCode;
-        this.postalCode = postalCode;
-        this.latitude = latitude;
-        this.longitude = longitude;
     }
 
     public Double getLatitude(){
