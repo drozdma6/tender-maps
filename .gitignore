@@ -1,0 +1,21 @@
+# Node (Vite + React)
+/tender-map-frontend/node_modules/
+/tender-map-frontend/package-lock.json
+/tender-map-frontend/yarn.lock
+/tender-map-frontend/dist/
+
+# Java (Spring Boot)
+/procurements_api/target/
+/scrapper/target/
+
+# IDE specific
+*.log
+*.idea/
+*.iml
+
+# System specific
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
