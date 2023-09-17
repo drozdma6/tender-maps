@@ -54,13 +54,18 @@ const colorRange = [
     [209, 55, 78]
 ];
 
+/*
+    Formatting price as 100k for 100 000, 100mil for 100 milions and so on
+ */
 function priceFormat(price) {
     if (price < 10**3) {
         return price.toString();
     } else if (price < 10**6) {
         return Math.floor(price / 10**3) + 'k';
-    } else {
+    } else if (price < 10**9) {
         return Math.floor(price / 10**6) + 'mil';
+    } else {
+        return Math.floor(price / 10**9) + 'bil';
     }
 }
 
