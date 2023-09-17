@@ -54,12 +54,22 @@ const colorRange = [
     [209, 55, 78]
 ];
 
+function priceFormat(price) {
+    if (price < 10**3) {
+        return price.toString();
+    } else if (price < 10**6) {
+        return Math.floor(price / 10**3) + 'k';
+    } else {
+        return Math.floor(price / 10**6) + 'mil';
+    }
+}
+
 function getTooltip({object}) {
     if (!object) {
         return null;
     }
     const companiesCount = object.points.length;
-    const totalContractPrice = object.colorValue; //colorValue represents sum of all tenders contract prices
+    const totalContractPrice = priceFormat(object.colorValue);
 
     return `\
     ${companiesCount} Companies
