@@ -36,7 +36,7 @@ function IconMap({
                  }) {
     const [suppliersData, setSuppliersData] = useState([]);
     const [nonSuppliersData, setNonSuppliersData] = useState([]);
-    const [hoverInfo, setHoverInfo] = useState({});
+    const [selectedIconData, setSelectedIconData] = useState({});
     const [suppliedProcurements, setSuppliedProcurements] = useState([]);
     const [companyOffers, setCompanyOffers] = useState([]);
     const [showLayers, setShowLayers] = useState({suppliers: true, nonSuppliers: true});
@@ -45,10 +45,6 @@ function IconMap({
         fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier" : true}), setSuppliersData);
         fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier" : false}), setNonSuppliersData);
     }, [filterLocations, filterAuthorities])
-
-    const hideTooltip = () => {
-        setHoverInfo({});
-    };
 
     async function fetchOffers(companyId) {
         fetchData(addFiltersToPath(OFFERS_PATH, {"companyId" : companyId}), setCompanyOffers);
@@ -63,17 +59,17 @@ function IconMap({
         setCompanyOffers([]);
         if (info.picked) {
             if (info.objects) {
-                setHoverInfo({})
+                setSelectedIconData({})
             } else {
                 //fetch supplied procurements only if click is on supplier company
                 if (info.layer.id === "suppliers") {
                     fetchSuppliedProcurements(info.object.id);
                 }
                 fetchOffers(info.object.id); //fetch for both suppliers / non-suppliers
-                setHoverInfo(info);
+                setSelectedIconData(info);
             }
         } else {
-            setHoverInfo({});
+            setSelectedIconData({});
         }
     };
 
@@ -118,13 +114,13 @@ function IconMap({
                 views={MAP_VIEW}
                 initialViewState={INITIAL_VIEW_STATE}
                 controller={{dragRotate: false}}
-                onViewStateChange={hideTooltip}
+                onViewStateChange= {() => setSelectedIconData({})}
                 onClick={expandTooltip}
             >
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
             </DeckGL>
 
-            <Tooltip info={hoverInfo} suppliedProcurements={suppliedProcurements} offers={companyOffers}/>
+            <Tooltip info={selectedIconData} suppliedProcurements={suppliedProcurements} offers={companyOffers}/>
 
             <Legend
                 title="Icon map"
