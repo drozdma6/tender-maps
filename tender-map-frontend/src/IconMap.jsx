@@ -40,6 +40,7 @@ function IconMap({
     const [suppliedProcurements, setSuppliedProcurements] = useState([]);
     const [companyOffers, setCompanyOffers] = useState([]);
     const [showLayers, setShowLayers] = useState({suppliers: true, nonSuppliers: true});
+    const [hoveredLayerId, setHoveredLayerId] = useState(null);
 
     useEffect(() => {
         fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier" : true}), setSuppliersData);
@@ -73,6 +74,14 @@ function IconMap({
         }
     };
 
+    const handleHover = info => {
+        if (info && info.object) {
+            setHoveredLayerId(info.layer.id);
+        } else {
+            setHoveredLayerId(null);
+        }
+    };
+
     const layerProps = {
         pickable: true,
         getPosition: d => [d.address.longitude, d.address.latitude],
@@ -97,6 +106,15 @@ function IconMap({
         }),
     ].filter(Boolean);
 
+    // Rearrange layers based on hover state to ensure hovered layer is rendered on top
+    if (hoveredLayerId) {
+        const hoveredLayerIndex = layers.findIndex(layer => layer.id === hoveredLayerId);
+        if (hoveredLayerIndex > -1) {
+            const [hoveredLayer] = layers.splice(hoveredLayerIndex, 1);
+            layers.push(hoveredLayer);
+        }
+    }
+
     // Handlers for switch changes
     const handleSwitchChange = (layerType) => () => {
         setShowLayers((prev) => ({...prev, [layerType]: !prev[layerType]}));
@@ -116,6 +134,7 @@ function IconMap({
                 controller={{dragRotate: false}}
                 onViewStateChange= {() => setSelectedIconData({})}
                 onClick={expandTooltip}
+                onHover={handleHover}
             >
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
             </DeckGL>
