@@ -22,8 +22,7 @@ const INITIAL_VIEW_STATE = {
     bearing: 0
 };
 
-const DATA_SUPPLIERS_PATH = '/companies/suppliers';
-const DATA_NON_SUPPLIERS_PATH = '/companies/non-suppliers';
+const DATA_COMPANIES = '/companies';
 const PROCUREMENTS_PATH = '/procurements';
 const OFFERS_PATH = '/offers'
 
@@ -43,8 +42,8 @@ function IconMap({
     const [showLayers, setShowLayers] = useState({suppliers: true, nonSuppliers: true});
 
     useEffect(() => {
-        fetchData(addFiltersToPath(DATA_SUPPLIERS_PATH, {"hasExactAddress": true}), setSuppliersData);
-        fetchData(addFiltersToPath(DATA_NON_SUPPLIERS_PATH, {"hasExactAddress": true}), setNonSuppliersData);
+        fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier" : true}), setSuppliersData);
+        fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier" : false}), setNonSuppliersData);
     }, [filterLocations, filterAuthorities])
 
     const hideTooltip = () => {
