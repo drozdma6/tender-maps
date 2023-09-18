@@ -27,7 +27,7 @@ This map visually illustrates the distribution of suppliers involved in public p
 ### Icon Map
 The icon map is designed to showcase companies participating in public procurement. Suppliers are marked with orange icons, while 
 non-suppliers are indicated by blue icons. Users can interact with these icons to access lists of both won and supplied procurements, 
-as well as view all offers submitted by each company 
+as well as view all offers submitted by each company. 
 
 ### Hexagon Map
 The hexagon map serves as a visual representation of the geographical distribution of suppliers involved in public procurement.
@@ -38,8 +38,8 @@ one set of information, while its color may represent another. Furthermore, user
 
 ## Contact Information
   - Author Name: Marek Drozdik
-  - Author Email: [drozdma6@cvut.cz](mailto:drozdma6@cvut.cz)
   - [Github](https://github.com/opendatalabcz/analyzer_public_contracts)
+  - [LinkedIn](https://www.linkedin.com/in/marek-drozd%C3%ADk-07828b218)
 `;
 
 
