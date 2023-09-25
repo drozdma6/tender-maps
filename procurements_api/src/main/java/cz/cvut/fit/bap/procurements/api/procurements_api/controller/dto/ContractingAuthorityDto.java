@@ -1,11 +1,11 @@
 package cz.cvut.fit.bap.procurements.api.procurements_api.controller.dto;
 
 /**
- * Class represents company data transfer object
+ * Class represents contractor authority data transfer object
  */
-public record CompanyDto(
+public record ContractingAuthorityDto(
         Long id,
         String name,
         AddressDto address,
-        String organisationId) {
+        String url) {
 }
