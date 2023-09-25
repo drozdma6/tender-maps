@@ -6,9 +6,11 @@ import org.springframework.scheduling.annotation.Async;
 
 import java.util.concurrent.CompletableFuture;
 
-
+/*
+    Abstract class for methods returning jsoup documents of sites
+ */
 public abstract class AbstractFetcher{
-    public abstract Document getContractorDetail(String href);
+    public abstract Document getAuthorityDetail(String href);
 
     public abstract Document getProcurementResult(String procurement);
 
@@ -17,7 +19,7 @@ public abstract class AbstractFetcher{
     @Async
     public abstract CompletableFuture<Document> getProcurementDetail(String procurement);
 
-    public abstract Document getContractorAuthorityList(int page);
+    public abstract Document getContractingAuthorityList(int page);
 
     public abstract Document getProcurementListPage(int page);
 }

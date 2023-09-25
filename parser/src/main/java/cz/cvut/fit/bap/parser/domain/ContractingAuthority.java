@@ -1,24 +1,22 @@
 package cz.cvut.fit.bap.parser.domain;
 
-
 import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-
 /*
-    Class represents contractor authority table
+    Class represents contracting authority table
  */
 @Entity
-public class ContractorAuthority implements DomainEntity<Long>{
+public class ContractingAuthority implements DomainEntity<Long> {
     @Id
     @GeneratedValue
     private Long id;
-    @Column(name = "contractor_authority_name", unique = true)
+    @Column(name = "contracting_authority_name", unique = true)
     private String name;
-    @OneToMany(mappedBy = "contractorAuthority")
+    @OneToMany(mappedBy = "contractingAuthority")
     private Set<Procurement> procurements = new HashSet<>();
 
     @ManyToOne
@@ -36,13 +34,13 @@ public class ContractorAuthority implements DomainEntity<Long>{
         this.address = address;
     }
 
-    public ContractorAuthority(String name, Address address, String url){
+    public ContractingAuthority(String name, Address address, String url) {
         this.name = name;
         this.address = address;
         this.url = url;
     }
 
-    public ContractorAuthority(){
+    public ContractingAuthority() {
     }
 
     public String getUrl(){
@@ -83,7 +81,7 @@ public class ContractorAuthority implements DomainEntity<Long>{
     public boolean equals(Object o){
         if (this == o)
             return true;
-        if (!(o instanceof ContractorAuthority that))
+        if (!(o instanceof ContractingAuthority that))
             return false;
         return Objects.equals(id, that.id);
     }

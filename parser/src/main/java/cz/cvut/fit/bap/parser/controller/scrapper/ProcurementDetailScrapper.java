@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
+import cz.cvut.fit.bap.parser.controller.dto.ContractingAuthorityDto;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -19,18 +19,18 @@ public class ProcurementDetailScrapper extends AbstractScrapper{
     }
 
     /**
-     * Gets information about contractor authority who created this procurement
+     * Gets information about contracting authority who created this procurement
      *
-     * @return contractorAuthorityDto of authority
+     * @return contractingAuthorityDto of authority
      */
-    public ContractorAuthorityDto getContractorAuthorityDto(){
+    public ContractingAuthorityDto getContractingAuthorityDto() {
         Elements authorityElem = document.select("[title=\"Contracting authority\"] a");
         if(authorityElem.isEmpty() || !authorityElem.hasText()){
-            throw new MissingHtmlElementException(document.location() + " missing contractor authority info.");
+            throw new MissingHtmlElementException(document.location() + " missing contracting authority info.");
         }
         String url = authorityElem.attr("href");
         String name = authorityElem.text();
-        return new ContractorAuthorityDto(url, name);
+        return new ContractingAuthorityDto(url, name);
     }
 
     /**

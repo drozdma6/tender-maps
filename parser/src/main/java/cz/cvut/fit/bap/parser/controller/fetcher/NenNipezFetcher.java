@@ -21,14 +21,14 @@ public class NenNipezFetcher extends AbstractFetcher{
     private static final Logger LOGGER = LoggerFactory.getLogger(NenNipezFetcher.class);
 
     /**
-     * Fetches contractor detail site.
+     * Fetches contracting detail site.
      *
-     * @param href of contractor authority
-     * @return Document containing contractor detail site
+     * @param href of contracting authority
+     * @return Document containing contracting detail site
      */
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
-    public Document getContractorDetail(String href){
+    public Document getAuthorityDetail(String href) {
         final String url = BASE_URL + href;
         return getDocumentWithRetry(url);
     }
@@ -80,14 +80,14 @@ public class NenNipezFetcher extends AbstractFetcher{
     }
 
     /**
-     * Fetches contractor authority list
+     * Fetches contracting authority list
      *
      * @param page which is supposed to get fetched
-     * @return document containing contractor authorities
+     * @return document containing contracting authorities
      */
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
-    public Document getContractorAuthorityList(int page){
+    public Document getContractingAuthorityList(int page) {
         String url = BASE_URL + "/profily-zadavatelu-platne/p:pzp:page=" + page;
         return getDocumentWithRetry(url);
     }

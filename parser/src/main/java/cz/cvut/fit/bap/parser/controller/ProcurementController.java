@@ -12,7 +12,7 @@ import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementDetailFac
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementListFactory;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementResultFactory;
 import cz.cvut.fit.bap.parser.domain.Company;
-import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
+import cz.cvut.fit.bap.parser.domain.ContractingAuthority;
 import cz.cvut.fit.bap.parser.domain.Offer;
 import cz.cvut.fit.bap.parser.domain.Procurement;
 import io.micrometer.core.annotation.Timed;
@@ -36,7 +36,7 @@ public class ProcurementController extends AbstractController<ProcurementService
     private final ProcurementListFactory procurementListFactory;
     private final OfferController offerController;
     private final CompanyController companyController;
-    private final ContractorAuthorityController contractorAuthorityController;
+    private final ContractingAuthorityController contractingAuthorityController;
     private final AbstractFetcher fetcher;
 
     public ProcurementController(ProcurementResultFactory procurementResultFactory,
@@ -44,14 +44,14 @@ public class ProcurementController extends AbstractController<ProcurementService
                                  ProcurementService procurementService,
                                  ProcurementListFactory procurementListFactory, OfferController offerController,
                                  CompanyController companyController,
-                                 ContractorAuthorityController contractorAuthorityController, AbstractFetcher fetcher){
+                                 ContractingAuthorityController contractingAuthorityController, AbstractFetcher fetcher) {
         super(procurementService);
         this.procurementResultFactory = procurementResultFactory;
         this.procurementDetailFactory = procurementDetailFactory;
         this.procurementListFactory = procurementListFactory;
         this.offerController = offerController;
         this.companyController = companyController;
-        this.contractorAuthorityController = contractorAuthorityController;
+        this.contractingAuthorityController = contractingAuthorityController;
         this.fetcher = fetcher;
     }
 
@@ -101,7 +101,7 @@ public class ProcurementController extends AbstractController<ProcurementService
                                      List<Pair<Company,BigDecimal>> participants){
         procurementResultDto.suppliersMap().forEach((supplierName, supplierInfo) -> {
             Company supplier = saveSupplier(supplierInfo);
-            ContractorAuthority savedAuthority = contractorAuthorityController.save(procurementDetailDto.contractorAuthority());
+            ContractingAuthority savedAuthority = contractingAuthorityController.save(procurementDetailDto.contractingAuthority());
             Procurement procurement = super.save(new Procurement(procurementDetailDto.procurementName(), supplier,
                     savedAuthority, supplierInfo.contractPrice(), procurementDetailDto.placeOfPerformance(),
                     procurementDetailDto.dateOfPublication(), systemNumber));
@@ -115,11 +115,11 @@ public class ProcurementController extends AbstractController<ProcurementService
     }
 
     private ProcurementDetailDto getProcurementDetailDto(ProcurementDetailScrapper procurementDetailScrapper){
-        ContractorAuthority contractorAuthority = contractorAuthorityController.getContractorAuthority(
-                procurementDetailScrapper.getContractorAuthorityDto());
+        ContractingAuthority contractingAuthority = contractingAuthorityController.getContractingAuthority(
+                procurementDetailScrapper.getContractingAuthorityDto());
         return new ProcurementDetailDto(procurementDetailScrapper.getProcurementName(),
                 procurementDetailScrapper.getProcurementPlaceOfPerformance(),
-                procurementDetailScrapper.getProcurementDateOfPublication(), contractorAuthority);
+                procurementDetailScrapper.getProcurementDateOfPublication(), contractingAuthority);
     }
 
     private ProcurementResultDto getProcurementResultDto(ProcurementResultScrapper procurementResultScrapper){

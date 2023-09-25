@@ -25,7 +25,7 @@ class NenNipezFetcherTest{
     private NenNipezFetcher nenNipezFetcher;
 
     @Test
-    void getContractorDetail() throws IOException{
+    void getAuthorityDetail() throws IOException {
         String expectedUrl = "https://nen.nipez.cz/testUrl";
 
         Document expectedDoc = new Document(expectedUrl);
@@ -33,7 +33,7 @@ class NenNipezFetcherTest{
         when(connection.get()).thenReturn(expectedDoc);
         try(MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
             jsoup.when(() -> Jsoup.connect(expectedUrl)).thenReturn(connection);
-            Assertions.assertEquals(expectedDoc, nenNipezFetcher.getContractorDetail("/testUrl"));
+            Assertions.assertEquals(expectedDoc, nenNipezFetcher.getAuthorityDetail("/testUrl"));
         }
     }
 
@@ -94,7 +94,7 @@ class NenNipezFetcherTest{
     }
 
     @Test
-    void getContractorAuthorityList() throws IOException{
+    void getContractingAuthorityList() throws IOException {
         int page = 1;
         String expectedUrl = "https://nen.nipez.cz/profily-zadavatelu-platne/p:pzp:page=" + page;
         Document expectedDoc = new Document(expectedUrl);
@@ -102,7 +102,7 @@ class NenNipezFetcherTest{
         when(connection.get()).thenReturn(expectedDoc);
         try(MockedStatic<Jsoup> jsoup = mockStatic(Jsoup.class)){
             jsoup.when(() -> Jsoup.connect(expectedUrl)).thenReturn(connection);
-            Assertions.assertEquals(expectedDoc, nenNipezFetcher.getContractorAuthorityList(page));
+            Assertions.assertEquals(expectedDoc, nenNipezFetcher.getContractingAuthorityList(page));
         }
     }
 }

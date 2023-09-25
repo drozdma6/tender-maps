@@ -1,8 +1,7 @@
 package cz.cvut.fit.bap.parser.integrated;
 
 import cz.cvut.fit.bap.parser.business.CompanyService;
-import cz.cvut.fit.bap.parser.business.ContractorAuthorityService;
-import cz.cvut.fit.bap.parser.business.OfferService;
+import cz.cvut.fit.bap.parser.business.ContractingAuthorityService;
 import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.controller.ProcurementController;
 import cz.cvut.fit.bap.parser.domain.Company;
@@ -22,10 +21,7 @@ public class ProcurementSaveIntTest{
     private ProcurementService procurementService;
 
     @Autowired
-    private OfferService offerService;
-
-    @Autowired
-    private ContractorAuthorityService contractorAuthorityService;
+    private ContractingAuthorityService contractingAuthorityService;
 
     @Autowired
     private CompanyService companyService;
@@ -38,7 +34,7 @@ public class ProcurementSaveIntTest{
         procurementController.save(systemNumber);
 
         Assertions.assertTrue(procurementService.existsBySystemNumber(systemNumber));
-        Assertions.assertTrue(contractorAuthorityService.readByName("Městské divadlo Zlín, příspěvková organizace").isPresent());
+        Assertions.assertTrue(contractingAuthorityService.readByName("Městské divadlo Zlín, příspěvková organizace").isPresent());
         Company company = companyService.readByName("SEDASPORT, s.r.o.").get();
         Assertions.assertEquals("SEDASPORT, s.r.o.", company.getName());
         Assertions.assertEquals("Myjava", company.getAddress().getCity());

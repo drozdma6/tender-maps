@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
+import cz.cvut.fit.bap.parser.controller.dto.ContractingAuthorityDto;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,15 +15,15 @@ class ProcurementDetailScrapperTest{
     private final HtmlFileCreator htmlFileCreator = new HtmlFileCreator();
 
     @Test
-    void getContractorAuthorityDto() throws IOException{
+    void getContractingAuthorityDto() throws IOException {
         final String url = "https://nen.nipez.cz/en/verejne-zakazky/detail-zakazky/N006-23-V00002372";
         Document document = Jsoup.parse(
                 htmlFileCreator.ensureCreatedHtmlFile(url, "ProcurementDetail.html"));
         ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
 
         String expectedUrl = "/en/verejne-zakazky/detail-zakazky/N006-23-V00002372/detail-subjektu/2530226";
-        ContractorAuthorityDto expectedDto = new ContractorAuthorityDto(expectedUrl, "Česká agentura na podporu obchodu");
-        ContractorAuthorityDto actualDto = procurementDetailScrapper.getContractorAuthorityDto();
+        ContractingAuthorityDto expectedDto = new ContractingAuthorityDto(expectedUrl, "Česká agentura na podporu obchodu");
+        ContractingAuthorityDto actualDto = procurementDetailScrapper.getContractingAuthorityDto();
 
         Assertions.assertEquals(expectedDto, actualDto);
     }

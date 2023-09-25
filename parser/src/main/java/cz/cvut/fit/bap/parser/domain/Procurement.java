@@ -29,8 +29,8 @@ public class Procurement implements DomainEntity<Long>{
     private Company supplier;
 
     @ManyToOne
-    @JoinColumn(name = "contractor_authority_id")
-    private ContractorAuthority contractorAuthority;
+    @JoinColumn(name = "contracting_authority_id")
+    private ContractingAuthority contractingAuthority;
 
     @Column(name = "contract_price", precision = 14, scale = 2)
     private BigDecimal contractPrice;
@@ -47,11 +47,11 @@ public class Procurement implements DomainEntity<Long>{
     public Procurement(){
     }
 
-    public Procurement(String name, Company supplier, ContractorAuthority contractorAuthority,
+    public Procurement(String name, Company supplier, ContractingAuthority contractingAuthority,
                        BigDecimal contractPrice, String placeOfPerformance, LocalDate dateOfPublication, String systemNumber){
         this.name = name;
         this.supplier = supplier;
-        this.contractorAuthority = contractorAuthority;
+        this.contractingAuthority = contractingAuthority;
         this.contractPrice = contractPrice;
         this.placeOfPerformance = placeOfPerformance;
         this.dateOfPublication = dateOfPublication;
@@ -124,12 +124,12 @@ public class Procurement implements DomainEntity<Long>{
         return id;
     }
 
-    public ContractorAuthority getContractorAuthority(){
-        return contractorAuthority;
+    public ContractingAuthority getContractingAuthority() {
+        return contractingAuthority;
     }
 
-    public void setContractorAuthority(ContractorAuthority contractorAuthority){
-        this.contractorAuthority = contractorAuthority;
+    public void setContractingAuthority(ContractingAuthority contractingAuthority) {
+        this.contractingAuthority = contractingAuthority;
     }
 
     @Override

@@ -17,7 +17,7 @@ class FactoryScrapperTest{
                 new CompanyDetailFactory(),
                 new ProcurementDetailFactory(),
                 new ProcurementResultFactory(),
-                new ContractorDetailFactory(),
+                new AuthorityDetailFactory(),
                 new ProcurementListFactory());
         // Add other factory instances here
     }

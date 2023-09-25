@@ -1,7 +1,7 @@
 package cz.cvut.fit.bap.parser.dao;
 
 import cz.cvut.fit.bap.parser.TestConfigurationClass;
-import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
+import cz.cvut.fit.bap.parser.domain.ContractingAuthority;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,19 +14,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @Import(TestConfigurationClass.class)
-class ContractorAuthorityJpaRepositoryTest{
+class ContractingAuthorityJpaRepositoryTest {
 
     @Autowired
-    private ContractorAuthorityJpaRepository contractorAuthorityJpaRepository;
+    private ContractingAuthorityJpaRepository contractingAuthorityJpaRepository;
 
     @Test
-    void findContractorAuthorityByName(){
+    void findContractingAuthorityByName() {
         String name = "testName";
-        ContractorAuthority contractorAuthority = new ContractorAuthority(name, null, "url");
+        ContractingAuthority contractingAuthority = new ContractingAuthority(name, null, "url");
 
-        contractorAuthorityJpaRepository.save(contractorAuthority);
+        contractingAuthorityJpaRepository.save(contractingAuthority);
 
-        Optional<ContractorAuthority> returnedContractor = contractorAuthorityJpaRepository.findContractorAuthorityByName(name);
+        Optional<ContractingAuthority> returnedContractor = contractingAuthorityJpaRepository.findContractingAuthorityByName(name);
 
         assertTrue(returnedContractor.isPresent());
         assertEquals(name, returnedContractor.get().getName());
@@ -34,9 +34,9 @@ class ContractorAuthorityJpaRepositoryTest{
     }
 
     @Test
-    public void findContractorAuthorityByNameNonExisting(){
+    public void findContractingAuthorityByNameNonExisting() {
         String name = "name";
-        Optional<ContractorAuthority> returnedContractor = contractorAuthorityJpaRepository.findContractorAuthorityByName(name);
+        Optional<ContractingAuthority> returnedContractor = contractingAuthorityJpaRepository.findContractingAuthorityByName(name);
         assertTrue(returnedContractor.isEmpty());
     }
 }

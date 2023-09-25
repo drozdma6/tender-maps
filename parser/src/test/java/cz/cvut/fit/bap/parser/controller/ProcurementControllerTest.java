@@ -1,7 +1,7 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.ProcurementService;
-import cz.cvut.fit.bap.parser.controller.dto.ContractorAuthorityDto;
+import cz.cvut.fit.bap.parser.controller.dto.ContractingAuthorityDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementListScrapper;
@@ -40,7 +40,7 @@ class ProcurementControllerTest{
     private ProcurementDetailFactory procurementDetailFactory;
 
     @Mock
-    private ContractorAuthorityController contractorAuthorityController;
+    private ContractingAuthorityController contractingAuthorityController;
 
     @Mock
     private ProcurementListFactory procurementListFactory;
@@ -70,13 +70,13 @@ class ProcurementControllerTest{
     void saveProcurementNonExisting(){
         String systemNumber = "systemNumber";
         Document document = new Document("testDoc");
-        ContractorAuthorityDto contractorAuthorityDto = new ContractorAuthorityDto("url", "name");
+        ContractingAuthorityDto contractingAuthorityDto = new ContractingAuthorityDto("url", "name");
 
         ProcurementResultScrapper procurementResultScrapper = mock(ProcurementResultScrapper.class);
         ProcurementDetailScrapper procurementDetailScrapper = mock(ProcurementDetailScrapper.class);
 
         when(procurementDetailFactory.create(document)).thenReturn(procurementDetailScrapper);
-        when(procurementDetailScrapper.getContractorAuthorityDto()).thenReturn(contractorAuthorityDto);
+        when(procurementDetailScrapper.getContractingAuthorityDto()).thenReturn(contractingAuthorityDto);
 
         when(abstractFetcher.getProcurementResult(systemNumber)).thenReturn(document);
         when(procurementResultFactory.create(document)).thenReturn(procurementResultScrapper);
@@ -85,7 +85,7 @@ class ProcurementControllerTest{
         when(abstractFetcher.getProcurementDetail(any())).thenReturn(CompletableFuture.completedFuture(document));
 
         procurementController.save(systemNumber);
-        verify(contractorAuthorityController).getContractorAuthority(contractorAuthorityDto);
+        verify(contractingAuthorityController).getContractingAuthority(contractingAuthorityDto);
 
         verify(service).existsBySystemNumber(systemNumber);
         verify(abstractFetcher).getProcurementDetail(systemNumber);

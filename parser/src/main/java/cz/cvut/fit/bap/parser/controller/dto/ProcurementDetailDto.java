@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.dto;
 
-import cz.cvut.fit.bap.parser.domain.ContractorAuthority;
+import cz.cvut.fit.bap.parser.domain.ContractingAuthority;
 
 import java.time.LocalDate;
 
@@ -11,6 +11,6 @@ public record ProcurementDetailDto(
         String procurementName,
         String placeOfPerformance,
         LocalDate dateOfPublication,
-        ContractorAuthority contractorAuthority
+        ContractingAuthority contractingAuthority
 ){
 }
