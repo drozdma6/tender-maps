@@ -48,10 +48,10 @@ function FilterSideBar({
     };
 
     useEffect(() => {
-        fetchContractorAuthority();
+        fetchAuthorities();
     }, []);
 
-    async function fetchContractorAuthority() {
+    async function fetchAuthorities() {
         const url = apiBaseUrl + "/authorities"
         const response = await axios.get(url);
         setAuthoritiesData(response.data);
@@ -100,7 +100,7 @@ function FilterSideBar({
                             getOptionLabel={(option) => option.name || ""}
                             sx={{flexGrow: 1, marginRight: 2}}
                             renderInput={(params) => (
-                                <TextField {...params} label="Contractor Authority"/>
+                                <TextField {...params} label="Contracting Authority"/>
                             )}
                             onChange={handleAuthorityChange}
                             value={filterAuthorities.name}
