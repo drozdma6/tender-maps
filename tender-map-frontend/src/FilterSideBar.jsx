@@ -18,6 +18,7 @@ import axios from "axios";
 import CloseIcon from "@mui/icons-material/Clear";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import {CZECH_REGIONS} from "./constants.js";
+import Typography from "@mui/material/Typography";
 
 function FilterSideBar({
                            apiBaseUrl,
@@ -91,7 +92,7 @@ function FilterSideBar({
                 anchor="left"
                 open={opened}
             >
-                <Box sx={{overflow: "auto", marginTop: isMobile ? 11 : 8}}>
+                <Box sx={{overflow: "auto", marginTop: 8}}>
                     <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
                         <Autocomplete
                             disablePortal
@@ -128,7 +129,15 @@ function FilterSideBar({
                         </Box>
                     ))}
 
-                    <Divider/>
+                    <Divider />
+                    <Typography
+                        sx={{ ml: 2 }}
+                        color="text.secondary"
+                        display="block"
+                        variant="caption"
+                    >
+                        Place of performance
+                    </Typography>
 
                     <List>
                         {CZECH_REGIONS.map((text) => (
