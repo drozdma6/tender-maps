@@ -1,14 +1,43 @@
 import Navigation from './Navigation';
 import Map from "./Map.jsx";
-import {Box, CssBaseline} from "@mui/material";
-import {useState} from 'react'
+import {Box, CssBaseline, ThemeProvider} from "@mui/material";
+import {useEffect, useState} from 'react'
 import Info from "./Info.jsx";
+import { createTheme } from '@mui/material/styles';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
-    const [selectedPage, setSelectedPage] = useState('HEATMAP');
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    // Initialize page from localStorage or default to heatmap
+    const [selectedPage, setSelectedPage] = useState(() => {
+        const storedPage = localStorage.getItem('page');
+        return storedPage !== null ? JSON.parse(storedPage) : 'HEATMAP';
+    });
+    // Initialize theme from localStorage or default to false
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        const storedTheme = localStorage.getItem('darkTheme');
+        return storedTheme !== null ? JSON.parse(storedTheme) : false;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('darkTheme', JSON.stringify(isDarkMode));
+    }, [isDarkMode]);
+
+    useEffect(() => {
+        localStorage.setItem('page', JSON.stringify(selectedPage));
+    }, [selectedPage]);
+
+    const darkTheme = createTheme({
+        palette: {
+            mode: isDarkMode ? 'dark' : 'light',
+            ...(isDarkMode ? {
+                background: {
+                    default: '#303030',
+                    paper: '#303030',
+                },
+            } : {}),
+        },
+    });
 
     const handlePageChange = (page) => {
         setSelectedPage(page);
@@ -28,13 +57,15 @@ function App() {
     };
 
     return (
-        <Box sx={{display: 'flex', flexDirection: 'column'}}>
+        <ThemeProvider theme={darkTheme}>
             <CssBaseline/>
-            <Navigation onPageChange={handlePageChange} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode}/>
-            <Box component='main'>
-                {renderActiveComponent()}
+            <Box sx={{display: 'flex', flexDirection: 'column'}}>
+                <Navigation onPageChange={handlePageChange} themeToggle={isDarkMode} setThemeToggle={setIsDarkMode}/>
+                <Box component='main'>
+                    {renderActiveComponent()}
+                </Box>
             </Box>
-        </Box>
+        </ThemeProvider>
     );
 }
 

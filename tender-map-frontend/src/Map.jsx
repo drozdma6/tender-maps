@@ -102,24 +102,22 @@ function Map({activeMap, apiBaseUrl, isDarkMode}) {
                 setFilterAuthorities={setFilterAuthorities}
                 setShowFilterMenu={setShowFilterMenu}/>
             <IconButton
-                color="inherit"
                 aria-label="open drawer"
                 onClick={handleFilterMenuIconClick}
                 edge="start"
                 style={{
                     marginLeft: 10,
                     marginTop: 'var(--app-bar-height)', //height of appbar
-                    backgroundColor: 'white',
+                    backgroundColor: theme.palette.background.default,
                     borderRadius: '50%',
                     padding: '13px',
-                    boxShadow: '0px 8px 12px rgba(0, 0, 0, 0.3)',
+                    boxShadow: '0px 8px 12px rgba(0, 0, 0, 0.5)',
                     position: 'fixed',
                     bottom: isMobile ? 10 : 'auto', // Only apply "bottom" when isMobile is true
                     top: isMobile ? 'auto' : 10,     // Only apply "top" when isMobile is false
                 }}
-                className="filter-button"
             >
-                <FilterAltIcon/>
+                <FilterAltIcon style={{ color: theme.palette.mode === 'light' ? 'black' : 'white'}}/>
             </IconButton>
             <ToastContainer
                 position="top-center"

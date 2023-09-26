@@ -1,7 +1,10 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import {useTheme} from "@mui/material";
 
 function Footer() {
+    const theme = useTheme();
+
     return (
         <Box
             component="footer"
@@ -10,7 +13,7 @@ function Footer() {
                 padding: '0.01rem',
                 position: 'fixed',
                 bottom: 0,
-                backgroundColor: 'rgba(245, 245, 245, 0.4)',
+                backgroundColor: theme.palette.background.default
             }}
         >
             <Typography variant="body2" color="textSecondary" sx={{ fontSize: '0.8rem' }}>

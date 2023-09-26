@@ -9,8 +9,6 @@
     padding: 8px;
     min-width: 200px;
     pointer-events: all;
-    background: #fcfcfc;
-    color: #444;
     overflow-y: auto;
     max-height: 300px;
 }
@@ -43,4 +41,12 @@
     height: 16px;
     border-radius: 50%;
     margin-right: 8px;
+}
+
+.custom-markdown a, .custom-markdown a:visited {
+    color: dodgerblue;
+}
+
+.maplibregl-ctrl-attrib-inner {
+    color: initial;
 }

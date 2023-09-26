@@ -6,8 +6,9 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow, useTheme
 } from "@mui/material";
+import Box from "@mui/material/Box";
 
 function truncate(str, n) {
     return (str.length > n) ? str.slice(0, n - 1) + '…' : str;
@@ -27,17 +28,18 @@ function renderPrice(price) {
 
 function Tooltip({info, suppliedProcurements, offers}) {
     const {object, x, y} = info;
+    const theme = useTheme();
 
     if (!object) {
         return null;
     }
 
     return (
-        <div className="tooltip" style={{left: x, top: y}}>
+        <Box backgroundColor={theme.palette.background.paper} className="tooltip" style={{left: x, top: y}}>
             <h3>{object.name}</h3>
             <TableContainer className="custom-table">
                 {suppliedProcurements.length !== 0 ? (
-                    <div>
+                    <Box>
                         <Table stickyHeader aria-label="sticky table" size="small">
                             <TableHead>
                                 <TableRow>
@@ -61,7 +63,7 @@ function Tooltip({info, suppliedProcurements, offers}) {
                             </TableBody>
                         </Table>
                         <Divider sx={{borderBottomWidth: 4}}/>
-                    </div>
+                    </Box>
                 ) : (
                     <div/>
                 )}
@@ -92,7 +94,7 @@ function Tooltip({info, suppliedProcurements, offers}) {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </div>
+        </Box>
     );
 }
 
