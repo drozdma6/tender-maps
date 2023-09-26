@@ -172,6 +172,16 @@ function Navigation({ onPageChange, isDarkMode, setIsDarkMode }) {
                             </Button>
                         ))}
                         <Box className="navbarLogoLinks">
+                            <a href="https://fit.cvut.cz/en" target="_blank" rel="noopener noreferrer">
+                                <img
+                                    className="imageLogo"
+                                    src="/data/fit-cvut-logo-en.svg"
+                                    alt="CTU FIT"
+                                    style={{
+                                        width: "90px"
+                                    }}
+                                />
+                            </a>
                             <a href="https://github.com/opendatalabcz/" target="_blank" rel="noopener noreferrer">
                                 <img
                                     className="imageLogo"
@@ -179,20 +189,13 @@ function Navigation({ onPageChange, isDarkMode, setIsDarkMode }) {
                                     alt="Open Data Lab"
                                 />
                             </a>
-                            <a href="https://fit.cvut.cz/en" target="_blank" rel="noopener noreferrer">
-                                <img
-                                    className="imageLogo"
-                                    src="/data/fit-cvut-logo-en.svg"
-                                    alt="CTU FIT"
-                                />
-                            </a>
-
                             <a href="https://github.com/opendatalabcz/analyzer_public_contracts" target="_blank"
                                rel="noopener noreferrer">
                                 <img
                                     className="imageLogo"
                                     src="/data/github-logo.svg"
                                     alt="github"
+                                    style={imgStyle}
                                 />
                             </a>
                         </Box>
