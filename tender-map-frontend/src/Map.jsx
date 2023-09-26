@@ -84,7 +84,7 @@ function Map({activeMap, apiBaseUrl, isDarkMode}) {
         }
         if (filterAuthorities.size !== 0) {
             const filterAuthoritiesIDsParam = [...filterAuthorities].map((authority) => authority.id).join(',');
-            params.append("contractorAuthorityIds", filterAuthoritiesIDsParam);
+            params.append("contractingAuthorityIds", filterAuthoritiesIDsParam);
         }
         return `${path}?${params.toString()}`;
     }
