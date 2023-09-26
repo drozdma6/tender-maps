@@ -51,7 +51,7 @@ function HeatMap({
                 initialViewState={INITIAL_VIEW_STATE}
                 controller={true}
                 layers={layers}>
-                <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
+                <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle}/>
             </DeckGL>
             <Legend title="Heat map"
                     text="Distribution of suppliers and price of their tenders. Darker colors indicate areas of significant economic growth."
