@@ -1,10 +1,10 @@
 import {Paper} from "@mui/material";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 
 function Info({apiBaseUrl}) {
     const apiDocs = apiBaseUrl + "-docs";
-
     const markdownContent = `
 # Tender Maps
 
@@ -36,13 +36,14 @@ Unlike the heat map, the hexagon map has the advantage of displaying more inform
 one set of information, while its color may represent another. Furthermore, users have the option to click on individual hexagons
   to access detailed data about the companies located within that specific area (hexagon).
 
-## Contact Information
-  - Author Name: Marek Drozdik
-  - [Github](https://github.com/opendatalabcz/analyzer_public_contracts)
-  - [LinkedIn](https://www.linkedin.com/in/marek-drozd%C3%ADk-07828b218)
+## Project information
+   -  Author: Marek Drozdik <a href="https://www.linkedin.com/in/marek-drozd%C3%ADk-07828b218" target="_blank" rel="noopener noreferrer">
+                <img src="/data/LinkedIn-icon.png" alt="LinkedIn" style="width: 62px; margin-left: 3px;"/>
+              </a>
+   -  Repository: <a href="https://github.com/opendatalabcz/analyzer_public_contracts" target="_blank" rel="noopener noreferrer">
+                <img src="/data/github-logo-text-black.svg" alt="GitHub" style="width: 55px; margin-left: 3px; ...imgStyle"/>
+              </a>
 `;
-
-
     return (
         <Paper style={{
             paddingBottom: "var(--app-bar-height)",
@@ -51,7 +52,9 @@ one set of information, while its color may represent another. Furthermore, user
             paddingLeft: 30,
             paddingRight: 30
         }}>
-            <ReactMarkdown>{markdownContent}</ReactMarkdown>
+            <div className="custom-markdown">
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{markdownContent}</ReactMarkdown>
+            </div>
         </Paper>
     );
 }
