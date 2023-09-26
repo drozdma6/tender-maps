@@ -21,19 +21,19 @@ public class CompanyService extends AbstractService<Company, Long> {
     /**
      * Gets all companies matching filtering
      *
-     * @param placesOfPerformance    of supplied procurements or of procurements for which company made offers for
-     * @param contractorAuthorityIds of supplied procurements or of procurements for which company made offers for
-     * @param hasExactAddress        if company has exact geolocation
-     * @param isSupplier             if company has already supplied some procurements
+     * @param placesOfPerformance     of supplied procurements or of procurements for which company made offers for
+     * @param contractingAuthorityIds of supplied procurements or of procurements for which company made offers for
+     * @param hasExactAddress         if company has exact geolocation
+     * @param isSupplier              if company has already supplied some procurements
      * @return suppliers which match filtering
      */
     public Collection<Company> readAll(List<String> placesOfPerformance,
-                                            List<Long> contractorAuthorityIds,
-                                            Boolean hasExactAddress,
-                                            Boolean isSupplier) {
+                                       List<Long> contractingAuthorityIds,
+                                       Boolean hasExactAddress,
+                                       Boolean isSupplier) {
         return ((CompanyRepository) repository).findAll(CompanySpecification.getCompanies(
                 placesOfPerformance,
-                contractorAuthorityIds,
+                contractingAuthorityIds,
                 hasExactAddress,
                 isSupplier
         ));

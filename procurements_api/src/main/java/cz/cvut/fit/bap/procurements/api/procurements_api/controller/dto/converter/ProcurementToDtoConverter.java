@@ -29,6 +29,6 @@ public class ProcurementToDtoConverter implements Function<Procurement, Procurem
                 procurement.getContractPrice(), procurement.getPlaceOfPerformance(),
                 procurement.getDateOfPublication(), procurement.getSystemNumber(),
                 companyToDtoConverter.apply(procurement.getSupplier()),
-                procurement.getContractorAuthority().getName());
+                procurement.getContractingAuthority().getName());
     }
 }

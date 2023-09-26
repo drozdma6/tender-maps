@@ -60,7 +60,7 @@ public class ProcurementSpecification {
 
     private static Predicate buildContractingAuthorityPredicate(Root<Procurement> root, CriteriaBuilder criteriaBuilder, List<Long> contractingAuthorityIds) {
         return contractingAuthorityIds != null && !contractingAuthorityIds.isEmpty() ?
-                root.get("contractorAuthority").get("id").in(contractingAuthorityIds) :
+                root.get("contractingAuthority").get("id").in(contractingAuthorityIds) :
                 criteriaBuilder.conjunction();
     }
 

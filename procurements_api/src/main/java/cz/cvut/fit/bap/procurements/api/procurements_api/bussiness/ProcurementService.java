@@ -22,18 +22,18 @@ public class ProcurementService extends AbstractService<Procurement, Long> {
      * Gets all procurements matching filtering by parameters.
      *
      * @param placesOfPerformance     filtering by place of performance
-     * @param contractorAuthorityIds  filtering by contractor authorities Ids
+     * @param contractingAuthorityIds filtering by contractor authorities Ids
      * @param supplierHasExactAddress if supplier has exact geolocation
      * @param supplierId              filtering by supplierId
      * @return All procurements satisfying filtering.
      */
     public Collection<Procurement> readAll(List<String> placesOfPerformance,
-                                           List<Long> contractorAuthorityIds,
+                                           List<Long> contractingAuthorityIds,
                                            Boolean supplierHasExactAddress,
                                            Long supplierId) {
         return ((ProcurementRepository) repository).findAll(ProcurementSpecification.getProcurementSpecification(
                 placesOfPerformance,
-                contractorAuthorityIds,
+                contractingAuthorityIds,
                 supplierHasExactAddress,
                 supplierId));
     }

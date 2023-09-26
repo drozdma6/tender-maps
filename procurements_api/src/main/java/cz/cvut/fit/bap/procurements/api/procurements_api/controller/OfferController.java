@@ -26,20 +26,20 @@ public class OfferController extends AbstractController<Offer, Long, OfferDto> {
     /**
      * Gets all offers created by provided companyID matching optional filtering.
      *
-     * @param companyId              of searched company
-     * @param placesOfPerformance    filtering by places of performance
-     * @param contractorAuthorityIds filtering by contracting authority ids
+     * @param companyId               of searched company
+     * @param placesOfPerformance     filtering by places of performance
+     * @param contractingAuthorityIds filtering by contracting authority ids
      * @return offers created by company matching filtering
      */
     @CrossOrigin
     @GetMapping
     public ResponseEntity<Collection<OfferDto>> getOffersByCompanyId(@RequestParam Optional<List<String>> placesOfPerformance,
-                                                                     @RequestParam Optional<List<Long>> contractorAuthorityIds,
+                                                                     @RequestParam Optional<List<Long>> contractingAuthorityIds,
                                                                      @RequestParam Long companyId) {
         List<OfferDto> offerDtos = ((OfferService) service).getOffersByCompanyId(
                         companyId,
                         placesOfPerformance.orElse(Collections.emptyList()),
-                        contractorAuthorityIds.orElse(Collections.emptyList())
+                        contractingAuthorityIds.orElse(Collections.emptyList())
                 )
                 .stream()
                 .map(toDtoConverter)

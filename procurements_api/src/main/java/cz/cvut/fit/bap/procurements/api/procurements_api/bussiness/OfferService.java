@@ -21,13 +21,13 @@ public class OfferService extends AbstractService<Offer, Long> {
     /**
      * Gets all offers created by provided companyID matching desired filtering.
      *
-     * @param companyId              of searched company
-     * @param placesOfPerformance    filtering by places of performance
-     * @param contractorAuthorityIds filtering by contracting authority ids
+     * @param companyId               of searched company
+     * @param placesOfPerformance     filtering by places of performance
+     * @param contractingAuthorityIds filtering by contracting authority ids
      * @return offers created by company matching filtering
      */
-    public Collection<Offer> getOffersByCompanyId(Long companyId, List<String> placesOfPerformance, List<Long> contractorAuthorityIds) {
+    public Collection<Offer> getOffersByCompanyId(Long companyId, List<String> placesOfPerformance, List<Long> contractingAuthorityIds) {
         return ((OfferRepository) repository).findAll(
-                OfferSpecification.getCompanyOffersSpecification(placesOfPerformance, contractorAuthorityIds, companyId));
+                OfferSpecification.getCompanyOffersSpecification(placesOfPerformance, contractingAuthorityIds, companyId));
     }
 }

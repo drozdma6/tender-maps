@@ -9,16 +9,16 @@ import java.util.Set;
 
 
 /*
-    Class represents contractor authority table
+    Class represents contracting authority table
  */
 @Entity
-public class ContractorAuthority implements DomainEntity<Long>{
+public class ContractingAuthority implements DomainEntity<Long> {
     @Id
     @GeneratedValue
     private Long id;
-    @Column(name = "contractor_authority_name", unique = true)
+    @Column(name = "contracting_authority_name", unique = true)
     private String name;
-    @OneToMany(mappedBy = "contractorAuthority")
+    @OneToMany(mappedBy = "contractingAuthority")
     private Set<Procurement> procurements = new HashSet<>();
 
     @ManyToOne
@@ -28,62 +28,62 @@ public class ContractorAuthority implements DomainEntity<Long>{
     @Column(name = "url")
     private String url;
 
-    public Address getAddress(){
+    public Address getAddress() {
         return address;
     }
 
-    public void setAddress(Address address){
+    public void setAddress(Address address) {
         this.address = address;
     }
 
-    public ContractorAuthority(){
+    public ContractingAuthority() {
     }
 
-    public String getUrl(){
+    public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url){
+    public void setUrl(String url) {
         this.url = url;
     }
 
-    public Set<Procurement> getProcurements(){
+    public Set<Procurement> getProcurements() {
         return procurements;
     }
 
-    public void setProcurements(Set<Procurement> procurements){
+    public void setProcurements(Set<Procurement> procurements) {
         this.procurements = procurements;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
     @Override
-    public void setId(Long id){
+    public void setId(Long id) {
         this.id = id;
     }
 
     @Override
-    public Long getId(){
+    public Long getId() {
         return id;
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof ContractorAuthority that))
+        if (!(o instanceof ContractingAuthority that))
             return false;
         return Objects.equals(id, that.id);
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hash(id);
     }
 }

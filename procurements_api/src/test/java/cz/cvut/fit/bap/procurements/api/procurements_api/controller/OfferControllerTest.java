@@ -54,7 +54,7 @@ class OfferControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/offers")
                         .param("companyId", "2")
                         .param("placesOfPerformance", "Test Place 2")
-                        .param("contractorAuthorityIds", "3")
+                        .param("contractingAuthorityIds", "3")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))

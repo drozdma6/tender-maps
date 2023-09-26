@@ -80,7 +80,7 @@ class CompanyControllerTest {
     @Test
     public void testGetSuppliers3() throws Exception {
         mockMvc.perform(get("/api/companies")
-                        .param("contractorAuthorityIds", "1")
+                        .param("contractingAuthorityIds", "1")
                         .param("isSupplier", "true")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -95,7 +95,7 @@ class CompanyControllerTest {
     public void testGetSuppliers4() throws Exception {
         mockMvc.perform(get("/api/companies")
                         .param("isSupplier", "true")
-                        .param("contractorAuthorityIds", "1")
+                        .param("contractingAuthorityIds", "1")
                         .param("placesOfPerformance", "Test Place 1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -123,7 +123,7 @@ class CompanyControllerTest {
         mockMvc.perform(get("/api/companies")
                         .param("isSupplier", "false")
                         .param("placesOfPerformance", "Test Place 3")
-                        .param("contractorAuthorityIds", "1")
+                        .param("contractingAuthorityIds", "1")
                         .param("hasExactAddress", "true")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

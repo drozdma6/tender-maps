@@ -34,7 +34,7 @@ class ProcurementControllerTest {
     public void testReadAllParams() throws Exception {
         mockMvc.perform(get("/api/procurements")
                         .param("placesOfPerformance", "Test Place 1")
-                        .param("contractorAuthorityIds", "1")
+                        .param("contractingAuthorityIds", "1")
                         .param("supplierHasExactAddress", "true")
                         .param("supplierId", "1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -73,9 +73,9 @@ class ProcurementControllerTest {
     }
 
     @Test
-    public void testWithContractorAuthorityId() throws Exception {
+    public void testWithContractingAuthorityId() throws Exception {
         mockMvc.perform(get("/api/procurements")
-                        .param("contractorAuthorityIds", "2")
+                        .param("contractingAuthorityIds", "2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -85,9 +85,9 @@ class ProcurementControllerTest {
     }
 
     @Test
-    public void testWithContractorAuthorityIds() throws Exception {
+    public void testWithContractingAuthorityIds() throws Exception {
         mockMvc.perform(get("/api/procurements")
-                        .param("contractorAuthorityIds", "2", "1")
+                        .param("contractingAuthorityIds", "2", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))

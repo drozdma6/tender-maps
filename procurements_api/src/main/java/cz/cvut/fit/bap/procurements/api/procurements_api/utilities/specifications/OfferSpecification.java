@@ -29,7 +29,7 @@ public class OfferSpecification {
 
     private static Predicate buildContractingAuthorityPredicate(Root<Offer> root, CriteriaBuilder criteriaBuilder, List<Long> contractingAuthorityIds) {
         return contractingAuthorityIds != null && !contractingAuthorityIds.isEmpty() ?
-                root.get("procurement").get("contractorAuthority").get("id").in(contractingAuthorityIds) :
+                root.get("procurement").get("contractingAuthority").get("id").in(contractingAuthorityIds) :
                 criteriaBuilder.conjunction();
     }
 }

@@ -25,20 +25,20 @@ public class ProcurementController extends AbstractController<Procurement, Long,
     /**
      * Gets all procurements matching filtering by parameters.
      *
-     * @param contractorAuthorityIds filtering by contractor authority ids
-     * @param placesOfPerformance    filtering by places of performance
+     * @param contractingAuthorityIds filtering by contracting authority ids
+     * @param placesOfPerformance     filtering by places of performance
      * @param supplierHasExactAddress filtering whether supplier's address is exact (latitude and longitude is not null)
      * @return procurements matching filtering
      */
     @CrossOrigin
     @GetMapping
     public Collection<ProcurementDto> readAll(@RequestParam Optional<List<String>> placesOfPerformance,
-                                              @RequestParam Optional<List<Long>> contractorAuthorityIds,
+                                              @RequestParam Optional<List<Long>> contractingAuthorityIds,
                                               @RequestParam Optional<Boolean> supplierHasExactAddress,
                                               @RequestParam Optional<Long> supplierId) {
         return ((ProcurementService) service).readAll(
                         placesOfPerformance.orElse(Collections.emptyList()),
-                        contractorAuthorityIds.orElse(Collections.emptyList()),
+                        contractingAuthorityIds.orElse(Collections.emptyList()),
                         supplierHasExactAddress.orElse(null),
                         supplierId.orElse(null))
                 .stream().map(toDtoConverter).toList();

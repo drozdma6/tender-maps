@@ -14,5 +14,5 @@ public record ProcurementDto(
         LocalDate dateOfPublication,
         String systemNumber,
         CompanyDto supplier,
-        String contractorAuthorityName) {
+        String contractingAuthorityName) {
 }

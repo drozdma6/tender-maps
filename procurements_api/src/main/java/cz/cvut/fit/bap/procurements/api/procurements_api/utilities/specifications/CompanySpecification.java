@@ -59,6 +59,6 @@ public class CompanySpecification {
         if (contractingAuthorityIds == null || contractingAuthorityIds.isEmpty()) {
             return criteriaBuilder.conjunction();
         }
-        return root.get("offers").get("procurement").get("contractorAuthority").get("id").in(contractingAuthorityIds);
+        return root.get("offers").get("procurement").get("contractingAuthority").get("id").in(contractingAuthorityIds);
     }
 }
