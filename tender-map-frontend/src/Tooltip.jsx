@@ -26,17 +26,25 @@ function renderPrice(price) {
     }
 }
 
+function buildLinkToCompanyDetail(organisationId){
+    return "https://or.justice.cz/ias/ui/rejstrik-$firma?ico=" + organisationId;
+ }
+
 function Tooltip({info, suppliedProcurements, offers}) {
-    const {object, x, y} = info;
+    const {object: companyInfo, x, y} = info;
     const theme = useTheme();
 
-    if (!object) {
+    if (!companyInfo) {
         return null;
     }
 
     return (
         <Box backgroundColor={theme.palette.background.paper} className="tooltip" style={{left: x, top: y}}>
-            <h3>{object.name}</h3>
+            <h3>
+                <Link href={buildLinkToCompanyDetail(companyInfo.organisationId)} target="_blank">
+                    {companyInfo.name}
+                </Link>
+            </h3>
             <TableContainer className="custom-table">
                 {suppliedProcurements.length !== 0 ? (
                     <Box>
@@ -95,7 +103,7 @@ function Tooltip({info, suppliedProcurements, offers}) {
                 </Table>
             </TableContainer>
         </Box>
-    );
+);
 }
 
 export default Tooltip;
