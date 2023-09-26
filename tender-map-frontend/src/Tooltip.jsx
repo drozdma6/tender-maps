@@ -17,6 +17,14 @@ function getProcurementUrl(procurementSystemNumber) {
     return "https://nen.nipez.cz/verejne-zakazky/detail-zakazky/" + procurementSystemNumber.replaceAll("/", "-");
 }
 
+function renderPrice(price) {
+    if (price === null || price === 'undefined') {
+        return "N/A CZK";
+    } else {
+        return price.toString() + " CZK";
+    }
+}
+
 function Tooltip({info, suppliedProcurements, offers}) {
     const {object, x, y} = info;
 
@@ -46,7 +54,7 @@ function Tooltip({info, suppliedProcurements, offers}) {
                                             </Link>
                                         </TableCell>
                                         <TableCell align="right">
-                                            {row.contractPrice} CZK
+                                            {renderPrice(row.contractPrice)}
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -77,7 +85,7 @@ function Tooltip({info, suppliedProcurements, offers}) {
                                     </Link>
                                 </TableCell>
                                 <TableCell align="right">
-                                    {row.price} CZK
+                                    {renderPrice(row.price)}
                                 </TableCell>
                             </TableRow>
                         ))}
