@@ -48,9 +48,10 @@ function App() {
             case 'HEATMAP':
             case 'HEXAGONMAP':
             case 'ICONMAP':
-                return <Map activeMap={selectedPage} apiBaseUrl={API_URL} isDarkMode={isDarkMode}/>;
+                return <Map activeMap={selectedPage} apiBaseUrl={API_URL} isDarkMode={isDarkMode}
+                            changePageToInfo={() => handlePageChange('INFO')}/>;
             case 'INFO':
-                return <Info apiBaseUrl={API_URL}/>
+                return <Info apiBaseUrl={API_URL} scrollTo={"hexagonMap"}/>
             default:
                 return null;
         }

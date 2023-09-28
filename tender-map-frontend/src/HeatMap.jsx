@@ -25,6 +25,7 @@ function HeatMap({
                      intensity = 1,
                      threshold = 0.03,
                      radiusPixels = 30,
+                     changePageToInfo,
                  }) {
     const [data, setData] = useState([]);
 
@@ -54,7 +55,8 @@ function HeatMap({
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle}/>
             </DeckGL>
             <Legend title="Heat map"
-                    text="Distribution of suppliers and price of their tenders. Darker colors indicate areas of significant economic growth."
+                    text="Map shows suppliers and cumulative price of their tenders. Darker colors indicate areas of significant economic growth."
+                    changePageToInfo={changePageToInfo}
             >
                 <div style={{display: 'flex', alignItems: 'center', marginTop: '8px'}}>
                     <div style={{

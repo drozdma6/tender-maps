@@ -32,7 +32,8 @@ function IconMap({
                      filterLocations,
                      filterAuthorities,
                      iconMapping = '/data/location-icon-mapping.json',
-                     mapStyle
+                     mapStyle,
+                     changePageToInfo
                  }) {
     const [suppliersData, setSuppliersData] = useState([]);
     const [nonSuppliersData, setNonSuppliersData] = useState([]);
@@ -143,7 +144,8 @@ function IconMap({
 
             <Legend
                 title="Icon map"
-                text="Data set of all participants in tenders." items={[]}>
+                text="Data set of all participants in tenders." items={[]}
+                changePageToInfo={changePageToInfo}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" marginTop={2}>
                     <Box textAlign="center" marginLeft={4}>
                         <Typography variant="body1" fontWeight="bold" style={{color: legendItems.suppliers.color}}>

@@ -88,7 +88,8 @@ function HexagonMap({
                         filterAuthorities,
                         mapStyle,
                         upperPercentile = 100,
-                        coverage = 1
+                        coverage = 1,
+                        changePageToInfo
                     }) {
     const [sliderValue, setSliderValue] = useState(1000);
     const [data, setData] = useState([]);
@@ -145,6 +146,7 @@ function HexagonMap({
             <Legend
                 title="Hexagon map"
                 text="Distribution of suppliers and price of their tenders. Both color and elevation of hexagon show cumulative price of tenders. Elevation can show number of companies in hexagon."
+                changePageToInfo={changePageToInfo}
             >
                 <div style={{
                     display: 'flex',

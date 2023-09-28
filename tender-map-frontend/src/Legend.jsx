@@ -4,7 +4,7 @@ import {
     useTheme,
     useMediaQuery,
     Typography,
-    Box,
+    Box, Link,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import {makeStyles} from "@mui/styles";
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Legend({title, text, children}) {
+function Legend({title, text, changePageToInfo, children}) {
     const [minimized, setMinimized] = useState(false);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -39,6 +39,10 @@ function Legend({title, text, children}) {
     const toggleMinimized = () => {
         setMinimized((prevMinimized) => !prevMinimized);
     };
+
+    const handleMoreInfoClick = () => {
+        changePageToInfo();
+    }
 
     return (
         <Box className={`${classes.container} ${isMobile ? classes.containerMobile : ""}`}>
@@ -59,7 +63,18 @@ function Legend({title, text, children}) {
             {!minimized && (
                 <>
                     <Box maxWidth={380} textAlign={"justify"}>
-                        <Typography variant="body1" >{text}</Typography>
+                        <Typography variant="body1" >
+                            {text}
+                            <Link
+                                component="button"
+                                variant="body2"
+                                onClick={handleMoreInfoClick}
+                                sx={{ ml: 1, mb: 0.5}}
+                                underline="none"
+                            >
+                                [More]
+                            </Link>
+                        </Typography>
                     </Box>
                     {children}
                 </>

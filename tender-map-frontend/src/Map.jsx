@@ -21,7 +21,7 @@ const MAP_STYLES = {
     }
 };
 
-function Map({activeMap, apiBaseUrl, isDarkMode}) {
+function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
     const [filterLocations, setFilterLocations] = useState([]);
     const [filterAuthorities, setFilterAuthorities] = useState(new Set());
     const [showFilterMenu, setShowFilterMenu] = useState(false);
@@ -34,7 +34,8 @@ function Map({activeMap, apiBaseUrl, isDarkMode}) {
             fetchData: fetchData,
             addFiltersToPath: addFiltersToPath,
             filterLocations: filterLocations,
-            filterAuthorities: filterAuthorities
+            filterAuthorities: filterAuthorities,
+            changePageToInfo,
         };
         switch (activeMap) {
             case 'HEATMAP':
