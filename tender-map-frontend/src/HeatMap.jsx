@@ -5,15 +5,6 @@ import DeckGL from '@deck.gl/react';
 import Legend from "./Legend.jsx";
 import {useEffect, useState} from "react";
 
-const INITIAL_VIEW_STATE = {
-    longitude: 15.301806,
-    latitude: 49.868280,
-    zoom: 6.6,
-    maxZoom: 16,
-    pitch: 0,
-    bearing: 0
-};
-
 const DATA_PATH = '/procurements';
 
 const LEGEND_TEXT = "This map shows the geographical distribution of suppliers in tenders and uses colours to indicate\n" +
@@ -29,6 +20,8 @@ function HeatMap({
                      threshold = 0.03,
                      radiusPixels = 30,
                      changePageToInfo,
+                     viewState,
+                     setViewState,
                  }) {
     const [data, setData] = useState([]);
 
@@ -52,7 +45,9 @@ function HeatMap({
     return (
         <div>
             <DeckGL
-                initialViewState={INITIAL_VIEW_STATE}
+                viewState={viewState}
+                onViewStateChange={e => setViewState(e.viewState)}
+                // initialViewState={INITIAL_VIEW_STATE}
                 controller={true}
                 layers={layers}>
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle}/>

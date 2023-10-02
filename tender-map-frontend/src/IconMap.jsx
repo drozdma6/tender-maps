@@ -13,15 +13,6 @@ import Typography from "@mui/material/Typography";
 
 const MAP_VIEW = new MapView({repeat: true});
 
-const INITIAL_VIEW_STATE = {
-    longitude: 15.301806,
-    latitude: 49.868280,
-    zoom: 6.6,
-    maxZoom: 16,
-    pitch: 0,
-    bearing: 0
-};
-
 const DATA_COMPANIES = '/companies';
 const PROCUREMENTS_PATH = '/procurements';
 const OFFERS_PATH = '/offers'
@@ -36,7 +27,9 @@ function IconMap({
                      filterAuthorities,
                      iconMapping = '/data/location-icon-mapping.json',
                      mapStyle,
-                     changePageToInfo
+                     changePageToInfo,
+                     viewState,
+                     setViewState
                  }) {
     const [suppliersData, setSuppliersData] = useState([]);
     const [nonSuppliersData, setNonSuppliersData] = useState([]);
@@ -48,7 +41,10 @@ function IconMap({
 
     useEffect(() => {
         fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier": true}), setSuppliersData);
-        fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier": false}), setNonSuppliersData);
+        fetchData(addFiltersToPath(DATA_COMPANIES, {
+            "hasExactAddress": true,
+            "isSupplier": false
+        }), setNonSuppliersData);
     }, [filterLocations, filterAuthorities])
 
     async function fetchOffers(companyId) {
@@ -134,9 +130,12 @@ function IconMap({
             <DeckGL
                 layers={layers}
                 views={MAP_VIEW}
-                initialViewState={INITIAL_VIEW_STATE}
                 controller={{dragRotate: false}}
-                onViewStateChange={() => setSelectedIconData({})}
+                onViewStateChange={(e) => {
+                    setSelectedIconData({})
+                    setViewState(e.viewState)
+                }}
+                viewState={viewState}
                 onClick={expandTooltip}
                 onHover={handleHover}
             >
