@@ -226,6 +226,7 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
                             onChange={handleDarkModeToggle}
                             name="nightShift"
                             inputProps={{'aria-label': 'secondary checkbox'}}
+                            checked={themeToggle}
                         />
                     </Box>
                 </Toolbar>
