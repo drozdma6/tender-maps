@@ -16,23 +16,22 @@ The tender data for this research was gathered from the Czech Republic's public 
 Applying filters based on the place where procurements are executed and the organization (contracting authority) responsible for initiating a particular procurement is possible for every map type.
 
 ### <div id='heatMap'>Heat Map</div>
-This map visually illustrates the distribution of suppliers involved in public procurements across different locations. By utilizing the
- addresses of companies for geolocation and assigning colors based on the cumulative contract prices of won procurements, 
- the heat map provides an intuitive insight into identifying significant areas of economic engagement within the realm of public procurement 
- in the Czech Republic.
+This map provides a visual representation of the distribution of suppliers participating in public tenders across the Czech Republic. 
+Utilising the addresses of company headquarters for geolocation and assigning colours based on the cumulative contract prices won, the heat map
+ offers an intuitive way of identifying significant areas of economic activity in public tenders in the Czech Republic.
 
 ### <div id='iconMap'>Icon Map</div>
-The icon map is designed to showcase companies participating in public procurement. Suppliers are marked with orange icons, while 
-non-suppliers are indicated by blue icons. Users can interact with these icons to access lists of both won and supplied procurements, 
-as well as view all offers submitted by each company. 
-
+The Icon Map displays companies that have participated in public tenders. Suppliers are represented by orange icons and
+ non-suppliers (companies that participated but did not win) are represented by blue icons. Users can click on these 
+ icons to access lists of both won and supplied procurements and to view all bids submitted by each company. Furthermore, 
+ users can click on the company name to access the government's official public register of companies, where they can view 
+ even more information.
 ### <div id='hexagonMap'>Hexagon Map</div>
-The hexagon map serves as a visual representation of the geographical distribution of suppliers involved in public procurement.
- By mapping company headquarters' addresses, and using color and elevation to reflect the total contract prices of won procurements.
-Unlike the heat map, the hexagon map has the advantage of displaying more information simultaneously. Each hexagon's elevation can convey 
-one set of information, while its color may represent another. Furthermore, users have the option to click on individual hexagons
-  to access detailed data about the companies located within that specific area (hexagon).
-
+The hexagon map functions as a clear illustration of the geographical spread of suppliers participating in public tenders.
+This is accomplished by mapping the locations of company headquarters and utilising colour and elevation to indicate the total
+ value of contracts won. Unlike the heat map, the hexagon map offers the advantage of displaying more information concurrently.
+   The elevation may indicate one set of data, while the colour may indicate another. Additionally, users can access detailed information about the
+   businesses situated in a specific hexagon by clicking on the corresponding hexagon.
 ## Project information
    -  Author: Marek Drozdik <a href="https://www.linkedin.com/in/marek-drozd%C3%ADk-07828b218" target="_blank" rel="noopener noreferrer">
                 <img src="/data/LinkedIn-icon.png" alt="LinkedIn" style="width: 62px; margin-left: 3px;"/>

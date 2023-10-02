@@ -16,6 +16,9 @@ const INITIAL_VIEW_STATE = {
 
 const DATA_PATH = '/procurements';
 
+const LEGEND_TEXT = "This map shows the geographical distribution of suppliers in tenders and uses colours to indicate\n" +
+    "                     the total value of contracts won. Darker colours indicate areas of significant economic growth."
+
 function HeatMap({
                      fetchData,
                      addFiltersToPath,
@@ -55,7 +58,7 @@ function HeatMap({
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle}/>
             </DeckGL>
             <Legend title="Heat map"
-                    text="Map shows suppliers and cumulative price of their tenders. Darker colors indicate areas of significant economic growth."
+                    text={LEGEND_TEXT}
                     changePageToInfo={changePageToInfo}
             >
                 <div style={{display: 'flex', alignItems: 'center', marginTop: '8px'}}>

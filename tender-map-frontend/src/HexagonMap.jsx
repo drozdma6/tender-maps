@@ -54,6 +54,9 @@ const colorRange = [
     [209, 55, 78]
 ];
 
+const LEGEND_TEXT = "This map displays the location of suppliers. By default, both the hexagon height and the hexagon colour" +
+    " show the total cumulative price. To see the price and the number of companies, simply hover over the hexagon."
+
 /*
     Formatting price as 100k for 100 000, 100mil for 100 milions and so on
  */
@@ -145,7 +148,7 @@ function HexagonMap({
             </DeckGL>
             <Legend
                 title="Hexagon map"
-                text="Distribution of suppliers and price of their tenders. Both color and elevation of hexagon show cumulative price of tenders. Elevation can show number of companies in hexagon."
+                text={LEGEND_TEXT}
                 changePageToInfo={changePageToInfo}
             >
                 <div style={{

@@ -26,6 +26,9 @@ const DATA_COMPANIES = '/companies';
 const PROCUREMENTS_PATH = '/procurements';
 const OFFERS_PATH = '/offers'
 
+const LEGEND_TEXT = "This map shows the participants in tenders and distinguishes between suppliers and non-suppliers " +
+    "(companies that have participated but not yet won). To view information about the tenders related to each participant, simply click on the icon."
+
 function IconMap({
                      fetchData,
                      addFiltersToPath,
@@ -44,16 +47,16 @@ function IconMap({
     const [hoveredLayerId, setHoveredLayerId] = useState(null);
 
     useEffect(() => {
-        fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier" : true}), setSuppliersData);
-        fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier" : false}), setNonSuppliersData);
+        fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier": true}), setSuppliersData);
+        fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier": false}), setNonSuppliersData);
     }, [filterLocations, filterAuthorities])
 
     async function fetchOffers(companyId) {
-        fetchData(addFiltersToPath(OFFERS_PATH, {"companyId" : companyId}), setCompanyOffers);
+        fetchData(addFiltersToPath(OFFERS_PATH, {"companyId": companyId}), setCompanyOffers);
     }
 
     async function fetchSuppliedProcurements(companyId) {
-        fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierId" : companyId}), setSuppliedProcurements);
+        fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierId": companyId}), setSuppliedProcurements);
     }
 
     const expandTooltip = info => {
@@ -133,7 +136,7 @@ function IconMap({
                 views={MAP_VIEW}
                 initialViewState={INITIAL_VIEW_STATE}
                 controller={{dragRotate: false}}
-                onViewStateChange= {() => setSelectedIconData({})}
+                onViewStateChange={() => setSelectedIconData({})}
                 onClick={expandTooltip}
                 onHover={handleHover}
             >
@@ -144,7 +147,7 @@ function IconMap({
 
             <Legend
                 title="Icon map"
-                text="Data set of all participants in tenders." items={[]}
+                text={LEGEND_TEXT}
                 changePageToInfo={changePageToInfo}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" marginTop={2}>
                     <Box textAlign="center" marginLeft={4}>
