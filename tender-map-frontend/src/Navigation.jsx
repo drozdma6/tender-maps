@@ -69,9 +69,12 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
     const theme = useTheme();
 
     const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
+        if (anchorElNav) {
+            setAnchorElNav(null);  // close the menu if it's already open
+        } else {
+            setAnchorElNav(event.currentTarget);  // open the menu if it's closed
+        }
     };
-
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
     };
@@ -81,8 +84,8 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
     }
 
     const imgStyle = theme.palette.mode === 'light'
-        ? { filter: 'invert(0)' } // Original color when light theme
-        : { filter: 'invert(1)' }; // Inverted color when dark theme
+        ? {filter: 'invert(0)'} // Original color when light theme
+        : {filter: 'invert(1)'}; // Inverted color when dark theme
 
     return (
         <AppBar position="static" color="default" style={{
@@ -147,7 +150,10 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
                             }}
                         >
                             {pages.map((page) => (
-                                <MenuItem key={page} onClick={() => onPageChange(page)}>
+                                <MenuItem key={page} onClick={() => {
+                                    onPageChange(page)
+                                    handleCloseNavMenu()
+                                }}>
                                     <Typography variant="body1" textAlign="center">{page}</Typography>
                                 </MenuItem>
                             ))}
