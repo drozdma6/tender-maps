@@ -47,28 +47,20 @@ function IconMap({
         }), setNonSuppliersData);
     }, [filterLocations, filterAuthorities])
 
-    async function fetchOffers(companyId) {
+    async function fetchDataOnClick(layerId, companyId) {
+        if (layerId === "suppliers") {
+            fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierId": companyId}), setSuppliedProcurements);
+        }
         fetchData(addFiltersToPath(OFFERS_PATH, {"companyId": companyId}), setCompanyOffers);
     }
 
-    async function fetchSuppliedProcurements(companyId) {
-        fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierId": companyId}), setSuppliedProcurements);
-    }
+    const handleIconClick = info => {
+        if (info.picked && !info.objects) {
+            const layerId = info.layer.id;
+            const companyId = info.object.id;
 
-    const expandTooltip = info => {
-        setSuppliedProcurements([]);
-        setCompanyOffers([]);
-        if (info.picked) {
-            if (info.objects) {
-                setSelectedIconData({})
-            } else {
-                //fetch supplied procurements only if click is on supplier company
-                if (info.layer.id === "suppliers") {
-                    fetchSuppliedProcurements(info.object.id);
-                }
-                fetchOffers(info.object.id); //fetch for both suppliers / non-suppliers
-                setSelectedIconData(info);
-            }
+            fetchDataOnClick(layerId, companyId);
+            setSelectedIconData(info);
         } else {
             setSelectedIconData({});
         }
@@ -136,7 +128,7 @@ function IconMap({
                     setViewState(e.viewState)
                 }}
                 viewState={viewState}
-                onClick={expandTooltip}
+                onClick={handleIconClick}
                 onHover={handleHover}
             >
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
