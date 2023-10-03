@@ -10,7 +10,7 @@ The primary objective was to create an application capable of web scraping, stor
 
 ## Data Information
 The tender data for this research was gathered from the Czech Republic's public procurement portal, [nen.nipez.cz](https://nen.nipez.cz/en/). The project included the development of a REST API to seamlessly integrate the dataset into various applications and projects. A publicly accessible
- [API Swagger documentation](${apiDocs}) is provided in order to simplify integration for other developers.
+ [API Swagger documentation](${apiDocs}) is provided in order to simplify integration for other developers. The operator is in no way responsible for the accuracy of the data and statistics presented in the Tender Maps.
 
 ## Maps Information
 Applying filters based on the place where procurements are executed and the organization (contracting authority) responsible for initiating a particular procurement is possible for every map type.

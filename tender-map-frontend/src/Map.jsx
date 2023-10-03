@@ -6,7 +6,6 @@ import FilterSideBar from "./FilterSideBar.jsx";
 import IconButton from "@mui/material/IconButton";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import {useMediaQuery, useTheme} from "@mui/material";
-import Footer from "./Footer.jsx";
 import {toast, ToastContainer} from "react-toastify";
 import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css';
@@ -103,7 +102,6 @@ function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
     return (
         <div>
             {renderActiveMap()}
-            <Footer/>
             <FilterSideBar
                 apiBaseUrl={apiBaseUrl}
                 opened={showFilterMenu}
