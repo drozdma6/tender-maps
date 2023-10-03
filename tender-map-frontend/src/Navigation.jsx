@@ -17,7 +17,7 @@ const MaterialUISwitch = styled(Switch)(() => {
     const theme = useTheme();
     const thumbColor = theme.palette.background.default;
     return {
-        width: 62,
+        width: 58,
         height: 34,
         padding: 7,
         '& .MuiSwitch-switchBase': {
@@ -166,6 +166,7 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
                         href="/"
                         color="inherit"
                         sx={{
+                            fontSize: { xs: '1.2rem', md: '1.5rem' }, // Adjust the font size for smaller devices
                             mr: 2,
                             display: {xs: 'flex', md: 'none'},
                             flexGrow: 1,
@@ -177,9 +178,9 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
                     >
                         <img src="/map_icon_black.svg" alt="Map Icon"
                              style={{
-                                 marginRight: '10px',
-                                 marginLeft: '10px',
-                                 width: '24px',
+                                 marginRight: '5px',
+                                 marginLeft: '5px',
+                                 width: '18px',
                                  ...imgStyle,
                              }}/>
                         TENDER MAPS
@@ -227,7 +228,7 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
                             </a>
                         </Box>
                     </Box>
-                    <Box marginBottom={1}>
+                    <Box sx={{ mb: { xs: 0, md: 1 } }}>
                         <MaterialUISwitch
                             onChange={handleDarkModeToggle}
                             name="nightShift"
