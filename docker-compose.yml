@@ -16,6 +16,7 @@ services:
       - CORE_POOL_SIZE=5
       - PROFINIT_API_KEY=${PROFINIT_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+      - FIXER_API_KEY=${FIXER_API_KEY}
 
   database:
     image: postgres:14-alpine

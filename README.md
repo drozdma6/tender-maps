@@ -11,8 +11,10 @@ The primary objective was to create an application capable of web scraping, stor
  - Edit *.env* 
 ```
 PROFINIT_API_KEY=profinit_api_key
+GOOGLE_API_KEY=google_api_key
 DB_PASSWORD=password
 VITE_API_URL=api_url
+FIXER_API_KEY=fixer_api_key
 ```
  - Optionally add GOOGLE_API_KEY, for geocoding foreign countries (do not include it in *.env* if you do not have it)
  - Optionally change [scrapper modifiers](#scrapper-modifiers) in *docker-compose.yml*.
