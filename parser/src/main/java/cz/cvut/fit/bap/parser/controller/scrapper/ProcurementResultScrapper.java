@@ -1,12 +1,18 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
+import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
+import cz.cvut.fit.bap.parser.controller.dto.ContractDto;
 import cz.cvut.fit.bap.parser.controller.dto.OfferDto;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for scrapping procurement result page
@@ -19,31 +25,23 @@ public class ProcurementResultScrapper extends AbstractScrapper{
     }
 
     /**
-     * Gets a supplier's map where key is supplier's name and value is additional information scrapped
-     * from procurement result page.
+     * Gets information from supplier's table in procurement result page
      *
-     * @return map containing company name as key companyInfo as value
+     * @return list containing contractDtos representing each row in supplier's table
      */
-    public Map<String,OfferDto> getSupplierMap(){
-        Map<String,OfferDto> suppliersMap = new HashMap<>();
+    public List<ContractDto> getSuppliers() {
+        List<ContractDto> suppliers = new ArrayList<>();
         Elements suppliersRows = getSuppliersRows();
-
         for(Element supplierRow : suppliersRows){
-            String name = getSupplierName(supplierRow);
-            Optional<BigDecimal> price = getPrice(supplierRow);
-            String url = getDetailHref(supplierRow);
-            // Check if the company already exists in the map
-            suppliersMap.compute(name, (key, existingOffer) -> {
-                if(existingOffer != null){
-                    // If it exists change value to new OfferDto
-                    return existingOffer.addPriceToOffer(price.orElse(null));
-                }else{
-                    // If it doesn't exist, add the new OfferDto object to the map
-                    return new OfferDto(price.orElse(null), url, name);
-                }
-            });
+            suppliers.add(new ContractDto(
+                    getPrice(supplierRow),
+                    getDetailHref(supplierRow),
+                    getSupplierName(supplierRow),
+                    getCurrency(supplierRow),
+                    getContractDate(supplierRow)
+            ));
         }
-        return suppliersMap;
+        return suppliers;
     }
 
     /**
@@ -59,9 +57,9 @@ public class ProcurementResultScrapper extends AbstractScrapper{
             String url = getDetailHref(participantRow);
             String strPrice = participantRow.select("[data-title=\"Bid price excl. VAT\"]").text();
             String participantName = participantRow.select("[data-title=\"Official name\"]").text();
-
+            Currency currency = getCurrency(participantRow);
             OfferDto offerDto = new OfferDto(getBigDecimalFromString(strPrice),
-                    url, participantName);
+                    url, participantName, currency);
             participants.add(offerDto);
         }
         return participants;
@@ -108,12 +106,34 @@ public class ProcurementResultScrapper extends AbstractScrapper{
         return nameElem.text();
     }
 
-    private Optional<BigDecimal> getPrice(Element supplierRow){
+    private BigDecimal getPrice(Element supplierRow) {
         Elements priceElem = supplierRow.select("[data-title=\"Contractual price excl. VAT\"]");
         if(priceElem.isEmpty() || !priceElem.hasText()){
-            return Optional.empty();
+            return null;
         }
-        return Optional.of(new BigDecimal(formatPrice(priceElem.text())));
+        return new BigDecimal(formatPrice(priceElem.text()));
+    }
+
+    private Currency getCurrency(Element row) {
+        Elements currencyElem = row.select("[data-title=\"Currency\"]");
+        if (currencyElem.isEmpty() || !currencyElem.hasText()) {
+            return Currency.CZK;
+        }
+        return Currency.fromString(currencyElem.text());
+    }
+
+    private LocalDate getContractDate(Element row) {
+        Elements dateElem = row.select("[data-title=\"Closing date of the contract\"]");
+        if (dateElem.isEmpty() || !dateElem.hasText()) {
+            return null;
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. MM. yyyy");
+        try {
+            return LocalDate.parse(dateElem.text(), formatter);
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private String getDetailHref(Element companyRow){

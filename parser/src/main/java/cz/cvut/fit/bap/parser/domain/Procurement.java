@@ -13,7 +13,7 @@ import java.util.Set;
  */
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"system_number", "supplier_id"})})
-public class Procurement implements DomainEntity<Long>{
+public class Procurement implements DomainEntity<Long> {
     @Id
     @GeneratedValue
     private Long id;
@@ -44,11 +44,14 @@ public class Procurement implements DomainEntity<Long>{
     @Column(name = "system_number")
     private String systemNumber;
 
-    public Procurement(){
+    @Column(name = "date_of_contract_close")
+    private LocalDate dateOfContractClose;
+
+    public Procurement() {
     }
 
-    public Procurement(String name, Company supplier, ContractingAuthority contractingAuthority,
-                       BigDecimal contractPrice, String placeOfPerformance, LocalDate dateOfPublication, String systemNumber){
+    public Procurement(String name, Company supplier, ContractingAuthority contractingAuthority, BigDecimal contractPrice,
+                       String placeOfPerformance, LocalDate dateOfPublication, String systemNumber, LocalDate dateOfContractClose) {
         this.name = name;
         this.supplier = supplier;
         this.contractingAuthority = contractingAuthority;
@@ -56,71 +59,80 @@ public class Procurement implements DomainEntity<Long>{
         this.placeOfPerformance = placeOfPerformance;
         this.dateOfPublication = dateOfPublication;
         this.systemNumber = systemNumber;
+        this.dateOfContractClose = dateOfContractClose;
     }
 
-    public String getSystemNumber(){
+    public LocalDate getDateOfContractClose() {
+        return dateOfContractClose;
+    }
+
+    public void setDateOfContractClose(LocalDate dateOfContractClose) {
+        this.dateOfContractClose = dateOfContractClose;
+    }
+
+    public String getSystemNumber() {
         return systemNumber;
     }
 
-    public void setSystemNumber(String systemNumber){
+    public void setSystemNumber(String systemNumber) {
         this.systemNumber = systemNumber;
     }
 
-    public LocalDate getDateOfPublication(){
+    public LocalDate getDateOfPublication() {
         return dateOfPublication;
     }
 
-    public void setDateOfPublication(LocalDate dateOfPublication){
+    public void setDateOfPublication(LocalDate dateOfPublication) {
         this.dateOfPublication = dateOfPublication;
     }
 
-    public String getPlaceOfPerformance(){
+    public String getPlaceOfPerformance() {
         return placeOfPerformance;
     }
 
-    public void setPlaceOfPerformance(String placeOfPerformance){
+    public void setPlaceOfPerformance(String placeOfPerformance) {
         this.placeOfPerformance = placeOfPerformance;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
-    public Set<Offer> getOffers(){
+    public Set<Offer> getOffers() {
         return offers;
     }
 
-    public void setOffers(Set<Offer> offers){
+    public void setOffers(Set<Offer> offers) {
         this.offers = offers;
     }
 
-    public Company getSupplier(){
+    public Company getSupplier() {
         return supplier;
     }
 
-    public void setSupplier(Company supplier){
+    public void setSupplier(Company supplier) {
         this.supplier = supplier;
     }
 
-    public BigDecimal getContractPrice(){
+    public BigDecimal getContractPrice() {
         return contractPrice;
     }
 
-    public void setContractPrice(BigDecimal contractPrice){
+    public void setContractPrice(BigDecimal contractPrice) {
         this.contractPrice = contractPrice;
     }
 
     @Override
-    public void setId(Long id){
+    public void setId(Long id) {
         this.id = id;
     }
 
     @Override
-    public Long getId(){
+    public Long getId() {
         return id;
     }
 
@@ -133,7 +145,7 @@ public class Procurement implements DomainEntity<Long>{
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (!(o instanceof Procurement that))
@@ -142,7 +154,7 @@ public class Procurement implements DomainEntity<Long>{
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hash(id);
     }
 }

@@ -28,7 +28,7 @@ public class ProcurementSaveIntTest{
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    void procurementSaveIntegrationTest3(){
+    void procurementSaveIntegrationTest() {
         String systemNumber = "N006/23/V00006411";
         Assertions.assertFalse(procurementService.existsBySystemNumber(systemNumber));
         procurementController.save(systemNumber);
