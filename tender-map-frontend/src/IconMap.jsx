@@ -55,6 +55,8 @@ function IconMap({
     }
 
     const handleIconClick = info => {
+        setSuppliedProcurements([]);
+        setCompanyOffers([]);
         if (info.picked && !info.objects) {
             const layerId = info.layer.id;
             const companyId = info.object.id;
