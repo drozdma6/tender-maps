@@ -10,9 +10,11 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import {useState} from "react";
 import {styled, Switch, useTheme} from "@mui/material";
+import LogoButton from "./LogoButton.jsx";
 
 const pages = ['HEATMAP', 'ICONMAP', 'HEXAGONMAP', 'INFO'];
 
+// switch from https://mui.com/material-ui/react-switch/
 const MaterialUISwitch = styled(Switch)(() => {
     const theme = useTheme();
     const thumbColor = theme.palette.background.default;
@@ -83,14 +85,12 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
         setThemeToggle(!themeToggle);
     }
 
-    const imgStyle = theme.palette.mode === 'light'
-        ? {filter: 'invert(0)'} // Original color when light theme
+    const imgColorInvert = theme.palette.mode === 'light' ? {filter: 'invert(0)'} // Original color when light theme
         : {filter: 'invert(1)'}; // Inverted color when dark theme
 
     return (
         <AppBar position="static" color="default" style={{
-            zIndex: 1400,
-            maxHeight: 'var(--app-bar-height)'
+            zIndex: 1400, maxHeight: 'var(--app-bar-height)'
         }}>
             <Container maxWidth="false">
                 <Toolbar disableGutters>
@@ -115,7 +115,7 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
                                  marginRight: '10px',
                                  marginLeft: '10px',
                                  width: '24px',
-                                 ...imgStyle,
+                                 ...imgColorInvert,
                              }}/>
                         TENDER MAPS
                     </Typography>
@@ -166,7 +166,7 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
                         href="/"
                         color="inherit"
                         sx={{
-                            fontSize: { xs: '1.2rem', md: '1.5rem' }, // Adjust the font size for smaller devices
+                            fontSize: {xs: '1.2rem', md: '1.5rem'}, // Adjust the font size for smaller devices
                             mr: 2,
                             display: {xs: 'flex', md: 'none'},
                             flexGrow: 1,
@@ -181,13 +181,12 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
                                  marginRight: '5px',
                                  marginLeft: '5px',
                                  width: '18px',
-                                 ...imgStyle,
+                                 ...imgColorInvert,
                              }}/>
                         TENDER MAPS
                     </Typography>
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
-                        {pages.map((page) => (
-                            <Button
+                        {pages.map((page) => (<Button
                                 key={page}
                                 color="inherit"
                                 onClick={() => onPageChange(page)}
@@ -199,36 +198,17 @@ function Navigation({onPageChange, themeToggle, setThemeToggle}) {
                                 {page}
                             </Button>
                         ))}
-                        <Box className="navbarLogoLinks">
-                            <a href="https://fit.cvut.cz/en" target="_blank" rel="noopener noreferrer">
-                                <img
-                                    className="imageLogo"
-                                    src="/data/fit-cvut-logo-en.svg"
-                                    alt="CTU FIT"
-                                    style={{
-                                        width: "90px"
-                                    }}
-                                />
-                            </a>
-                            <a href="https://github.com/opendatalabcz/" target="_blank" rel="noopener noreferrer">
-                                <img
-                                    className="imageLogo"
-                                    src="/data/opendatalab-logo.png"
-                                    alt="Open Data Lab"
-                                />
-                            </a>
-                            <a href="https://github.com/opendatalabcz/analyzer_public_contracts" target="_blank"
-                               rel="noopener noreferrer">
-                                <img
-                                    className="imageLogo"
-                                    src="/data/github-logo-black.svg"
-                                    alt="github"
-                                    style={imgStyle}
-                                />
-                            </a>
+                        <Box sx={{ml: 'auto'}}>
+                            <LogoButton href={"https://fit.cvut.cz/en"} imagePath={"/data/fit-cvut-logo-en.svg"}
+                                        alt={"CTU FIT"} imageStyle={{width: "90px"}}/>
+                            <LogoButton href={"https://github.com/opendatalabcz/"}
+                                        imagePath={"/data/opendatalab-logo.png"} alt={"Open Data Lab"}/>
+                            <LogoButton href={"https://github.com/opendatalabcz/analyzer_public_contracts"}
+                                        imagePath={"/data/github-logo-black.svg"} alt={"Github"}
+                                        imageStyle={imgColorInvert}/>
                         </Box>
                     </Box>
-                    <Box sx={{ mb: { xs: 0, md: 1 } }}>
+                    <Box sx={{mb: {xs: 0, md: 1}}}>
                         <MaterialUISwitch
                             onChange={handleDarkModeToggle}
                             name="nightShift"

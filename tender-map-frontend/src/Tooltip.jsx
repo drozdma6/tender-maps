@@ -26,9 +26,9 @@ function renderPrice(price) {
     }
 }
 
-function buildLinkToCompanyDetail(organisationId){
+function buildLinkToCompanyDetail(organisationId) {
     return "https://or.justice.cz/ias/ui/rejstrik-$firma?ico=" + organisationId;
- }
+}
 
 function Tooltip({info, suppliedProcurements, offers}) {
     const {object: companyInfo, x, y} = info;
@@ -39,7 +39,18 @@ function Tooltip({info, suppliedProcurements, offers}) {
     }
 
     return (
-        <Box backgroundColor={theme.palette.background.paper} className="tooltip" style={{left: x, top: y}}>
+        <Box backgroundColor={theme.palette.background.paper} sx={{
+            position: 'absolute',
+            z: 9,
+            fontSize: 12,
+            padding: 1.5,
+            minWidth: 200,
+            pointerEvents: 'all',
+            overflowY: 'auto',
+            maxHeight: 300,
+            left: x,
+            top: y
+        }}>
             <h3>
                 <Link href={buildLinkToCompanyDetail(companyInfo.organisationId)} target="_blank">
                     {companyInfo.name}
@@ -103,7 +114,7 @@ function Tooltip({info, suppliedProcurements, offers}) {
                 </Table>
             </TableContainer>
         </Box>
-);
+    );
 }
 
 export default Tooltip;

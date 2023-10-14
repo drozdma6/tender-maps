@@ -1,6 +1,7 @@
 import {Paper} from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import Box from "@mui/material/Box";
 
 const renderInfo = (apiDocs) =>  `
 # Tender Maps
@@ -52,11 +53,11 @@ function Info({apiBaseUrl}) {
             paddingLeft: 30,
             paddingRight: 30
         }}>
-            <div className="custom-markdown">
+            <Box sx={{ a: { color: "dodgerblue" }, "a:visited": { color: "#2196f3"} }}>
                 <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                     {renderInfo(apiDocs)}
                 </ReactMarkdown>
-            </div>
+            </Box>
         </Paper>
     );
 }

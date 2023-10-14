@@ -2,51 +2,7 @@
     --app-bar-height: 64px;
 }
 
-.tooltip {
-    position: absolute;
-    z-index: 9;
-    font-size: 12px;
-    padding: 8px;
-    min-width: 200px;
-    pointer-events: all;
-    overflow-y: auto;
-    max-height: 300px;
-}
-
-.navbarLogoLinks {
-    margin-left: auto;
-}
-
-.imageLogo {
-    width: 35px;
-    height: 35px;
-    margin: 15px 7px;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
-    margin-top: 8px;
-}
-
-.legend-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.legend-color {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    margin-right: 8px;
-}
-
-.custom-markdown a, .custom-markdown a:visited {
-    color: dodgerblue;
-}
-
+/* Overrides maplibre copyright text in dark mode */
 .maplibregl-ctrl-attrib-inner {
     color: initial;
 }
