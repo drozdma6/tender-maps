@@ -28,7 +28,7 @@ function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
         longitude: 15.301806,
         latitude: 49.868280,
         zoom: 6.6,
-        maxZoom: 16,
+        maxZoom: 17,
         pitch: 0,
         bearing: 0
     });

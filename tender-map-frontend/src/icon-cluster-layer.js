@@ -28,7 +28,7 @@ export default class IconClusterLayer extends CompositeLayer {
         const rebuildIndex = changeFlags.dataChanged || props.sizeScale !== oldProps.sizeScale;
 
         if (rebuildIndex) {
-            const index = new Supercluster({maxZoom: 16, radius: props.sizeScale * Math.sqrt(2)});
+            const index = new Supercluster({maxZoom: 17, radius: props.sizeScale * Math.sqrt(2)});
             index.load(
                 props.data.map(d => ({
                     geometry: {coordinates: props.getPosition(d)},
@@ -52,7 +52,7 @@ export default class IconClusterLayer extends CompositeLayer {
         if (pickedObject) {
             if (pickedObject.cluster && mode !== 'hover') {
                 info.objects = this.state.index
-                    .getLeaves(pickedObject.cluster_id, 25)
+                    .getLeaves(pickedObject.cluster_id, Infinity)
                     .map(f => f.properties);
             }
             info.object = pickedObject;

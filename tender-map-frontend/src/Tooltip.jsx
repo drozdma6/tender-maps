@@ -9,6 +9,10 @@ import {
     TableRow, useTheme
 } from "@mui/material";
 import Box from "@mui/material/Box";
+import {ArrowLeft, ArrowRight} from "@mui/icons-material";
+import IconButton from "@mui/material/IconButton";
+import {useEffect, useState} from "react";
+import {OFFERS_PATH, PROCUREMENTS_PATH} from "./constants.js";
 
 function truncate(str, n) {
     return (str.length > n) ? str.slice(0, n - 1) + '…' : str;
@@ -30,14 +34,39 @@ function buildLinkToCompanyDetail(organisationId) {
     return "https://or.justice.cz/ias/ui/rejstrik-$firma?ico=" + organisationId;
 }
 
-function Tooltip({info, suppliedProcurements, offers}) {
-    const {object: companyInfo, x, y} = info;
+function Tooltip({
+                     companyName,
+                     companyId,
+                     organisationId,
+                     x,
+                     y,
+                     fetchData,
+                     addFiltersToPath,
+                     layerId,
+                     curCompanyIndex,
+                     setCurCompanyIndex,
+                     totalNumberOfCompanies
+                 }) {
+    const [suppliedProcurements, setSuppliedProcurements] = useState([]);
+    const [companyOffers, setCompanyOffers] = useState([]);
     const theme = useTheme();
 
-    if (!companyInfo) {
-        return null;
+    useEffect(() => {
+        if (layerId === "suppliers") {
+            fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierId": companyId}), setSuppliedProcurements);
+        }
+        fetchData(addFiltersToPath(OFFERS_PATH, {"companyId": companyId}), setCompanyOffers);
+    }, [curCompanyIndex]);
+
+    const handleLeftButtonClick = () => {
+        const newIndex = curCompanyIndex === 0 ? totalNumberOfCompanies - 1 : curCompanyIndex - 1;
+        setCurCompanyIndex(newIndex);
     }
 
+    const handleRightButtonClick = () => {
+        const newIndex = curCompanyIndex === totalNumberOfCompanies - 1 ? 0 : curCompanyIndex + 1;
+        setCurCompanyIndex(newIndex);
+    }
     return (
         <Box backgroundColor={theme.palette.background.paper} sx={{
             position: 'absolute',
@@ -51,11 +80,27 @@ function Tooltip({info, suppliedProcurements, offers}) {
             left: x,
             top: y
         }}>
-            <h3>
-                <Link href={buildLinkToCompanyDetail(companyInfo.organisationId)} target="_blank">
-                    {companyInfo.name}
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+            }}>
+                <Link href={buildLinkToCompanyDetail(organisationId)} variant={"subtitle1"} target="_blank">
+                    {truncate(companyName, 30)}
                 </Link>
-            </h3>
+                {
+                    totalNumberOfCompanies > 1 &&
+                    <Box>
+                        <IconButton onClick={handleLeftButtonClick} disabled={curCompanyIndex === 0}>
+                            <ArrowLeft/>
+                        </IconButton>
+                        <IconButton onClick={handleRightButtonClick}
+                                    disabled={curCompanyIndex === totalNumberOfCompanies - 1}>
+                            <ArrowRight/>
+                        </IconButton>
+                    </Box>
+                }
+            </Box>
             <TableContainer className="custom-table">
                 {suppliedProcurements.length !== 0 ? (
                     <Box>
@@ -95,7 +140,7 @@ function Tooltip({info, suppliedProcurements, offers}) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {offers.map((row) => (
+                        {companyOffers.map((row) => (
                             <TableRow
                                 key={row.id}
                                 sx={{'&:last-child td, &:last-child th': {border: 0}}}

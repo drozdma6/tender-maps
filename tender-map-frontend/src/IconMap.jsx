@@ -31,8 +31,7 @@ function IconMap({
     const [suppliersData, setSuppliersData] = useState([]);
     const [nonSuppliersData, setNonSuppliersData] = useState([]);
     const [selectedIconData, setSelectedIconData] = useState({});
-    const [suppliedProcurements, setSuppliedProcurements] = useState([]);
-    const [companyOffers, setCompanyOffers] = useState([]);
+    const [curCompanyIndex, setCurCompanyIndex] = useState(0); //index of current company in tooltip
     const [showLayers, setShowLayers] = useState({suppliers: true, nonSuppliers: true});
     const [hoveredLayerId, setHoveredLayerId] = useState(null);
 
@@ -44,26 +43,53 @@ function IconMap({
         }), setNonSuppliersData);
     }, [filterLocations, filterAuthorities])
 
-    async function fetchDataOnClick(layerId, companyId) {
-        if (layerId === "suppliers") {
-            fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierId": companyId}), setSuppliedProcurements);
+    const renderTooltip = info => {
+        const {object, x, y} = info
+        if (!info.object) {
+            return null;
         }
-        fetchData(addFiltersToPath(OFFERS_PATH, {"companyId": companyId}), setCompanyOffers);
+
+        if (info.objects) {
+            return (
+                <Tooltip companyName={info.objects[curCompanyIndex].name}
+                         companyId={info.objects[curCompanyIndex].id}
+                         organisationId={info.objects[curCompanyIndex].organisationId}
+                         x={x}
+                         y={y}
+                         fetchData={fetchData}
+                         addFiltersToPath={addFiltersToPath}
+                         layerId={info.layer.id}
+                         curCompanyIndex={curCompanyIndex}
+                         setCurCompanyIndex={setCurCompanyIndex}
+                         totalNumberOfCompanies={info.objects.length}>
+                </Tooltip>
+            )
+        }
+        return (
+            <Tooltip companyName={object.name}
+                     companyId={object.id}
+                     organisationId={object.organisationId}
+                     x={x}
+                     y={y}
+                     fetchData={fetchData}
+                     addFiltersToPath={addFiltersToPath}
+                     layerId={info.layer.id}
+                     curCompanyIndex={curCompanyIndex}
+                     setCurCompanyIndex={setCurCompanyIndex}
+                     totalNumberOfCompanies={1}>
+            </Tooltip>
+
+        );
     }
 
-    const handleIconClick = info => {
-        setSuppliedProcurements([]);
-        setCompanyOffers([]);
-        if (info.picked && !info.objects) {
-            const layerId = info.layer.id;
-            const companyId = info.object.id;
 
-            fetchDataOnClick(layerId, companyId);
+    const expandTooltip = info => {
+        if (info.picked) {
             setSelectedIconData(info);
         } else {
             setSelectedIconData({});
         }
-    };
+    }
 
     const handleHover = info => {
         if (info && info.object) {
@@ -127,14 +153,11 @@ function IconMap({
                     setViewState(e.viewState)
                 }}
                 viewState={viewState}
-                onClick={handleIconClick}
+                onClick={expandTooltip}
                 onHover={handleHover}
             >
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
             </DeckGL>
-
-            <Tooltip info={selectedIconData} suppliedProcurements={suppliedProcurements} offers={companyOffers}/>
-
             <Legend
                 title="Icon map"
                 text={LEGEND_TEXT}
@@ -161,6 +184,7 @@ function IconMap({
                     </Box>
                 </Box>
             </Legend>
+            {renderTooltip(selectedIconData)}
         </div>
     );
 }
