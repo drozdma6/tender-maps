@@ -7,6 +7,7 @@ import Legend from "./Legend.jsx";
 import {Slider, Switch, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
+import {PROCUREMENTS_PATH} from "./constants.js";
 
 const ambientLight = new AmbientLight({
     color: [255, 255, 255],
@@ -42,8 +43,6 @@ const INITIAL_VIEW_STATE = {
     pitch: 25,
     bearing: 0
 };
-
-const DATA_PATH = '/procurements';
 
 const colorRange = [
     [1, 152, 189],
@@ -99,7 +98,7 @@ function HexagonMap({
     const [showNumOfTendersByElevation, setShowNumOfTendersByElevation] = useState(false);
 
     useEffect(() => {
-        fetchData(addFiltersToPath(DATA_PATH, {"supplierHasExactAddress": true}), setData);
+        fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierHasExactAddress": true}), setData);
     }, [filterLocations, filterAuthorities]);
 
     function handleElevationSwitchChange() {
@@ -126,12 +125,12 @@ function HexagonMap({
     const layer = showNumOfTendersByElevation
         ? new HexagonLayer({
             ...commonLayerConfig,
-            id: 'heatmap1',
+            id: 'hexagonmap1',
             getColorWeight: d => d.contractPrice,
         })
         : new HexagonLayer({
             ...commonLayerConfig,
-            id: 'heatmap2',
+            id: 'hexagonmap2',
             getElevationWeight: d => d.contractPrice,
             getColorWeight: d => d.contractPrice,
         });

@@ -17,7 +17,7 @@ import {
 import axios from "axios";
 import CloseIcon from "@mui/icons-material/Clear";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import {CZECH_REGIONS} from "./constants.js";
+import {CONTRACTING_AUTHORITIES_PATH, CZECH_REGIONS} from "./constants.js";
 import Typography from "@mui/material/Typography";
 
 function FilterSideBar({
@@ -53,7 +53,7 @@ function FilterSideBar({
     }, []);
 
     async function fetchAuthorities() {
-        const url = apiBaseUrl + "/authorities"
+        const url = apiBaseUrl + CONTRACTING_AUTHORITIES_PATH;
         const response = await axios.get(url);
         setAuthoritiesData(response.data);
     }
@@ -129,9 +129,9 @@ function FilterSideBar({
                         </Box>
                     ))}
 
-                    <Divider />
+                    <Divider/>
                     <Typography
-                        sx={{ ml: 2 }}
+                        sx={{ml: 2}}
                         color="text.secondary"
                         display="block"
                         variant="caption"

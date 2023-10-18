@@ -10,15 +10,12 @@ import {Switch} from "@mui/material";
 import Tooltip from "./Tooltip.jsx";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import {COMPANIES_PATH} from "./constants.js";
 
 const MAP_VIEW = new MapView({repeat: true});
 
-const DATA_COMPANIES = '/companies';
-const PROCUREMENTS_PATH = '/procurements';
-const OFFERS_PATH = '/offers'
-
 const LEGEND_TEXT = "This map shows the participants in tenders and distinguishes between suppliers and non-suppliers " +
-    "(companies that have participated but not yet won). To view information about the tenders related to each participant, simply click on the icon."
+    "(companies that have participated but not yet won). To view information about the tenders related to each participant, simply click on the icon.";
 
 function IconMap({
                      fetchData,
@@ -40,8 +37,8 @@ function IconMap({
     const [hoveredLayerId, setHoveredLayerId] = useState(null);
 
     useEffect(() => {
-        fetchData(addFiltersToPath(DATA_COMPANIES, {"hasExactAddress": true, "isSupplier": true}), setSuppliersData);
-        fetchData(addFiltersToPath(DATA_COMPANIES, {
+        fetchData(addFiltersToPath(COMPANIES_PATH, {"hasExactAddress": true, "isSupplier": true}), setSuppliersData);
+        fetchData(addFiltersToPath(COMPANIES_PATH, {
             "hasExactAddress": true,
             "isSupplier": false
         }), setNonSuppliersData);

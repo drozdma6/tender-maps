@@ -4,8 +4,7 @@ import {HeatmapLayer} from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
 import Legend from "./Legend.jsx";
 import {useEffect, useState} from "react";
-
-const DATA_PATH = '/procurements';
+import {PROCUREMENTS_PATH} from "./constants.js";
 
 const LEGEND_TEXT = "This map shows the geographical distribution of suppliers in tenders and uses colours to indicate\n" +
     "                     the total value of contracts won. Darker colours indicate areas of significant economic growth."
@@ -26,7 +25,7 @@ function HeatMap({
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        fetchData(addFiltersToPath(DATA_PATH, {"supplierHasExactAddress": true}), setData);
+        fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierHasExactAddress": true}), setData);
     }, [filterLocations, filterAuthorities]);
 
     const layers = [
@@ -47,7 +46,6 @@ function HeatMap({
             <DeckGL
                 viewState={viewState}
                 onViewStateChange={e => setViewState(e.viewState)}
-                // initialViewState={INITIAL_VIEW_STATE}
                 controller={true}
                 layers={layers}>
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle}/>
