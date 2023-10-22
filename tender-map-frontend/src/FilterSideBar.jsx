@@ -105,6 +105,7 @@ function FilterSideBar({
                             )}
                             onChange={handleAuthorityChange}
                             value={filterAuthorities.name}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                         />
                         <IconButton onClick={handleCloseFilterMenuButton}>
                             <ArrowBackIosNewIcon/>

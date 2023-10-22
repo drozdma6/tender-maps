@@ -56,7 +56,7 @@ function Tooltip({
             fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierId": companyId}), setSuppliedProcurements);
         }
         fetchData(addFiltersToPath(OFFERS_PATH, {"companyId": companyId}), setCompanyOffers);
-    }, [curCompanyIndex, companyId, layerId, fetchData, addFiltersToPath]);
+    }, [companyId, layerId, fetchData, addFiltersToPath]);
 
     const handleLeftButtonClick = () => {
         const newIndex = curCompanyIndex === 0 ? totalNumberOfCompanies - 1 : curCompanyIndex - 1;
