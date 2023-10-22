@@ -41,7 +41,7 @@ function IconMap({
             "hasExactAddress": true,
             "isSupplier": false
         }), setNonSuppliersData);
-    }, [filterLocations, filterAuthorities])
+    }, [filterLocations, filterAuthorities, addFiltersToPath, fetchData])
 
     const renderTooltip = info => {
         const {object, x, y} = info

@@ -35,6 +35,10 @@ function FilterSideBar({
 
     const drawerWidth = isMobile ? "100%" : 350;
 
+    useEffect(() => {
+        fetchAuthorities();
+    });
+
     const handleCheckboxToggle = (text) => () => {
         const currentIndex = filterLocations.indexOf(text);
         const newCheckedItems = [...filterLocations];
@@ -47,10 +51,6 @@ function FilterSideBar({
 
         setFilterLocations(newCheckedItems);
     };
-
-    useEffect(() => {
-        fetchAuthorities();
-    }, []);
 
     async function fetchAuthorities() {
         const url = apiBaseUrl + CONTRACTING_AUTHORITIES_PATH;

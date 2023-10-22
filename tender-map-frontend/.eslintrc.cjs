@@ -9,7 +9,7 @@ module.exports = {
     'plugin:react-hooks/recommended',
   ],
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  settings: { react: { version: '18.2' } },
+  settings: { react: { version: '17.0.2' } },
   plugins: ['react-refresh'],
   rules: {
     "react/prop-types": 0,

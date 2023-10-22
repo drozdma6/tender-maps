@@ -26,7 +26,7 @@ function HeatMap({
 
     useEffect(() => {
         fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierHasExactAddress": true}), setData);
-    }, [filterLocations, filterAuthorities]);
+    }, [filterLocations, filterAuthorities, addFiltersToPath, fetchData]);
 
     const layers = [
         new HeatmapLayer({

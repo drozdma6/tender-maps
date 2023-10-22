@@ -99,7 +99,7 @@ function HexagonMap({
 
     useEffect(() => {
         fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierHasExactAddress": true}), setData);
-    }, [filterLocations, filterAuthorities]);
+    }, [filterLocations, filterAuthorities, addFiltersToPath, fetchData]);
 
     function handleElevationSwitchChange() {
         setShowNumOfTendersByElevation(!showNumOfTendersByElevation);
