@@ -1,5 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.currency_exchanger;
 
+import io.micrometer.core.annotation.Timed;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class CurrencyExchanger implements ICurrencyExchanger {
     }
 
     @Override
+    @Timed(value = "scrapper.currency.exchange")
     public Optional<BigDecimal> exchange(BigDecimal value, Currency from, Currency to, LocalDate date) {
         String urlString = buildApiUrl(from, to, date);
         try {
