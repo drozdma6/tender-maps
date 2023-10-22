@@ -4,12 +4,13 @@ services:
     ports:
       - '8080:8080'
     depends_on:
-      - database
+      - procurements-db
     container_name: scrapper
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://public_procurements_db/postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://public-procurements-db/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_PROFILES_ACTIVE=prod,actuator
 
       - RUN_ON_STARTUP=true
       - SCHEDULING_CRON=0 0 0 1 * *
@@ -18,10 +19,10 @@ services:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
       - FIXER_API_KEY=${FIXER_API_KEY}
 
-  database:
+  procurements-db:
     image: postgres:14-alpine
     restart: always
-    container_name: public_procurements_db
+    container_name: public-procurements-db
     volumes:
       - pg_data:/var/lib/postgresql/data
     environment:
@@ -34,10 +35,10 @@ services:
     ports:
       - '8081:8081'
     depends_on:
-      - database
+      - procurements-db
     container_name: procurements-api
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://public_procurements_db/postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://public-procurements-db/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
 
@@ -48,17 +49,8 @@ services:
       args:
         - VITE_API_URL=${VITE_API_URL}
     ports:
-      - '3001:80'
+      - '3000:3000'
     container_name: tender-map-frontend
-    environment:
-      - NODE_ENV=production
-
-  adminer:
-    image: adminer
-    container_name: database_viewer
-    restart: always
-    ports:
-      - '8082:8080'
 
   prometheus:
     image: prom/prometheus
@@ -69,14 +61,14 @@ services:
     volumes:
       - ./parser/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
-  
+
   grafana:
     image: grafana/grafana
     container_name: grafana
     depends_on:
       - prometheus
     ports:
-      - '3000:3000'
+      - '3001:3000'
     restart: unless-stopped
     volumes:
       - grafana-data:/var/lib/grafana
