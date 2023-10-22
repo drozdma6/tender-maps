@@ -30,10 +30,11 @@ function IconMap({
                  }) {
     const [suppliersData, setSuppliersData] = useState([]);
     const [nonSuppliersData, setNonSuppliersData] = useState([]);
-    const [selectedIconData, setSelectedIconData] = useState({});
+    const [selectedIconData, setSelectedIconData] = useState(null);
     const [curCompanyIndex, setCurCompanyIndex] = useState(0); //index of current company in tooltip
     const [showLayers, setShowLayers] = useState({suppliers: true, nonSuppliers: true});
     const [hoveredLayerId, setHoveredLayerId] = useState(null);
+    const[iconClicked, setIconClicked] = useState(false);
 
     useEffect(() => {
         fetchData(addFiltersToPath(COMPANIES_PATH, {"hasExactAddress": true, "isSupplier": true}), setSuppliersData);
@@ -45,10 +46,6 @@ function IconMap({
 
     const renderTooltip = info => {
         const {object, x, y} = info
-        if (!info.object) {
-            return null;
-        }
-
         if (info.objects) {
             return (
                 <Tooltip companyName={info.objects[curCompanyIndex].name}
@@ -65,6 +62,11 @@ function IconMap({
                 </Tooltip>
             )
         }
+
+        if (!object) {
+            return null;
+        }
+
         return (
             <Tooltip companyName={object.name}
                      companyId={object.id}
@@ -82,12 +84,14 @@ function IconMap({
         );
     }
 
-
     const expandTooltip = info => {
-        if (info.picked) {
+        if (info.picked && info.object) {
+            setCurCompanyIndex(0);
             setSelectedIconData(info);
+            setIconClicked(true);
         } else {
             setSelectedIconData({});
+            setIconClicked(false);
         }
     }
 
@@ -107,13 +111,6 @@ function IconMap({
 
     // Create the IconClusterLayer instances based on the switch status
     const layers = [
-        showLayers.suppliers && new IconClusterLayer({
-            data: suppliersData,
-            iconAtlas: '/data/location-icon-orange.png',
-            ...layerProps,
-            id: 'suppliers',
-            sizeScale: 40
-        }),
         showLayers.nonSuppliers && new IconClusterLayer({
             data: nonSuppliersData,
             ...layerProps,
@@ -121,6 +118,13 @@ function IconMap({
             iconAtlas: '/data/location-icon-blue.png',
             sizeScale: 40
         }),
+        showLayers.suppliers && new IconClusterLayer({
+            data: suppliersData,
+            iconAtlas: '/data/location-icon-orange.png',
+            ...layerProps,
+            id: 'suppliers',
+            sizeScale: 40
+        })
     ].filter(Boolean);
 
     // Rearrange layers based on hover state to ensure hovered layer is rendered on top
@@ -149,12 +153,12 @@ function IconMap({
                 views={MAP_VIEW}
                 controller={{dragRotate: false}}
                 onViewStateChange={(e) => {
-                    setSelectedIconData({})
-                    setViewState(e.viewState)
+                    setIconClicked(false); //hide tooltip on view state change
+                    setViewState(e.viewState);
                 }}
                 viewState={viewState}
                 onClick={expandTooltip}
-                onHover={handleHover}
+                onHover={iconClicked ? null : handleHover}
             >
                 <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
             </DeckGL>
@@ -184,7 +188,7 @@ function IconMap({
                     </Box>
                 </Box>
             </Legend>
-            {renderTooltip(selectedIconData)}
+            {iconClicked && renderTooltip(selectedIconData)}
         </div>
     );
 }
