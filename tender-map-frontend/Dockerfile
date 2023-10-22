@@ -1,11 +1,17 @@
-FROM node:19 AS build-stage
+FROM node:20-alpine
+# Create a group and user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Tell docker that all future commands should run as the appuser user
+USER appuser
 WORKDIR /app
-COPY package*.json ./
+# Change the ownership of the working directory to the non-root user "user"
+RUN chown -R appuser:appgroup /app
+COPY package.json .
 RUN npm install
 COPY . .
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run build
-RUN npm install -g serve
-EXPOSE 80
-CMD ["serve", "-s", "dist", "-l", "80"]
+ENV NODE_ENV production
+EXPOSE 3000
+CMD ["npx", "serve", "-s", "dist", "-l", "3000"]
