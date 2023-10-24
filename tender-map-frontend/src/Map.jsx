@@ -72,6 +72,7 @@ function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
         } catch (error) {
             console.error("Error fetching data:", error);
             toast.error("Failed to fetch data.", {
+                toastId: "toastId", //
                 position: "top-center",
                 autoClose: 1500,
                 hideProgressBar: false,
