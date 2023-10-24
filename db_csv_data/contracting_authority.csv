@@ -1,0 +1,596 @@
+id,contracting_authority_name,url,address_id
+1,Obec Starý Jičín,https://nen.nipez.cz/profil/staryjicin,2
+2,Statutární město Brno,https://nen.nipez.cz/profil/UMC_Brno_Kohoutovice,10
+3,Obec Dětřichov u Moravské Třebové,https://nen.nipez.cz/profil/oudmt,13
+4,Ministerstvo obrany,https://nen.nipez.cz/profil/MO,15
+5,Statutární město Pardubice,https://nen.nipez.cz/profil/pardubice,18
+6,Město Harrachov,https://nen.nipez.cz/profil/Harrachov,22
+7,Statutární město Ostrava,https://nen.nipez.cz/profil/0084545110,24
+8,Střední škola zemědělská a přírodovědná Rožnov pod Radhoštěm,https://nen.nipez.cz/profil/szesro,28
+9,Obec Drnovice,https://nen.nipez.cz/profil/obecdrnovice,30
+10,Krajské ředitelství policie kraje Vysočina,https://nen.nipez.cz/profil/KRPKVyso,33
+11,Správa Národního parku Šumava,https://nen.nipez.cz/profil/NPSUMAVA,42
+12,Hasičský záchranný sbor Středočeského kraje,https://nen.nipez.cz/profil/STC,50
+13,"Frýdlantská vodárenská společnost,a.s.",https://nen.nipez.cz/profil/vodarnafrydlant,53
+14,Hasičský záchranný sbor Jihomoravského kraje,https://nen.nipez.cz/profil/HZSJmK,78
+15,Hasičský záchranný sbor Zlínského kraje,https://nen.nipez.cz/profil/HZS_ZlK,81
+16,Město Poběžovice,https://nen.nipez.cz/profil/Pobezovice,83
+17,Národní památkový ústav,https://nen.nipez.cz/profil/NPU,100
+18,Krajský soud v Ostravě,https://nen.nipez.cz/profil/KSOstrava,104
+19,Město Brtnice,https://nen.nipez.cz/profil/mestobrtnice,108
+20,Hasičský záchranný sbor Jihočeského kraje,https://nen.nipez.cz/profil/HZS_Jck,115
+21,Ministerstvo práce a sociálních věcí,https://nen.nipez.cz/profil/MPSV,127
+22,"ČEZ Distribuce, a. s.",https://nen.nipez.cz/profil/DSO,163
+23,Úřad průmyslového vlastnictví,https://nen.nipez.cz/profil/UPV,166
+24,Národní muzeum,https://nen.nipez.cz/profil/NM,169
+25,"ČEZ, a. s.",https://nen.nipez.cz/profil/CEZ,178
+26,Ministerstvo vnitra,https://nen.nipez.cz/profil/MVCR,181
+27,Národní divadlo,https://nen.nipez.cz/profil/nd,186
+28,"Krajská nemocnice T. Bati, a. s.",https://nen.nipez.cz/profil/KNTB,201
+29,Statutární město Přerov,https://nen.nipez.cz/profil/zakazkymestoPrerov,214
+30,Úřad práce České republiky,https://nen.nipez.cz/profil/UPCR,222
+31,Státní oblastní archiv v Plzni,https://nen.nipez.cz/profil/soaplzen,225
+32,Krajské ředitelství policie hlavního města Prahy,https://nen.nipez.cz/profil/KRP,227
+33,Institut klinické a experimentální medicíny,https://nen.nipez.cz/profil/ikem,239
+34,Krajské ředitelství policie Olomouckého kraje,https://nen.nipez.cz/profil/KRPOLK,244
+35,Národní knihovna České republiky,https://nen.nipez.cz/profil/NKCR,267
+36,Město Jindřichův Hradec,https://nen.nipez.cz/profil/00246875,271
+37,Hasičský záchranný sbor Plzeňského kraje,https://nen.nipez.cz/profil/HZSPLK,276
+38,Úřad pro zastupování státu ve věcech majetkových,https://nen.nipez.cz/profil/uzsvm,286
+39,Obec Kasalice,https://nen.nipez.cz/profil/Kasalice,304
+40,Statutární město Zlín,https://nen.nipez.cz/profil/MMZ,308
+41,Státní oblastní archiv v Litoměřicích,https://nen.nipez.cz/profil/SOALTM,318
+42,Ministerstvo financí,https://nen.nipez.cz/profil/mfcr,321
+43,Digitální a informační agentura,https://nen.nipez.cz/profil/DIA,329
+44,Statutární město Jablonec nad Nisou,https://nen.nipez.cz/profil/SMJNN,331
+45,Obec Kozlovice,https://nen.nipez.cz/profil/OBECKOZLOVICE,338
+46,Generální ředitelství cel,https://nen.nipez.cz/profil/GRC,347
+47,Ústav územního rozvoje,https://nen.nipez.cz/profil/uur,359
+48,Okresní soud ve Svitavách,https://nen.nipez.cz/profil/OS_Svitavy,361
+49,Obec Popůvky,https://nen.nipez.cz/profil/ObecPopuvky,368
+50,Krajské ředitelství policie Středočeského kraje,https://nen.nipez.cz/profil/KRPS,376
+51,Krajský soud v Hradci Králové,https://nen.nipez.cz/profil/KSHK,380
+52,Krajské ředitelství policie Moravskoslezského kraje,https://nen.nipez.cz/profil/KRPMSK,383
+53,Obec Ježovy,https://nen.nipez.cz/profil/jezovy,396
+54,Krajské ředitelství policie Ústeckého kraje,https://nen.nipez.cz/profil/KRPU,398
+55,Krajské ředitelství policie Jihomoravského kraje,https://nen.nipez.cz/profil/KRPJMK,437
+56,Český statistický úřad,https://nen.nipez.cz/profil/CSU,439
+57,Institut pro veřejnou správu Praha,https://nen.nipez.cz/profil/IVS,453
+58,"Středisko společných činností AV ČR, v. v. i.",https://nen.nipez.cz/profil/SSC,464
+59,"Vojenská lázeňská a rekreační zařízení, příspěvková organizace",https://nen.nipez.cz/profil/VOLAREZA,467
+60,Obec Klenovice na Hané,https://nen.nipez.cz/profil/00288349,472
+61,"SATESO, s.r.o.",https://nen.nipez.cz/profil/sateso,476
+62,Obec Jaroměřice,https://nen.nipez.cz/profil/jaromerice,477
+63,Národní ústav lidové kultury,https://nen.nipez.cz/profil/nulk,485
+64,"Kostka Krásná Lípa, p.o.",https://nen.nipez.cz/profil/kostkakrasnalipa,493
+65,Obec Pičín,https://nen.nipez.cz/profil/Obecpicin,499
+66,Obec Bukovina,https://nen.nipez.cz/profil/Bukovina,520
+67,Česká agentura na podporu obchodu,https://nen.nipez.cz/profil/CzechTrade,528
+68,Správa Národního parku České Švýcarsko,https://nen.nipez.cz/profil/ceskesvycarsko,530
+69,Obec Velký Beranov,https://nen.nipez.cz/profil/obecvelkyberanov,537
+758,"OKD, a.s.",,2188
+70,Revmatologický ústav,https://nen.nipez.cz/profil/revmatologickyustav,542
+71,Obec Ždírec,https://nen.nipez.cz/profil/obeczdirec,544
+72,Hasičský záchranný sbor Moravskoslezského kraje,https://nen.nipez.cz/profil/HZSMSK,557
+73,"Technická správa komunikací hl.m. Prahy, a.s.",https://nen.nipez.cz/profil/TSK,559
+74,Ministerstvo zahraničních věcí,https://nen.nipez.cz/profil/mzv,610
+75,Krajské ředitelství policie Pardubického kraje,https://nen.nipez.cz/profil/KRP_Pak,615
+76,Nemocnice Slaný,https://nen.nipez.cz/profil/NemocniceSlany,617
+77,"Nemocnice Jablonec nad Nisou, p.o.",,618
+78,Národní pedagogický institut České republiky (zařízení pro další vzdělávání pedagogických pracovníků),https://nen.nipez.cz/profil/nidvcz,623
+79,Krajské ředitelství policie Karlovarského kraje,https://nen.nipez.cz/profil/KRPKVZ,625
+80,Generální finanční ředitelství,https://nen.nipez.cz/profil/gfrnen,642
+81,Katastrální úřad pro Jihočeský kraj,https://nen.nipez.cz/profil/KUJC,645
+82,Okresní soud v Ostravě,https://nen.nipez.cz/profil/OSSEMOS,656
+83,Krajské ředitelství policie Plzeňského kraje,https://nen.nipez.cz/profil/PCR_KRP_Plzen,663
+84,Město Police nad Metují,https://nen.nipez.cz/profil/PolicenadMetuji,674
+85,Slezské zemské muzeum,https://nen.nipez.cz/profil/SZM,677
+86,Obvodní soud pro Prahu 1,https://nen.nipez.cz/profil/OSPraha1,686
+87,Psychiatrická nemocnice Kosmonosy,https://nen.nipez.cz/profil/pnkosmonosy,689
+88,Státní oblastní archiv v Praze,https://nen.nipez.cz/profil/SOAPraha,694
+89,Obec Cebiv,https://nen.nipez.cz/profil/Cebiv,700
+90,Český hydrometeorologický ústav,https://nen.nipez.cz/profil/CHMU,705
+91,Obec Vohančice,https://nen.nipez.cz/profil/vohancice,708
+92,"Muzeum romské kultury, státní příspěvková organizace",https://nen.nipez.cz/profil/MRK,722
+93,"Armádní Servisní, příspěvková organizace",https://nen.nipez.cz/profil/ASPO,749
+94,Český úřad zeměměřický a katastrální,https://nen.nipez.cz/profil/CUZK,754
+95,Krajské ředitelství policie Jihočeského kraje,https://nen.nipez.cz/profil/KRPJCK,757
+96,Český telekomunikační úřad,,761
+97,Obec Kynice,https://nen.nipez.cz/profil/obeckynice,773
+98,Národní bezpečnostní úřad,https://nen.nipez.cz/profil/nbu,785
+99,Okresní soud v Karviné,https://nen.nipez.cz/profil/STAVASOKRE1,788
+100,Město Týnec nad Sázavou,https://nen.nipez.cz/profil/TnS,794
+101,Moravskoslezský kraj,https://nen.nipez.cz/profil/MSK,800
+102,"Domov pro seniory Loučka, příspěvková organizace",https://nen.nipez.cz/profil/dsloucka,803
+103,Svaz vodovodů a kanalizací Žďársko,https://nen.nipez.cz/profil/SVKZdarsko,805
+104,MĚSTO TEPLICE NAD METUJÍ,https://nen.nipez.cz/profil/teplicenm,807
+105,Základní škola a mateřská škola Častolovice,https://nen.nipez.cz/profil/zscastolovice,819
+106,"Ústav přístrojové techniky AV ČR, v. v. i.",https://nen.nipez.cz/profil/UPTAVCR,821
+107,Střední odborná škola a Gymnázium Staré Město,https://nen.nipez.cz/profil/sosagsm,827
+108,Správa státních hmotných rezerv,https://nen.nipez.cz/profil/SSHR,834
+109,"Základní škola a Mateřská škola, Teplice nad Metují",https://nen.nipez.cz/profil/zsteplicenadmetuji,807
+110,Česká inspekce životního prostředí,https://nen.nipez.cz/profil/cizp,862
+111,Zlínský kraj,https://nen.nipez.cz/profil/ZLK,884
+112,15. přední hlídka Royal Rangers Mariánské Lázně,,891
+113,Státní oblastní archiv v Třeboni,https://nen.nipez.cz/profil/SOATB,895
+114,Agentura ochrany přírody a krajiny České republiky,https://nen.nipez.cz/profil/AOPK,901
+115,"Vojenský technický ústav, s.p.",https://nen.nipez.cz/profil/VTU,628
+116,Vyšší policejní škola a Střední policejní škola Ministerstva vnitra v Holešově,https://nen.nipez.cz/profil/VPSaSPSHolesov,923
+117,Česká rozvojová agentura,https://nen.nipez.cz/profil/czechaid,937
+118,Městys Sepekov,https://nen.nipez.cz/profil/MestysSepekov,942
+119,Zařízení služeb pro Ministerstvo vnitra,https://nen.nipez.cz/profil/ZSMV,948
+120,Vězeňská služba České republiky,https://nen.nipez.cz/profil/VSCR,960
+121,Obec Bukovec,https://nen.nipez.cz/profil/obecbukovec,990
+122,Vyšší policejní škola a Střední policejní škola Ministerstva vnitra v Praze,https://nen.nipez.cz/profil/VPSaSPSMVvPraze,994
+123,Obec Lhota,https://nen.nipez.cz/profil/obeclhota,999
+124,Okresní soud v Děčíně,https://nen.nipez.cz/profil/OkresnisoudvDecine,1004
+125,Česká filharmonie,https://nen.nipez.cz/profil/CF,1023
+126,Ústřední vojenská nemocnice - Vojenská fakultní nemocnice Praha,https://nen.nipez.cz/profil/UVN,1024
+127,Obec Bednáreček,https://nen.nipez.cz/profil/ObecBednarecek,1030
+128,Obec Přehvozdí,https://nen.nipez.cz/profil/Prehvozdi,1041
+129,Ministerstvo dopravy,https://nen.nipez.cz/profil/mdcr,1074
+152,Správa Národního parku Podyjí,https://nen.nipez.cz/profil/SpravaNPPodyji,1103
+153,Obec Osek,https://nen.nipez.cz/profil/ObecOsek,1114
+154,"CENTRUM PRO ZDRAVOTNĚ POSTIŽENÉ Libereckého kraje, o.p.s.",https://nen.nipez.cz/profil/CZPLK,1118
+155,OLYMP CENTRUM SPORTU MINISTERSTVA VNITRA,https://nen.nipez.cz/profil/OCSMV,1120
+156,Obec Strání,https://nen.nipez.cz/profil/ObecStrani,1122
+157,Okresní soud v Klatovech,https://nen.nipez.cz/profil/OSKT,1125
+158,Česká obchodní inspekce,https://nen.nipez.cz/profil/COI,1127
+159,Národní archiv,https://nen.nipez.cz/profil/narodniarchiv,694
+160,Hasičský záchranný sbor Libereckého kraje,https://nen.nipez.cz/profil/HZS_LK,1148
+161,Energetický regulační úřad,https://nen.nipez.cz/profil/ERU,1155
+162,Krajské ředitelství policie Královéhradeckého kraje,https://nen.nipez.cz/profil/KRPHR,1169
+163,Správa Pražského hradu,https://nen.nipez.cz/profil/SPH,1192
+164,Městys Čestice,https://nen.nipez.cz/profil/MestysCestice,1214
+165,"Dopravní společnost Zlín-Otrokovice, s.r.o.",https://nen.nipez.cz/profil/dszo,1228
+166,Obec Moravany,https://nen.nipez.cz/profil/moravany,1236
+167,Obec Lesní Hluboké,https://nen.nipez.cz/profil/ObecLH,1237
+168,Česká republika - Kancelář Senátu,https://nen.nipez.cz/profil/KS,1242
+169,Město Jeseník,https://nen.nipez.cz/profil/jesenik,1245
+170,Obec Dobronín,https://nen.nipez.cz/profil/540916285,1247
+171,Tiskárna Ministerstva vnitra,https://nen.nipez.cz/profil/TMV,1249
+172,Městský soud v Praze,https://nen.nipez.cz/profil/MSOUDPHA,1251
+173,Okresní soud Plzeň - město,https://nen.nipez.cz/profil/ProfilOSPM,1253
+174,Ministerstvo spravedlnosti,https://nen.nipez.cz/profil/profilMsp,1260
+175,Obec Střížov,https://nen.nipez.cz/profil/ObecStrizov,1266
+202,Hasičský záchranný sbor Karlovarského kraje,https://nen.nipez.cz/profil/HZSKvk_,1309
+203,Policejní akademie České republiky v Praze,https://nen.nipez.cz/profil/PACR,1311
+204,Krajské ředitelství policie Libereckého kraje,https://nen.nipez.cz/profil/KRPLK,1314
+205,Agentura pro podnikání a inovace,https://nen.nipez.cz/profil/API2017,1319
+206,Sprintel s.r.o.,https://nen.nipez.cz/profil/Sprintel,1322
+207,Město Jílové,https://nen.nipez.cz/profil/PZmestoJilove,1329
+208,"Diagnostický ústav pro mládež, dětský domov se školou, středisko výchovné péče a základní škola, Ostrava - Kunčičky",https://nen.nipez.cz/profil/DUMOSTRAVA,1336
+209,Ředitelství vodních cest ČR,https://nen.nipez.cz/profil/RVCCR,1074
+210,Úřad pro civilní letectví,https://nen.nipez.cz/profil/Letectvi,1353
+211,Nemocnice Blansko,https://nen.nipez.cz/profil/NemocniceBlansko,1366
+212,Hasičský záchranný sbor Pardubického kraje,https://nen.nipez.cz/profil/hzspak,968
+213,Obec Slabčice,https://nen.nipez.cz/profil/ObecSlabcice,1380
+214,Městys Jimramov,https://nen.nipez.cz/profil/Jimramov,1390
+215,Obec Štarnov,https://nen.nipez.cz/profil/obecstarnov,1410
+216,Psychiatrická nemocnice Horní Beřkovice,https://nen.nipez.cz/profil/pnhob,1422
+217,"Vodovody a kanalizace Vyškov,a.s.",,1428
+218,Obec Stojčín,https://nen.nipez.cz/profil/ObecStojcin,1435
+219,"Galerie výtvarného umění v Ostravě, příspěvková organizace",https://nen.nipez.cz/profil/GVUO,1437
+220,Městys Knínice,https://nen.nipez.cz/profil/mestyskninice,1440
+221,"SPORT Jablonec nad Nisou, s.r.o.",https://nen.nipez.cz/profil/sportjablonec,1442
+222,Klášter dominikánů Jablonné v Podještědí,https://nen.nipez.cz/profil/klasterjablonne,1445
+223,Ministerstvo pro místní rozvoj,https://nen.nipez.cz/profil/mmr,1458
+224,Moravská zemská knihovna v Brně,https://nen.nipez.cz/profil/MZK,1477
+225,Hasičský záchranný sbor Olomouckého kraje,https://nen.nipez.cz/profil/HZS_OK,1487
+226,Správa uprchlických zařízení Ministerstva vnitra,https://nen.nipez.cz/profil/SUZMV,1498
+227,Nemocnice Hranice a.s.,https://nen.nipez.cz/profil/nemhranice,1500
+228,HULMAN - kovošrot s.r.o.,https://nen.nipez.cz/profil/hulmankovosrot,1503
+229,Město Kojetín,https://nen.nipez.cz/profil/kojetin,1507
+230,CASRI - Vědecké a servisní pracoviště tělesné výchovy a sportu,https://nen.nipez.cz/profil/CASRI,1391
+231,Katastrální úřad pro Jihomoravský kraj,https://nen.nipez.cz/profil/KUJM,1510
+232,Úřad pro ochranu hospodářské soutěže,https://nen.nipez.cz/profil/urad65349423,1516
+233,"Dětský diagnostický ústav, základní škola a školní jídelna",https://nen.nipez.cz/profil/DDU_Bohumin,1527
+234,Město Týniště nad Orlicí,https://nen.nipez.cz/profil/tynistenadorlici,1531
+235,Charita Olomouc,https://nen.nipez.cz/profil/CharitaOlomouc,1537
+236,"Buďánka, z.ú.",https://nen.nipez.cz/profil/budanka,1543
+237,Česká republika - Kancelář Poslanecké sněmovny,https://nen.nipez.cz/profil/KPS,1547
+238,Obec Sudoměřice u Bechyně,https://nen.nipez.cz/profil/obecsudomerice,1564
+239,Obec Ruda,,1582
+240,Česká centrála cestovního ruchu - CzechTourism,https://nen.nipez.cz/profil/Czechtourism,528
+241,Město Vlašim,https://nen.nipez.cz/profil/vlasim,1600
+242,Obec Nekmíř,https://nen.nipez.cz/profil/obnekmir,1609
+243,Obec Veselíčko,https://nen.nipez.cz/profil/veselicko,1613
+244,Město Svitavy,https://nen.nipez.cz/profil/msvitavy,1632
+245,OBEC BOLEHOŠŤ,https://nen.nipez.cz/profil/Bolehost,1648
+246,Moravská galerie v Brně,https://nen.nipez.cz/profil/MG,1653
+247,Obec Kařez,https://nen.nipez.cz/profil/obeckarez,1656
+248,Psychiatrická nemocnice Marianny Oranžské,https://nen.nipez.cz/profil/PNMO,1665
+249,Obec Srubec,https://nen.nipez.cz/profil/obecSrubec,1669
+250,"Střední škola technická a zemědělská, Nový Jičín, příspěvková organizace",https://nen.nipez.cz/profil/tznj,1694
+251,Generální inspekce bezpečnostních sborů,https://nen.nipez.cz/profil/GIBS,1704
+252,Hasičský záchranný sbor Ústeckého kraje,https://nen.nipez.cz/profil/HZS_UK,1707
+253,Město Nová Včelnice,https://nen.nipez.cz/profil/novavcelnice,1756
+254,Městský obvod Pardubice V,https://nen.nipez.cz/profil/pardubice5,1773
+255,Obec Řevničov,https://nen.nipez.cz/profil/obecRevnicov,1775
+256,Hasičský záchranný sbor Královéhradeckého kraje,https://nen.nipez.cz/profil/hzs_khk,1776
+257,"TRAFIN OIL, a.s.",https://nen.nipez.cz/profil/trafinoil,1778
+258,Lázně Bělohrad a.s.,https://nen.nipez.cz/profil/belohrad,1787
+259,Český metrologický institut,https://nen.nipez.cz/profil/CMI,1790
+260,Město Bechyně,https://nen.nipez.cz/profil/bechyne,426
+261,Kulturní a informační služby města Přerova,https://nen.nipez.cz/profil/kismpr,1846
+262,Městský obvod Pardubice IV,https://nen.nipez.cz/profil/pardubice4,1851
+263,NH Hospital a.s.,https://nen.nipez.cz/profil/nhhospital,1858
+264,Muzeum Jana Amose Komenského v Uherském Brodě,https://nen.nipez.cz/profil/MJAKUB,1859
+265,Hasičský záchranný sbor hlavního města Prahy,https://nen.nipez.cz/profil/Prahy,1865
+266,Obec Pazderna,https://nen.nipez.cz/profil/00577073,1871
+267,Památník národního písemnictví,https://nen.nipez.cz/profil/PNP,1872
+268,Husitské muzeum v Táboře,https://nen.nipez.cz/profil/HMT,1877
+269,Česká republika - Ministerstvo životního prostředí,https://nen.nipez.cz/profil/MZP,1878
+270,Obec Lestkov,https://nen.nipez.cz/profil/Lestkov,1883
+271,Obec Březnice,https://nen.nipez.cz/profil/breznice,1885
+272,Město Jesenice,https://nen.nipez.cz/profil/mestojesenice,1897
+273,Obec Rantířov,https://nen.nipez.cz/profil/obecrantirov,1911
+274,Město Třemošná,https://nen.nipez.cz/profil/MestoTremosna,1919
+275,OBEC ČERNILOV,https://nen.nipez.cz/profil/Cernilov,1936
+276,Krajské ředitelství policie Zlínského kraje,https://nen.nipez.cz/profil/KRPZLK,1958
+277,Okresní soud ve Vsetíně,https://nen.nipez.cz/profil/OSSEMVS,1121
+278,Obec Šimonovice,https://nen.nipez.cz/profil/ObecSimonovice,1967
+279,Obec Vyskytná nad Jihlavou,https://nen.nipez.cz/profil/VyskytnanadJihlavou,1971
+280,"14l15 Baťův institut, příspěvková organizace",https://nen.nipez.cz/profil/1415BI,1993
+281,Národní technické muzeum,https://nen.nipez.cz/profil/NTM1,1995
+282,"ZOO a zámek Zlín - Lešná, příspěvková organizace",,2003
+283,Obec Suchý,https://nen.nipez.cz/profil/obecsuchy,2007
+284,"Řízení letového provozu České republiky, státní podnik (ŘLP ČR, s.p.)",https://nen.nipez.cz/profil/RLPCR,2022
+285,Česká průmyslová zdravotní pojišťovna,https://nen.nipez.cz/profil/CPZP,2027
+286,Správa úložišť radioaktivních odpadů,https://nen.nipez.cz/profil/surao,2037
+287,Státní úřad pro jadernou bezpečnost,https://nen.nipez.cz/profil/SUJB,2043
+288,Česká geologická služba,https://nen.nipez.cz/profil/CGS,2062
+289,OBEC PĚČÍN,https://nen.nipez.cz/profil/obecpecin,2066
+290,Město Kouřim,https://nen.nipez.cz/profil/mestokourim,2088
+291,Město Frenštát pod Radhoštěm,https://nen.nipez.cz/profil/00297852,2105
+292,Uměleckoprůmyslové museum v Praze,https://nen.nipez.cz/profil/UPM,2112
+293,Obec Luženičky,https://nen.nipez.cz/profil/obecluzenicky,2118
+294,Obec Lichnov,https://nen.nipez.cz/profil/Obec_Lichnov,2121
+295,Obec Prusy-Boškůvky,https://nen.nipez.cz/profil/PrusyBoskuvky,2139
+296,Město Orlová,https://nen.nipez.cz/profil/MESTOORLOVA,2147
+297,Gymnázium Uherské Hradiště,https://nen.nipez.cz/profil/GUH,2154
+298,Nemocnice Šumperk a.s.,https://nen.nipez.cz/profil/nemocnicesumperk,2174
+299,Obec Klínec,https://nen.nipez.cz/profil/obecklinec,2204
+300,Střední odborné učiliště Valašské Klobouky,https://nen.nipez.cz/profil/SOUVK,2213
+301,Ministerstvo kultury,https://nen.nipez.cz/profil/mkcr,2215
+302,Obec Římov,https://nen.nipez.cz/profil/obecrimov,2222
+303,"Obecný zájem, z.ú.",https://nen.nipez.cz/profil/obecnyzajem,2236
+304,Město Příbram,https://nen.nipez.cz/profil/MeUPB,2254
+305,Hasičský záchranný sbor kraje Vysočina,https://nen.nipez.cz/profil/Hasi,2264
+306,Obec Radenín,https://nen.nipez.cz/profil/ObecRadenin,2266
+307,Krajský soud v Plzni,https://nen.nipez.cz/profil/ProfilKSPM,2268
+308,LOM PRAHA s.p.,https://nen.nipez.cz/profil/00000515,633
+309,"Slovácké muzeum v Uherském Hradišti, příspěvková organizace",https://nen.nipez.cz/profil/slovackemuzeum,2277
+310,"Mateřská škola Píšťalka, Přerov, Máchova 8",,2282
+311,Okresní soud v Kolíně,https://nen.nipez.cz/profil/SOUKO,2283
+312,Centrum sociálních služeb Tloskov,https://nen.nipez.cz/profil/CSS_Tloskov,2294
+313,Obec Bušín,https://nen.nipez.cz/profil/ObecBusin,2301
+314,Obec Choťánky,https://nen.nipez.cz/profil/chotanky,2063
+315,Městys Vysoký Chlumec,https://nen.nipez.cz/profil/MVCH,2307
+316,Tělocvičná jednota Sokol Písková Lhota,https://nen.nipez.cz/profil/TJ_Sokol_PL,2311
+352,Obec Kyšice,https://nen.nipez.cz/profil/Kysice,2354
+353,Ministerstvo průmyslu a obchodu,https://nen.nipez.cz/profil/MPO,2368
+354,Katastrální úřad pro hlavní město Prahu,https://nen.nipez.cz/profil/KUPH,754
+355,Obec Kuklík,https://nen.nipez.cz/profil/ObecKuklik,2391
+356,Krajský soud v Ústí nad Labem,https://nen.nipez.cz/profil/KSUL,2408
+357,Obec Všekary,https://nen.nipez.cz/profil/obecvsekary,2420
+358,Městys Podhradí,https://nen.nipez.cz/profil/Podhradi,2428
+359,Zeměměřický úřad,https://nen.nipez.cz/profil/ZU,754
+360,Ministerstvo zemědělství,https://nen.nipez.cz/profil/MZe,2431
+361,Centrum sociálních služeb Hrabyně,https://nen.nipez.cz/profil/csshrabyne,2445
+362,Biskupství ostravsko-opavské,https://nen.nipez.cz/profil/65468953,2455
+363,"Střední škola, základní škola a mateřská škola pro sluchově postižené, Praha 5, Holečkova 4",https://nen.nipez.cz/profil/SKOLAHOLECKOVA,2465
+364,Obec Mladějovice,,2472
+365,Katastrální úřad pro Plzeňský kraj,https://nen.nipez.cz/profil/KUPL,2486
+366,Církevní základní škola a mateřská škola Třinec,https://nen.nipez.cz/profil/CZSaMSTrinec,2489
+367,Obec Žatčany,https://nen.nipez.cz/profil/ObecZatcany,2499
+368,Muzeum umění Olomouc,https://nen.nipez.cz/profil/MUO,2502
+369,Správa Krkonošského národního parku,https://nen.nipez.cz/profil/krnap,2516
+370,Okresní soud ve Zlíně,https://nen.nipez.cz/profil/OSZlin,2522
+371,Česká školní inspekce,https://nen.nipez.cz/profil/CSI,2526
+372,Město Nýrsko,https://nen.nipez.cz/profil/MestoNyrsko,2538
+373,Město Lipník nad Bečvou,https://nen.nipez.cz/profil/mestolipnik,2545
+374,KIGMAX HRANICE s.r.o.,https://nen.nipez.cz/profil/KIGMAXHRANICE,2550
+375,Obec Želiv,https://nen.nipez.cz/profil/obeczeliv,2552
+376,Agentura pro podporu podnikání a investic CzechInvest,https://nen.nipez.cz/profil/CzechInvest,528
+377,"Zoologická zahrada Tábor, a.s.",https://nen.nipez.cz/profil/zootabor,2564
+378,Katastrální úřad pro Ústecký kraj,https://nen.nipez.cz/profil/KUUL,2565
+379,"DH Liberec, o.p.s.",https://nen.nipez.cz/profil/DomovHarcov,2568
+380,Katastrální úřad pro Moravskoslezský kraj,https://nen.nipez.cz/profil/KUMS,2580
+381,"Mohelnické kulturní a sportovní centrum, s.r.o.",https://nen.nipez.cz/profil/mksc,2590
+382,"Krajská nemocnice Liberec, a.s.",https://nen.nipez.cz/profil/KNL,2600
+383,Obec Maleč,https://nen.nipez.cz/profil/Malec,2602
+384,Zemský archiv v Opavě,https://nen.nipez.cz/profil/zemarch,2603
+385,"Čistírna - zájmové sdružení obcí Město Touškov, Kozolupy, Bdeněves",https://nen.nipez.cz/profil/cistirna_MT_K_B,2617
+386,"Sociální služby Lipník nad Bečvou, příspěvková organizace",https://nen.nipez.cz/profil/socslulnb,2623
+387,Památník Terezín,https://nen.nipez.cz/profil/pamter,2629
+388,Městská část Praha 22,,2655
+389,Obec Březová,https://nen.nipez.cz/profil/00233153,2658
+390,Obec Puklice,https://nen.nipez.cz/profil/obecpuklice,2660
+391,Biskupské gymnázium,https://nen.nipez.cz/profil/Bigy,2662
+392,Obec Dolní Němčí,https://nen.nipez.cz/profil/obecDolniNemci,2671
+393,Národní technická knihovna,https://nen.nipez.cz/profil/NTK,2681
+394,Obec Mutěnice,https://nen.nipez.cz/profil/mutenice,2685
+395,Střední odborné učiliště Uherský Brod,https://nen.nipez.cz/profil/SOUUB,174
+396,Obec Kvilda,https://nen.nipez.cz/profil/obecKvilda,2710
+397,Moravské zemské muzeum,https://nen.nipez.cz/profil/mzmnen,2739
+398,"Ředitelství silnic Zlínského kraje,příspěvková organizace",https://nen.nipez.cz/profil/RSZK,2749
+399,Střední odborná škola požární ochrany a Vyšší odborná škola požární ochrany,https://nen.nipez.cz/profil/SOSPO,2764
+400,Obec Stěbořice,https://nen.nipez.cz/profil/steborice,2773
+401,Město Újezd u Brna,https://nen.nipez.cz/profil/mestoujezdubrna,2778
+402,Krajská hygienická stanice Jihomoravského kraje se sídlem v Brně,https://nen.nipez.cz/profil/KHSJmK,2799
+403,Obec Bezděkov nad Metují,https://nen.nipez.cz/profil/BezdekovnM,2805
+404,Obalovna Louny s.r.o.,https://nen.nipez.cz/profil/ObalovnaLouny,84
+405,Centrum pro regionální rozvoj České republiky,https://nen.nipez.cz/profil/CENTRUM,2811
+406,Obec Albrechtice,https://nen.nipez.cz/profil/Obec_Albrechtice,2820
+407,"SK Horní Staré Město, z.s.",https://nen.nipez.cz/profil/sk_hsm,2831
+408,Státní fond životního prostředí České republiky,https://nen.nipez.cz/profil/sfzp,901
+409,Město Ždánice,,2838
+410,Obec Opařany,https://nen.nipez.cz/profil/obecoparany,2839
+411,"Domov pro seniory Burešov, příspěvková organizace",https://nen.nipez.cz/profil/dsburesov,2849
+412,Obec Metylovice,https://nen.nipez.cz/profil/ObecMetylovice,2851
+413,Obec Dobřejovice,https://nen.nipez.cz/profil/dobrejovice,2855
+414,Město Nové Město pod Smrkem,https://nen.nipez.cz/profil/NMpS,2863
+415,Obec Bukovany,https://nen.nipez.cz/profil/obecbukovany,2866
+416,Státní úřad inspekce práce,https://nen.nipez.cz/profil/suip_cz,2876
+417,Obec Olšany,https://nen.nipez.cz/profil/Olsany,2890
+418,Okresní soud v Trutnově,https://nen.nipez.cz/profil/soutu,2898
+419,Městské vodovody a kanalizace Skuteč s.r.o.,https://nen.nipez.cz/profil/LEOPOSMEST2,2910
+420,"Industry Servis ZK, a.s.",https://nen.nipez.cz/profil/ISZK,2916
+421,Město Skuteč,https://nen.nipez.cz/profil/LEOPOSMEST1,2910
+422,Obec Bohdalice - Pavlovice,https://nen.nipez.cz/profil/00291641,2920
+423,Charita Veselí nad Moravou,https://nen.nipez.cz/profil/CharitaVnM,2923
+424,"Zdravotnická záchranná služba Zlínského kraje, příspěvková organizace",https://nen.nipez.cz/profil/ZZSZK,2927
+425,Obec Jinačovice,https://nen.nipez.cz/profil/jinacovice,2928
+426,Rehabilitační ústav Kladruby,https://nen.nipez.cz/profil/RUKladruby,2936
+427,Odborné učiliště Kelč,https://nen.nipez.cz/profil/OUK,2955
+428,"Potravinová banka Pardubice, z. s.",https://nen.nipez.cz/profil/PotravbankaPardubice,2964
+429,Oblastní charita Nové Hrady u Skutče,https://nen.nipez.cz/profil/charita_NH,2964
+430,Gymnázium Zlín - Lesní čtvrť,https://nen.nipez.cz/profil/00559105,2967
+431,"Ústav fyzikální chemie J. Heyrovského AV ČR, v.v.i.",https://nen.nipez.cz/profil/UFCHJH,2969
+432,"Teplárna České Budějovice, a.s.",https://nen.nipez.cz/profil/TCB,2979
+433,Obec Staříč,https://nen.nipez.cz/profil/Staric,2993
+434,Státní veterinární správa,https://nen.nipez.cz/profil/svscr,3020
+435,"RBP, zdravotní pojišťovna",https://nen.nipez.cz/profil/RBPzadavatel,3044
+436,Obec Slavětín,https://nen.nipez.cz/profil/Slavetin,3046
+437,Moravský zemský archiv v Brně,https://nen.nipez.cz/profil/MZA_v_Brne,3047
+438,"Státní ústav jaderné, chemické a biologické ochrany, v. v. i.",https://nen.nipez.cz/profil/SUJCHBO,3048
+439,Obec Bdeněves,https://nen.nipez.cz/profil/ObecBdeneves,3050
+440,Vojenská zdravotní pojišťovna České republiky,https://nen.nipez.cz/profil/VoZP,3060
+441,Obec Stašov,https://nen.nipez.cz/profil/obecstasov,3070
+442,Obec Ostroměř,https://nen.nipez.cz/profil/obecostromer,3074
+443,Obec Bílá Třemešná,https://nen.nipez.cz/profil/BilaTremesna,3084
+444,Obec Krhanice,https://nen.nipez.cz/profil/ObecKrhanice,3087
+445,"Junák - český skaut, středisko Moravská Orlice Moravské Budějovice, z. s.",https://nen.nipez.cz/profil/JunakMB,3089
+446,Město Velké Hamry,https://nen.nipez.cz/profil/mestovelkehamry,3104
+447,Obec Víceměřice,https://nen.nipez.cz/profil/Vicemerice,1388
+448,"Ministerstvo školství, mládeže a tělovýchovy",https://nen.nipez.cz/profil/MSMT,3117
+449,"Střední průmyslová škola dopravní, a.s.",https://nen.nipez.cz/profil/spsdopravni,3134
+450,Obec Vedrovice,,3141
+451,Město Chropyně,https://nen.nipez.cz/profil/Chropyne,3153
+452,Obec Horní Lhota,https://nen.nipez.cz/profil/hornilhota,3163
+453,"Dětský diagnostický ústav, středisko výchovné péče, základní škola a školní jídelna Plzeň, Karlovarská 67",https://nen.nipez.cz/profil/msmtdduplzen,3165
+454,Okresní soud v České Lípě,https://nen.nipez.cz/profil/Z00000472,3167
+455,Obec Pluhův Žďár,https://nen.nipez.cz/profil/PluhuvZdar,3171
+456,"Botanický ústav AV ČR, v. v. i.",https://nen.nipez.cz/profil/Botanickyustav,3177
+457,Město Hartmanice,https://nen.nipez.cz/profil/mestohartmanice,3186
+458,Městys Černý Důl,https://nen.nipez.cz/profil/mestyscernydul,3216
+459,Kroměřížská nemocnice a.s.,https://nen.nipez.cz/profil/KMN,3223
+460,Obec Slepotice,https://nen.nipez.cz/profil/SLEPOTICE,3229
+461,Dům zahraniční spolupráce,https://nen.nipez.cz/profil/DZS,3230
+462,Obec Slatinky,https://nen.nipez.cz/profil/Slatinky,3235
+463,statutární město Havířov,,3237
+464,Sdílení o.p.s.,https://nen.nipez.cz/profil/sdileni,3243
+465,Městys Mladé Buky,https://nen.nipez.cz/profil/mestysmb,3246
+466,Viterra Czech s.r.o.,https://nen.nipez.cz/profil/Viterra,3270
+467,Oldřich Vaňhara,https://nen.nipez.cz/profil/OldrichVanhara,3284
+468,Obec Přáslavice,,3286
+469,"Technické služby Zlín, s.r.o.",https://nen.nipez.cz/profil/TSZlin,3295
+470,Národní galerie v Praze,https://nen.nipez.cz/profil/profilng,3305
+471,Horimex cars s.r.o.,https://nen.nipez.cz/profil/Horimexcars,3309
+472,Městys Štoky,https://nen.nipez.cz/profil/mestysstoky,3317
+473,Česká centra,https://nen.nipez.cz/profil/ceskacentra,3318
+474,Obec Doubravice,https://nen.nipez.cz/profil/doubravice,3320
+475,Obec Rohovládova Bělá,https://nen.nipez.cz/profil/obecrohovladovabela,3330
+476,"Energotrans, a.s.",https://nen.nipez.cz/profil/EGS,178
+477,Obec Určice,https://nen.nipez.cz/profil/Urcice,3351
+478,Obec Červená Voda,https://nen.nipez.cz/profil/cervenavoda,3361
+479,Městys Ledenice,https://nen.nipez.cz/profil/Ledenice,3364
+480,Národní filmový archiv,https://nen.nipez.cz/profil/NFA,3367
+481,Obec Studánka,https://nen.nipez.cz/profil/Studanka,3371
+482,COMTES FHT a.s.,https://nen.nipez.cz/profil/COMTES,3378
+483,"Správa hřbitovů města Brna, příspěvková organizace",https://nen.nipez.cz/profil/hrbitovybrno,3384
+484,Obec Panenské Břežany,https://nen.nipez.cz/profil/panenskebrezany,3389
+485,Obec Horní Němčí,https://nen.nipez.cz/profil/ObecHorniNemci,3391
+486,KON - KYS s.r.o.,https://nen.nipez.cz/profil/KONKYS,3395
+487,Obec Rynoltice,https://nen.nipez.cz/profil/Rynoltice,3403
+488,Obec Horní Kruty,https://nen.nipez.cz/profil/HorniKruty,3404
+489,"Muzeum Těšínska, příspěvková organizace",https://nen.nipez.cz/profil/00305847,3406
+490,Česká republika - Státní zemědělská a potravinářská inspekce,https://nen.nipez.cz/profil/szpi,3412
+491,Svaz vodovodů a kanalizací JIHLAVSKO,https://nen.nipez.cz/profil/svakjihlavsko,3416
+492,Obec Veselá,https://nen.nipez.cz/profil/Vesela,3447
+493,Záchranný útvar Hasičského záchranného sboru České republiky,https://nen.nipez.cz/profil/ZUHZSCR,3448
+494,Lesní správa Lány,https://nen.nipez.cz/profil/lslany,3468
+495,Město Brandýs nad Labem-Stará Boleslav,https://nen.nipez.cz/profil/mesto_Brandys_nL,3471
+496,PKS servis spol. s r.o.,https://nen.nipez.cz/profil/25378341,3487
+497,"ENERGETIKA TŘINEC, a.s.",https://nen.nipez.cz/profil/47675896,3503
+498,"Kralupská sportovní, spol. s r.o.",https://nen.nipez.cz/profil/sportkralupy,3516
+499,Obec Vlčnov,https://nen.nipez.cz/profil/obecVlcnov,2276
+500,OBEC NEDĚLIŠTĚ,https://nen.nipez.cz/profil/Nedeliste,3545
+501,Krajské státní zastupitelství v Brně,https://nen.nipez.cz/profil/KSZBrno,3552
+502,"Hvězdárna Valašské Meziříčí, příspěvková organizace",https://nen.nipez.cz/profil/Hvezdarna_VM,3559
+503,STROMMY COMPANY s.r.o.,https://nen.nipez.cz/profil/STROMMY,3575
+504,Obec Kotlasy,https://nen.nipez.cz/profil/ObecKotlasy,3577
+505,"SPOLEČNĚ, z.s.",https://nen.nipez.cz/profil/spolecne,3579
+506,Katastrální úřad pro Královéhradecký kraj,https://nen.nipez.cz/profil/KUKH,1985
+507,Státní fond podpory investic,https://nen.nipez.cz/profil/sfpi,3590
+508,"Muzeum jihovýchodní Moravy ve Zlíně, příspěvková organizace",https://nen.nipez.cz/profil/MJVM,1993
+509,Ústavní soud,https://nen.nipez.cz/profil/ustavnisoud,3611
+510,"ART ECON - Střední škola a vyšší odborná škola Praha, s.r.o.",https://nen.nipez.cz/profil/artecon,3617
+511,Obec Prosenická Lhota,https://nen.nipez.cz/profil/ProsenickaLhota,3624
+512,"Dětský diagnostický ústav, středisko výchovné péče, základní škola a školní jídelna, Hradec Králové, Říčařova 277",https://nen.nipez.cz/profil/DDUHK,3625
+513,"Vodovody a kanalizace Náchod, a.s.",https://nen.nipez.cz/profil/VAKNachod,3646
+514,Obec Dobroutov,https://nen.nipez.cz/profil/ObecDobroutov,3647
+515,Obec Čížkov,https://nen.nipez.cz/profil/obeccizkov,3654
+516,Obec Babylon,https://nen.nipez.cz/profil/obecbabylon,3655
+517,Endokrinologický ústav,https://nen.nipez.cz/profil/endo,3657
+518,Obec Hojovice,https://nen.nipez.cz/profil/Hojovice,3659
+519,Obec Štěměchy,https://nen.nipez.cz/profil/obecstemechy,3663
+520,Obec Tmaň,https://nen.nipez.cz/profil/obectman,3673
+521,Obec Lešná,https://nen.nipez.cz/profil/Lesna,3686
+522,Obec Nivnice,https://nen.nipez.cz/profil/obecNivnice,3687
+523,Jihočeská hospodářská komora,https://nen.nipez.cz/profil/jhk,3690
+524,"Levitovo centrum následné péče, příspěvková organizace",https://nen.nipez.cz/profil/Levitovocentrum,3697
+525,Obec Dobrovítov,https://nen.nipez.cz/profil/ObecDobrovitov,3700
+526,Městys Bohdalov,https://nen.nipez.cz/profil/355144,3712
+527,"Sociální služby Vsetín, příspěvková organizace",https://nen.nipez.cz/profil/SSVS,3729
+528,SOMA spol. s r. o.,,3738
+529,Město Hodkovice nad Mohelkou,https://nen.nipez.cz/profil/HodkoviceNM,3742
+530,JESSENIA a.s.,https://nen.nipez.cz/profil/JESSENIA,1858
+531,Česká správa sociálního zabezpečení,https://nen.nipez.cz/profil/CSSZ,3759
+532,Město Brušperk,https://nen.nipez.cz/profil/00296538,3774
+533,Vyšší odborná škola pedagogická a sociální a Střední pedagogická škola Kroměříž,https://nen.nipez.cz/profil/SPGSKM,3779
+534,Služby města Jindřichův Hradec s.r.o.,https://nen.nipez.cz/profil/26043335,1758
+535,Tauferova střední odborná škola veterinární Kroměříž,https://nen.nipez.cz/profil/vetkm,3790
+536,SAKO Brno SOLAR a.s.,https://nen.nipez.cz/profil/SAKOBrnoSOLAR,3794
+537,"ROSA - centrum pro ženy, z.s.",https://nen.nipez.cz/profil/ROSAcentrum,3822
+538,Technické muzeum v Brně,https://nen.nipez.cz/profil/TMB,3840
+539,Okresní soud v Nymburce,https://nen.nipez.cz/profil/osstcnb,3866
+540,Okresní soud v Pelhřimově,https://nen.nipez.cz/profil/OSJICPE,3872
+541,Obec Velhartice,https://nen.nipez.cz/profil/ObecVelhartice,3877
+542,Obec Jičíněves,https://nen.nipez.cz/profil/Jicineves,3879
+543,OBEC VYSKEŘ,https://nen.nipez.cz/profil/obecVysker,420
+544,Obec Bošice,https://nen.nipez.cz/profil/250350,3892
+545,Městské kulturní středisko Třebíč,,3903
+546,Centrum služeb pro silniční dopravu,https://nen.nipez.cz/profil/profilCSPSD,3906
+547,Obec Úhřetice,https://nen.nipez.cz/profil/ObecUhretice,3918
+548,Uherskohradišťská nemocnice a.s.,https://nen.nipez.cz/profil/nemuh,3920
+549,Obec Hraničné Petrovice,https://nen.nipez.cz/profil/hranicnepetrovice,3938
+550,Město Koryčany,https://nen.nipez.cz/profil/MESTO_KORYCANY,3950
+551,Město Žirovnice,https://nen.nipez.cz/profil/mesto_zirovnice,3952
+552,Město Slaný,https://nen.nipez.cz/profil/mestoslany,3961
+553,Obec Sokolnice,https://nen.nipez.cz/profil/sokolnice,3984
+554,"Městská sportovní zařízení Benešov, s.r.o.",https://nen.nipez.cz/profil/MSZBenesov,3987
+555,Probační a mediační služba,https://nen.nipez.cz/profil/PMS,3990
+556,Obec Hlavatce,https://nen.nipez.cz/profil/Hlavatce,4000
+557,Okresní soud v Rychnově nad Kněžnou,https://nen.nipez.cz/profil/OS_Rychnov_nKn,4002
+558,Město Moravský Krumlov,https://nen.nipez.cz/profil/mestomoravskykrumlov,4027
+559,"Národní divadlo Brno, příspěvková organizace",https://nen.nipez.cz/profil/NdB,4042
+560,"Střední průmyslová škola, Obchodní akademie a Jazyková škola s právem státní jazykové zkoušky, Frýdek-Místek, příspěvková organizace",https://nen.nipez.cz/profil/spsoafm,4064
+561,"Základní umělecká škola, Krnov, Hlavní náměstí 9, příspěvková organizace",https://nen.nipez.cz/profil/zuskrnov,4066
+562,Obec Boršov nad Vltavou,https://nen.nipez.cz/profil/BorsovnadVltavou,4073
+563,Obec Klopina,https://nen.nipez.cz/profil/klopina,4074
+564,Krajská hygienická stanice Olomouckého kraje se sídlem v Olomouci,https://nen.nipez.cz/profil/KHSOL,4075
+565,Obec Vitějovice,https://nen.nipez.cz/profil/ObecVitejovice,4077
+566,Okresní soud v Kladně,https://nen.nipez.cz/profil/OSSTCKL,4084
+567,Obec Branka u Opavy,https://nen.nipez.cz/profil/47812303,4096
+568,"A-WebSys, spol. s r.o.",https://nen.nipez.cz/profil/awebsys,4110
+569,Město Hostivice,https://nen.nipez.cz/profil/hostivice,4113
+570,"TROJEK, a.s.",https://nen.nipez.cz/profil/trojek,4139
+571,Obec Bohutín,https://nen.nipez.cz/profil/00302392,4158
+572,Krajský soud v Brně,https://nen.nipez.cz/profil/KS_Brno,4164
+573,Obec Horní Štěpánov,https://nen.nipez.cz/profil/obechornistepanov,4179
+757,Obec Mnichov,https://nen.nipez.cz/profil/obec_mnichov_1,4845
+574,Obec Cizkrajov,https://nen.nipez.cz/profil/obeccizkrajov,4184
+575,Obec Olešná,https://nen.nipez.cz/profil/Obecolesna,4185
+576,Obec Císařov,https://nen.nipez.cz/profil/cisarov,4186
+577,Obec Panenská Rozsíčka,https://nen.nipez.cz/profil/obecpanenskarozsicka,4193
+578,Obec Pleše,https://nen.nipez.cz/profil/Obecplese,4195
+579,Krajské státní zastupitelství v Praze,https://nen.nipez.cz/profil/spravedlnost,4208
+580,Zotavovna Vězeňské služby České republiky Přední Labská,https://nen.nipez.cz/profil/prednilabska,4210
+581,Obec Smolotely,https://nen.nipez.cz/profil/ObecSmolotely,4218
+582,Obec Velké Kunětice,https://nen.nipez.cz/profil/velkekunetice,4220
+583,Městský obvod Pardubice VI,https://nen.nipez.cz/profil/pardubice6,4223
+584,Tomáš STRAUB s.r.o.,,4232
+585,"Základní škola Jílové, okres Děčín, příspěvková organizace",https://nen.nipez.cz/profil/PZZSJilovedc,4238
+586,Městys Česká Bělá,https://nen.nipez.cz/profil/CeskaBela,4240
+587,Obec Budětice,https://nen.nipez.cz/profil/obecbudetice,4246
+588,Integrovaná střední škola - Centrum odborné přípravy a Jazyková škola s právem státní jazykové zkoušky Valašské Meziříčí,https://nen.nipez.cz/profil/isscopvm,4261
+589,Státní oblastní archiv v Hradci Králové,https://nen.nipez.cz/profil/zam,4265
+590,"Základní škola speciální, Ostrava-Slezská Ostrava, příspěvková organizace",https://nen.nipez.cz/profil/ZSSPECOSTR,4272
+591,Město Polná,https://nen.nipez.cz/profil/mestopolna,4275
+592,"Základní škola Vojtěcha Martínka Brušperk, okres Frýdek-Místek",https://nen.nipez.cz/profil/60043792,4277
+593,Služby města Pardubic a.s.,https://nen.nipez.cz/profil/SMP,1710
+594,Obec Kunratice u Cvikova,https://nen.nipez.cz/profil/KunraticeCvikov,4294
+595,"Technické služby Průhonice, s.r.o.",https://nen.nipez.cz/profil/tspruhonice,4371
+596,Pražský filharmonický sbor,https://nen.nipez.cz/profil/PFS,4382
+597,Obec Libín,https://nen.nipez.cz/profil/ObecLibin,4388
+598,NASKA a.s.,https://nen.nipez.cz/profil/NASKA,1786
+599,Obec Koberovy,https://nen.nipez.cz/profil/Koberovy,4393
+600,Okresní soud v Prostějově,https://nen.nipez.cz/profil/OSvProstejove,4409
+601,Obec Litvínovice,https://nen.nipez.cz/profil/ObecLitvinovice,2164
+602,Okresní soud v Litoměřicích,https://nen.nipez.cz/profil/OSSCELT,4413
+603,Česká informační agentura životního prostředí,https://nen.nipez.cz/profil/CENIA,4429
+604,Obec Netunice,https://nen.nipez.cz/profil/netunice,4441
+605,"Muzeum Kroměřížska, příspěvková organizace",https://nen.nipez.cz/profil/muzeumkm,4450
+606,Archiv bezpečnostních složek,https://nen.nipez.cz/profil/ABS,4458
+607,Krajské státní zastupitelství v Plzni,https://nen.nipez.cz/profil/KSZPLZ,4462
+608,Městský obvod Pardubice VII,https://nen.nipez.cz/profil/pardubice7,4464
+609,Okresní soud v Olomouci,https://nen.nipez.cz/profil/OSSEMOC,4481
+610,"Sociální služby města Přerova, p.o.",https://nen.nipez.cz/profil/SSMP,4487
+611,Obec Kočí,https://nen.nipez.cz/profil/ObecKoci,4497
+612,Technické služby města Nových Hradů,https://nen.nipez.cz/profil/TS_NoveHrady,4499
+613,Centrum pro zjišťování výsledků vzdělávání,https://nen.nipez.cz/profil/CZVV,4506
+652,Město Kamenice nad Lipou,https://nen.nipez.cz/profil/MestoKamenicenl,4553
+653,Město Krupka,https://nen.nipez.cz/profil/mestokrupka,4572
+654,Okresní soud v Jičíně,https://nen.nipez.cz/profil/OSJC,4578
+655,"Výzkumný ústav práce a sociálních věcí, v. v. i.",https://nen.nipez.cz/profil/VUPSV,1147
+702,Obec Pernštejnské Jestřabí,https://nen.nipez.cz/profil/00599662,4652
+703,Městys Velké Poříčí,https://nen.nipez.cz/profil/Porici,4655
+704,Obec Rohozná,https://nen.nipez.cz/profil/obecrohozna,4657
+705,Obec Strachoňovice,https://nen.nipez.cz/profil/obecstrachonovice,4658
+706,Centrum výzkumu Řež s.r.o.,https://nen.nipez.cz/profil/26722445,3129
+707,Obec Nezvěstice,https://nen.nipez.cz/profil/nezvestice,4661
+708,Obec Strašice,https://nen.nipez.cz/profil/strasice,2881
+709,Drážní úřad,https://nen.nipez.cz/profil/drazniurad,4664
+710,Obec Ovesné Kladruby,https://nen.nipez.cz/profil/ovesnekladruby,4667
+711,"Výchovný ústav, střední škola a školní jidelna Višňové, Zámek 1",https://nen.nipez.cz/profil/Vychovnyustav,4675
+712,Okresní soud v Kroměříži,https://nen.nipez.cz/profil/OSKromeriz,4681
+713,"""Bělská skupina""",https://nen.nipez.cz/profil/belskaskupina,4695
+714,Obec Bítouchov,https://nen.nipez.cz/profil/obecbitouchov,4699
+715,Úřad vlády České republiky,https://nen.nipez.cz/profil/UVCR,4718
+716,Státní ústav pro kontrolu léčiv,https://nen.nipez.cz/profil/SUKL,4727
+717,"Gymnázium BESKYDY MOUNTAIN ACADEMY, s.r.o.",https://nen.nipez.cz/profil/gymnaziumbma,4729
+718,"Muzeum regionu Valašsko, příspěvková organizace",https://nen.nipez.cz/profil/MRV,1121
+719,Město Velvary,https://nen.nipez.cz/profil/mestovelvary,4745
+720,KELY 99 s.r.o.,https://nen.nipez.cz/profil/KELY99,1958
+721,"VTP Brno, a.s.",https://nen.nipez.cz/profil/VTP_BRNO_AS,2921
+722,Gymnázium Kroměříž,https://nen.nipez.cz/profil/gymkrom,4776
+752,SPORTCOMPLEX z.s.,https://nen.nipez.cz/profil/SPORTCOMPLEX,4802
+753,Česká agentura pro standardizaci,https://nen.nipez.cz/profil/CAS,4824
+754,"Vodní záchranná služba ČČK, z.s.",https://nen.nipez.cz/profil/VZS,4829
+755,První plzeňská galvanovna s.r.o.,https://nen.nipez.cz/profil/PPG,4842
+756,Obec Staré Jesenčany,https://nen.nipez.cz/profil/starejesencany,4843
+759,"Centrum aplikovaného výzkumu a dalšího vzdělávání, o.p.s.",https://nen.nipez.cz/profil/CentrumAVDV,4878
+760,Střední škola oděvní a služeb Vizovice,https://nen.nipez.cz/profil/souviz,4882
+761,Obec Pitín,https://nen.nipez.cz/profil/ObecPitin,4889
+762,Obec Březolupy,https://nen.nipez.cz/profil/obecbrezolupy,4903
+763,Obec Strašov,https://nen.nipez.cz/profil/obecstrasov,4911
+764,Okresní soud Jeseník,https://nen.nipez.cz/profil/OSJE,4916
+765,Národní úřad pro kybernetickou a informační bezpečnost,https://nen.nipez.cz/profil/nukib,4918
+766,Katastrální úřad pro Liberecký kraj,https://nen.nipez.cz/profil/KULB,4919
+767,Tělocvičná jednota Sokol Telč,https://nen.nipez.cz/profil/tjsokoltelc,3243
+768,Město Ralsko,https://nen.nipez.cz/profil/Ralsko,4922
+769,Město Hranice,,4941
+770,Ústav leteckého zdravotnictví Praha,https://nen.nipez.cz/profil/ulzpraha,4948
+771,Město Jaroměř,https://nen.nipez.cz/profil/mesto_jaromer,4955
+772,Okresní soud v Semilech,https://nen.nipez.cz/profil/os_semily,138
+773,"Vinařství Vinaře, s.r.o.",https://nen.nipez.cz/profil/VinarstviVinare,4979
+774,Institut umění - Divadelní ústav,https://nen.nipez.cz/profil/IDU,4990
+802,LTC Pardubice z.s.,https://nen.nipez.cz/profil/LTCPardubice,5152
+803,Gymnázium Otrokovice,https://nen.nipez.cz/profil/GyOtrr,5156
+804,Obec Rouchovany,https://nen.nipez.cz/profil/ObecRouchovany,3226
+805,Okresní soud ve Frýdku-Místku,https://nen.nipez.cz/profil/RENCHLOKRE1,5175
+852,Obec Libuň,https://nen.nipez.cz/profil/ObecLibun,5210
+853,OBEC OHNIŠOV,https://nen.nipez.cz/profil/Ohnisov,5214
+854,"Quarzit Quarry, a.s.",https://nen.nipez.cz/profil/quarzitquarry,5231
+855,MĚSTO ČESKÁ SKALICE,https://nen.nipez.cz/profil/CeskaSkalice,5235
+902,Okresní soud v Hodoníně,https://nen.nipez.cz/profil/OSHodonin,5262
+903,Obec Čepřovice,https://nen.nipez.cz/profil/Obec_Ceprovice,5266
+904,Střední uměleckoprůmyslová škola Uherské Hradiště,https://nen.nipez.cz/profil/267,5270
+905,Obec Skřivany,,5272
+952,"FC Vlachovo Březí, z.s.",https://nen.nipez.cz/profil/FC_Vlachovo_Brezi,5302
+953,TJ Žďár nad Sázavou z.s.,https://nen.nipez.cz/profil/TJZdar,5304
+1002,OBEC VELKÉ PETROVICE,https://nen.nipez.cz/profil/VelkePetrovice,5362
+1003,OBEC DUBENEC,,5363
+1004,Střední průmyslová škola strojnická Vsetín,https://nen.nipez.cz/profil/spssvs,5368
