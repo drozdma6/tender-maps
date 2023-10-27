@@ -8,7 +8,7 @@ import java.time.LocalDate;
 /*
     Row from supplier's table on procurement result page.
  */
-public record ContractDto(
+public record ContractData(
         BigDecimal contractPrice,
         String detailHref,
         String companyName,

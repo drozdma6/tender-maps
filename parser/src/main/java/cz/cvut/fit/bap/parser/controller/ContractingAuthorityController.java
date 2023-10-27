@@ -1,7 +1,6 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.ContractingAuthorityService;
-import cz.cvut.fit.bap.parser.controller.dto.ContractingAuthorityDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.AuthorityDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.AuthorityDetailFactory;
@@ -50,18 +49,19 @@ public class ContractingAuthorityController extends AbstractController<Contracti
     /**
      * Gets contractingAuthority from scrappers.
      *
-     * @param contractingAuthorityDto scrapped dto
+     * @param name of contracting authority
+     * @param url of contracting authority detail
      * @return saved contracting authority
      */
-    public ContractingAuthority getContractingAuthority(ContractingAuthorityDto contractingAuthorityDto) {
-        Optional<ContractingAuthority> optionalAuthority = service.readByName(contractingAuthorityDto.name());
+    public ContractingAuthority getContractingAuthority(String name, String url) {
+        Optional<ContractingAuthority> optionalAuthority = service.readByName(name);
         if(optionalAuthority.isPresent()){
             return optionalAuthority.get();
         }
-        Document document = fetcher.getAuthorityDetail(contractingAuthorityDto.url());
+        Document document = fetcher.getAuthorityDetail(url);
         AuthorityDetailScrapper authorityDetailScrapper = authorityDetailFactory.create(document);
         String urlToProfile = authorityDetailScrapper.getContractingAuthorityUrl();
         Address geocodedAddress = addressController.geocode(authorityDetailScrapper.getContractingAuthorityAddress());
-        return new ContractingAuthority(contractingAuthorityDto.name(), geocodedAddress, urlToProfile);
+        return new ContractingAuthority(name, geocodedAddress, urlToProfile);
     }
 }

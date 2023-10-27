@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.controller.dto.ContractingAuthorityDto;
+import cz.cvut.fit.bap.parser.controller.dto.ProcurementDetailPageData;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,32 +12,41 @@ import java.time.LocalDate;
 
 
 class ProcurementDetailScrapperTest{
+    private final String procurementName = "Prodloužení podpory pro Kentico Basic (01/2023)";
+    private final String placeOfPerformance = "Hlavní město Praha";
+    private final LocalDate dateOfPublication = LocalDate.of(2023, 1, 30);
+    private final String contractingAuthorityName = "Česká agentura na podporu obchodu";
+    private final String contractingAuthorityUrl = "/en/verejne-zakazky/detail-zakazky/N006-23-V00002372/detail-subjektu/2530226";
+    private final String publicContractRegime = "Small-scale public contract";
+    private final String type = "Public contract for services";
+    private final String typeOfProcedure = "Otevřená výzva";
+    private final LocalDate bidsSubmissionDeadline = LocalDate.of(2023, 2, 13);
+    private final String codeFromNipezCodeList = "72267100-0";
+    private final String nameFromNipezCodeList = "Údržba programového vybavení pro informační technologie";
+
+    private final ProcurementDetailPageData expectedDetailPageData = new ProcurementDetailPageData(
+            procurementName,
+            placeOfPerformance,
+            dateOfPublication,
+            contractingAuthorityName,
+            contractingAuthorityUrl,
+            type,
+            typeOfProcedure,
+            publicContractRegime,
+            bidsSubmissionDeadline,
+            codeFromNipezCodeList,
+            nameFromNipezCodeList);
+
     private final HtmlFileCreator htmlFileCreator = new HtmlFileCreator();
 
     @Test
-    void getContractingAuthorityDto() throws IOException {
+    void getProcurementDetailPageData() throws IOException {
         final String url = "https://nen.nipez.cz/en/verejne-zakazky/detail-zakazky/N006-23-V00002372";
         Document document = Jsoup.parse(
                 htmlFileCreator.ensureCreatedHtmlFile(url, "ProcurementDetail.html"));
         ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
-
-        String expectedUrl = "/en/verejne-zakazky/detail-zakazky/N006-23-V00002372/detail-subjektu/2530226";
-        ContractingAuthorityDto expectedDto = new ContractingAuthorityDto(expectedUrl, "Česká agentura na podporu obchodu");
-        ContractingAuthorityDto actualDto = procurementDetailScrapper.getContractingAuthorityDto();
-
-        Assertions.assertEquals(expectedDto, actualDto);
-    }
-
-    @Test
-    void getProcurementName() throws IOException{
-        final String url = "https://nen.nipez.cz/en/verejne-zakazky/p:vz:sort-stavZP=none/detail-zakazky/N006-23-V00002372";
-        Document document = Jsoup.parse(
-                htmlFileCreator.ensureCreatedHtmlFile(url, "ProcurementDetail.html"));
-        ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
-
-        String expectedProcurementName = "Prodloužení podpory pro Kentico Basic (01/2023)";
-        Assertions.assertEquals(expectedProcurementName,
-                procurementDetailScrapper.getProcurementName());
+        ProcurementDetailPageData procurementDetailPageData = procurementDetailScrapper.getPageData();
+        Assertions.assertEquals(expectedDetailPageData, procurementDetailPageData);
     }
 
     @Test
@@ -50,55 +59,6 @@ class ProcurementDetailScrapperTest{
 
         Document document = Jsoup.parse(htmlWithoutName);
         ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
-        Assertions.assertThrows(MissingHtmlElementException.class, procurementDetailScrapper::getProcurementName);
-    }
-
-    @Test
-    void getProcurementPlaceOfPerformance() throws IOException{
-        final String url = "https://nen.nipez.cz/en/verejne-zakazky/p:vz:sort-stavZP=none/detail-zakazky/N006-23-V00002372";
-        Document document = Jsoup.parse(
-                htmlFileCreator.ensureCreatedHtmlFile(url, "ProcurementDetail.html"));
-        ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
-
-        String expectedPlaceOfPerformance = "Hlavní město Praha";
-        Assertions.assertEquals(expectedPlaceOfPerformance,
-                procurementDetailScrapper.getProcurementPlaceOfPerformance());
-    }
-
-    @Test
-    void getProcurementPLaceOfPerformanceNull(){
-        String htmlWithoutPlaceOfPerformance = """
-                <div title="Code from the CPV code list" class="gov-grid-tile">
-                    <h3 class="gov-title--delta">Code from the CPV code list</h3>
-                    <p class="gov-note" title="72267100-0">72267100-0</p>
-                </div>""";
-
-        Document document = Jsoup.parse(htmlWithoutPlaceOfPerformance);
-        ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
-        Assertions.assertNull(procurementDetailScrapper.getProcurementPlaceOfPerformance());
-    }
-
-    @Test
-    void getProcurementDateOfPublication() throws IOException{
-        final String url = "https://nen.nipez.cz/en/verejne-zakazky/p:vz:sort-stavZP=none/detail-zakazky/N006-23-V00002372";
-        Document document = Jsoup.parse(
-                htmlFileCreator.ensureCreatedHtmlFile(url, "ProcurementDetail.html"));
-        ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
-        LocalDate expectedDateOfPublication = LocalDate.of(2023, 1, 30);
-        Assertions.assertEquals(expectedDateOfPublication,
-                procurementDetailScrapper.getProcurementDateOfPublication());
-    }
-
-    @Test
-    void getProcurementDateOfPublicationNull(){
-        String htmlWrongDateFormat = """
-                <td class="gov-table__cell gov-table__cell--second"
-                title="03. 03. 2023 16:48" style="width:150px"
-                data-title="Date of publication">03-03-2023 16:48
-                </td>""";
-
-        Document document = Jsoup.parse(htmlWrongDateFormat);
-        ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
-        Assertions.assertNull(procurementDetailScrapper.getProcurementDateOfPublication());
+        Assertions.assertThrows(MissingHtmlElementException.class, procurementDetailScrapper::getPageData);
     }
 }

@@ -4,5 +4,5 @@ import java.util.List;
 
 public record ProcurementResultDto(
         List<OfferDto> participants,
-        List<ContractDto> suppliers) {
+        List<ContractData> suppliers) {
 }

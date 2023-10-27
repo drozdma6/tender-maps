@@ -2,7 +2,7 @@ package cz.cvut.fit.bap.parser.controller.scrapper;
 
 
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
-import cz.cvut.fit.bap.parser.controller.dto.ContractDto;
+import cz.cvut.fit.bap.parser.controller.dto.ContractData;
 import cz.cvut.fit.bap.parser.controller.dto.OfferDto;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
 import org.jsoup.Jsoup;
@@ -51,14 +51,14 @@ class ProcurementResultScrapperTest {
                 htmlFileCreator.ensureCreatedHtmlFile(url, "ProcurementResult.html"));
         ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(document);
 
-        ContractDto expectedContract = new ContractDto(new BigDecimal("266400.00"),
+        ContractData expectedContract = new ContractData(new BigDecimal("266400.00"),
                 "/en/profily-zadavatelu-platne/detail-profilu/BSMV/uzavrene-zakazky/detail-zakazky/N006-22-V00010946/vysledek/detail-uverejneni/1371846408",
                 "Nej.cz s.r.o.", Currency.CZK, LocalDate.of(2022, 5, 30));
 
-        List<ContractDto> contractDtos = procurementResultScrapper.getSuppliers();
+        List<ContractData> contractData = procurementResultScrapper.getSuppliers();
 
-        Assertions.assertEquals(1, contractDtos.size());
-        Assertions.assertEquals(expectedContract, contractDtos.get(0));
+        Assertions.assertEquals(1, contractData.size());
+        Assertions.assertEquals(expectedContract, contractData.get(0));
     }
 
     @Test
@@ -146,14 +146,14 @@ class ProcurementResultScrapperTest {
                     """;
         Document document = Jsoup.parse(html);
         ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(document);
-        ContractDto expectedOfferDto1 = new ContractDto(new BigDecimal("1.00"),
+        ContractData expectedOfferDto1 = new ContractData(new BigDecimal("1.00"),
                 "/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539261",
                 "supplier1", Currency.CZK, LocalDate.of(2023, 5, 26));
-        ContractDto expectedOfferDto2 = new ContractDto(new BigDecimal("1.00"),
+        ContractData expectedOfferDto2 = new ContractData(new BigDecimal("1.00"),
                 "/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539262",
                 "supplier2", Currency.EUR, LocalDate.of(2020, 5, 23));
 
-        List<ContractDto> actualOffers = procurementResultScrapper.getSuppliers();
+        List<ContractData> actualOffers = procurementResultScrapper.getSuppliers();
         Assertions.assertEquals(2, actualOffers.size());
         Assertions.assertEquals(expectedOfferDto1, actualOffers.get(0));
         Assertions.assertEquals(expectedOfferDto2, actualOffers.get(1));
@@ -229,11 +229,11 @@ class ProcurementResultScrapperTest {
                 """;
         Document document = Jsoup.parse(html);
         ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(document);
-        ContractDto expectedOfferDto = new ContractDto(null,
+        ContractData expectedOfferDto = new ContractData(null,
                 "/en/verejne-zakazky/detail-zakazky/N006-23-V00009801/vysledek/detail-uverejneni/1668539261",
                 "Netfox s.r.o.", Currency.CZK, LocalDate.of(2023, 5, 26));
 
-        List<ContractDto> actualOffers = procurementResultScrapper.getSuppliers();
+        List<ContractData> actualOffers = procurementResultScrapper.getSuppliers();
         Assertions.assertEquals(1, actualOffers.size());
         Assertions.assertEquals(expectedOfferDto, actualOffers.get(0));
     }

@@ -3,7 +3,7 @@ package cz.cvut.fit.bap.parser.controller;
 import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.CurrencyExchanger;
-import cz.cvut.fit.bap.parser.controller.dto.ContractDto;
+import cz.cvut.fit.bap.parser.controller.dto.ContractData;
 import cz.cvut.fit.bap.parser.controller.dto.OfferDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementListScrapper;
@@ -64,20 +64,20 @@ class ProcurementControllerTest {
 
     @Test
     void testSumPricesAndFilterByCompanyNameCZK() {
-        List<ContractDto> offers = Arrays.asList(
-                new ContractDto(BigDecimal.valueOf(10), "href1", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
-                new ContractDto(BigDecimal.valueOf(20), "href2", "CompanyB", Currency.CZK, LocalDate.of(2000, 1, 1)),
-                new ContractDto(BigDecimal.valueOf(30), "href3", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
-                new ContractDto(BigDecimal.valueOf(10), "href4", "CompanyB", Currency.CZK, LocalDate.of(2000, 1, 1))
+        List<ContractData> offers = Arrays.asList(
+                new ContractData(BigDecimal.valueOf(10), "href1", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
+                new ContractData(BigDecimal.valueOf(20), "href2", "CompanyB", Currency.CZK, LocalDate.of(2000, 1, 1)),
+                new ContractData(BigDecimal.valueOf(30), "href3", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
+                new ContractData(BigDecimal.valueOf(10), "href4", "CompanyB", Currency.CZK, LocalDate.of(2000, 1, 1))
         );
 
-        List<ContractDto> result = procurementController.sumPricesAndFilterByCompanyName(offers);
+        List<ContractData> result = procurementController.sumPricesAndFilterByCompanyName(offers);
 
         // Assert that we have 2 unique company names in the result
         Assertions.assertEquals(2, result.size());
 
         // Assert the combined price for CompanyA
-        ContractDto companyAOffer = result.stream()
+        ContractData companyAOffer = result.stream()
                 .filter(o -> o.companyName().equals("CompanyA"))
                 .findFirst()
                 .orElse(null);
@@ -85,7 +85,7 @@ class ProcurementControllerTest {
         Assertions.assertEquals("href1", companyAOffer.detailHref());
 
         // Assert the combined price for CompanyB
-        ContractDto companyBOffer = result.stream()
+        ContractData companyBOffer = result.stream()
                 .filter(o -> o.companyName().equals("CompanyB"))
                 .findFirst()
                 .orElse(null);
@@ -95,11 +95,11 @@ class ProcurementControllerTest {
 
     @Test
     void testSumPricesAndFilterByCompanyNameExchange() {
-        List<ContractDto> offers = Arrays.asList(
-                new ContractDto(BigDecimal.valueOf(10), "href1", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
-                new ContractDto(BigDecimal.valueOf(20), "href2", "CompanyB", Currency.EUR, LocalDate.of(2000, 1, 1)),
-                new ContractDto(BigDecimal.valueOf(30), "href3", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
-                new ContractDto(BigDecimal.valueOf(10), "href4", "CompanyB", Currency.EUR, LocalDate.of(2000, 1, 1))
+        List<ContractData> offers = Arrays.asList(
+                new ContractData(BigDecimal.valueOf(10), "href1", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
+                new ContractData(BigDecimal.valueOf(20), "href2", "CompanyB", Currency.EUR, LocalDate.of(2000, 1, 1)),
+                new ContractData(BigDecimal.valueOf(30), "href3", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
+                new ContractData(BigDecimal.valueOf(10), "href4", "CompanyB", Currency.EUR, LocalDate.of(2000, 1, 1))
         );
 
         when(currencyExchanger.exchange(any(), any(), eq(Currency.CZK), any())).thenAnswer(invocation -> {
@@ -107,13 +107,13 @@ class ProcurementControllerTest {
             return Optional.of(argValue.multiply(BigDecimal.valueOf(25)));
         });
 
-        List<ContractDto> result = procurementController.sumPricesAndFilterByCompanyName(offers);
+        List<ContractData> result = procurementController.sumPricesAndFilterByCompanyName(offers);
 
         // Assert that we have 2 unique company names in the result
         Assertions.assertEquals(2, result.size());
 
         // Assert the combined price for CompanyA
-        ContractDto companyAOffer = result.stream()
+        ContractData companyAOffer = result.stream()
                 .filter(o -> o.companyName().equals("CompanyA"))
                 .findFirst()
                 .orElse(null);
@@ -121,7 +121,7 @@ class ProcurementControllerTest {
         Assertions.assertEquals("href1", companyAOffer.detailHref());
 
         // Assert the combined price for CompanyB
-        ContractDto companyBOffer = result.stream()
+        ContractData companyBOffer = result.stream()
                 .filter(o -> o.companyName().equals("CompanyB"))
                 .findFirst()
                 .orElse(null);

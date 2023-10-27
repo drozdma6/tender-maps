@@ -1,7 +1,7 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
-import cz.cvut.fit.bap.parser.controller.dto.ContractDto;
+import cz.cvut.fit.bap.parser.controller.dto.ContractData;
 import cz.cvut.fit.bap.parser.controller.dto.OfferDto;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -27,13 +27,13 @@ public class ProcurementResultScrapper extends AbstractScrapper{
     /**
      * Gets information from supplier's table in procurement result page
      *
-     * @return list containing contractDtos representing each row in supplier's table
+     * @return list containing data of contracts representing each row in supplier's table
      */
-    public List<ContractDto> getSuppliers() {
-        List<ContractDto> suppliers = new ArrayList<>();
+    public List<ContractData> getSuppliers() {
+        List<ContractData> suppliers = new ArrayList<>();
         Elements suppliersRows = getSuppliersRows();
         for(Element supplierRow : suppliersRows){
-            suppliers.add(new ContractDto(
+            suppliers.add(new ContractData(
                     getPrice(supplierRow),
                     getDetailHref(supplierRow),
                     getSupplierName(supplierRow),
@@ -47,7 +47,7 @@ public class ProcurementResultScrapper extends AbstractScrapper{
     /**
      * Gets map containing company detail url as key and additional information about company as value
      *
-     * @return arraylist of CompanyInfo class
+     * @return data about offers
      */
     public List<OfferDto> getParticipants(){
         List<OfferDto> participants = new ArrayList<>();

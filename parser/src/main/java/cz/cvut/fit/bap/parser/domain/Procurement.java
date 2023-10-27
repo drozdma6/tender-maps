@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 /*
     Class represents procurement table
@@ -20,9 +18,6 @@ public class Procurement implements DomainEntity<Long> {
 
     @Column(name = "procurement_name")
     private String name;
-
-    @OneToMany(mappedBy = "procurement")
-    private Set<Offer> offers = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
@@ -47,11 +42,31 @@ public class Procurement implements DomainEntity<Long> {
     @Column(name = "date_of_contract_close")
     private LocalDate dateOfContractClose;
 
+    @Column(name = "type")
+    private String type;
+
+    @Column(name = "type_of_procedure")
+    private String typeOfProcedure;
+
+    @Column(name = "public_contract_regime")
+    private String publicContractRegime;
+
+    @Column(name = "bids_submission_deadline")
+    private LocalDate bidsSubmissionDeadline;
+
+    @Column(name = "code_from_nipez_codelist")
+    private String codeFromNipezCodeList;
+
+    @Column(name = "name_from_nipez_codelist")
+    private String nameFromNipezCodeList;
+
     public Procurement() {
     }
 
-    public Procurement(String name, Company supplier, ContractingAuthority contractingAuthority, BigDecimal contractPrice,
-                       String placeOfPerformance, LocalDate dateOfPublication, String systemNumber, LocalDate dateOfContractClose) {
+    public Procurement(String name, Company supplier, ContractingAuthority contractingAuthority,
+                       BigDecimal contractPrice, String placeOfPerformance, LocalDate dateOfPublication, String systemNumber,
+                       LocalDate dateOfContractClose, String type, String typeOfProcedure, String publicContractRegime,
+                       LocalDate bidsSubmissionDeadline, String codeFromNipezCodeList, String nameFromNipezCodeList) {
         this.name = name;
         this.supplier = supplier;
         this.contractingAuthority = contractingAuthority;
@@ -60,6 +75,60 @@ public class Procurement implements DomainEntity<Long> {
         this.dateOfPublication = dateOfPublication;
         this.systemNumber = systemNumber;
         this.dateOfContractClose = dateOfContractClose;
+        this.type = type;
+        this.typeOfProcedure = typeOfProcedure;
+        this.publicContractRegime = publicContractRegime;
+        this.bidsSubmissionDeadline = bidsSubmissionDeadline;
+        this.codeFromNipezCodeList = codeFromNipezCodeList;
+        this.nameFromNipezCodeList = nameFromNipezCodeList;
+    }
+
+    public String getTypeOfProcedure() {
+        return typeOfProcedure;
+    }
+
+    public void setTypeOfProcedure(String typeOfProcedure) {
+        this.typeOfProcedure = typeOfProcedure;
+    }
+
+    public String getPublicContractRegime() {
+        return publicContractRegime;
+    }
+
+    public void setPublicContractRegime(String publicContractRegime) {
+        this.publicContractRegime = publicContractRegime;
+    }
+
+    public LocalDate getBidsSubmissionDeadline() {
+        return bidsSubmissionDeadline;
+    }
+
+    public void setBidsSubmissionDeadline(LocalDate bidsSubmissionDeadline) {
+        this.bidsSubmissionDeadline = bidsSubmissionDeadline;
+    }
+
+    public String getCodeFromNipezCodeList() {
+        return codeFromNipezCodeList;
+    }
+
+    public void setCodeFromNipezCodeList(String codeFromNipezCodeList) {
+        this.codeFromNipezCodeList = codeFromNipezCodeList;
+    }
+
+    public String getNameFromNipezCodeList() {
+        return nameFromNipezCodeList;
+    }
+
+    public void setNameFromNipezCodeList(String nameFromNipezCodeList) {
+        this.nameFromNipezCodeList = nameFromNipezCodeList;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public LocalDate getDateOfContractClose() {
@@ -100,14 +169,6 @@ public class Procurement implements DomainEntity<Long> {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<Offer> getOffers() {
-        return offers;
-    }
-
-    public void setOffers(Set<Offer> offers) {
-        this.offers = offers;
     }
 
     public Company getSupplier() {

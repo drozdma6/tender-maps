@@ -2,7 +2,6 @@ package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.ContractingAuthorityService;
 import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
-import cz.cvut.fit.bap.parser.controller.dto.ContractingAuthorityDto;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.AuthorityDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.AuthorityDetailFactory;
@@ -43,11 +42,10 @@ class ContractingAuthorityControllerTest {
         String name = "name";
         String url = "url";
         ContractingAuthority expectedAuthority = new ContractingAuthority(name, new Address(), url);
-        ContractingAuthorityDto contractingAuthorityDto = new ContractingAuthorityDto(url, name);
 
         when(contractingAuthorityService.readByName(name)).thenReturn(Optional.of(expectedAuthority));
 
-        ContractingAuthority actualAuthority = contractingAuthorityController.getContractingAuthority(contractingAuthorityDto);
+        ContractingAuthority actualAuthority = contractingAuthorityController.getContractingAuthority(name, url);
         verify(fetcher, never()).getAuthorityDetail(anyString());
         verify(addressController, never()).geocode(any(AddressDto.class));
 
@@ -69,7 +67,6 @@ class ContractingAuthorityControllerTest {
         AddressDto addressDto = new AddressDto("SK", "Bratislava", "00000", "ulica", "51");
 
         ContractingAuthority expectedAuthority = new ContractingAuthority(name, address, url);
-        ContractingAuthorityDto contractingAuthorityDto = new ContractingAuthorityDto(url, name);
 
         AuthorityDetailScrapper authorityDetailScrapper = mock(AuthorityDetailScrapper.class);
         Document document = new Document(url);
@@ -81,7 +78,7 @@ class ContractingAuthorityControllerTest {
         when(authorityDetailScrapper.getContractingAuthorityUrl()).thenReturn(url);
         when(addressController.geocode(addressDto)).thenReturn(address);
 
-        ContractingAuthority actualAuthority = contractingAuthorityController.getContractingAuthority(contractingAuthorityDto);
+        ContractingAuthority actualAuthority = contractingAuthorityController.getContractingAuthority(name, url);
 
         Assertions.assertEquals(expectedAuthority.getName(), actualAuthority.getName());
         Assertions.assertEquals(expectedAuthority.getUrl(), actualAuthority.getUrl());
