@@ -80,7 +80,7 @@ public class ProfinitGeocoder implements Geocoder{
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(queryUrl))
-                .timeout(Duration.of(10, SECONDS))
+                .timeout(Duration.of(20, SECONDS))
                 .GET()
                 .build();
 
