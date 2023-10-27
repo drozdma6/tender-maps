@@ -1,7 +1,7 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.CompanyService;
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.CompanyDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.CompanyDetailFactory;
@@ -74,7 +74,7 @@ class CompanyControllerTest{
         Company actualCompany = companyController.getCompany(testUrl, expectedCompany.getName());
 
         verify(fetcher, never()).getCompanyDetail(testUrl);
-        verify(addressController, never()).geocode(any(AddressDto.class));
+        verify(addressController, never()).geocode(any(AddressData.class));
 
         Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
         Assertions.assertEquals(expectedCompany.getOrganisationId(), actualCompany.getOrganisationId());
@@ -89,7 +89,7 @@ class CompanyControllerTest{
         Company actualCompany = companyController.getCompanyAsync(testUrl, expectedCompany.getName()).join();
 
         verify(fetcher, never()).getCompanyDetail(testUrl);
-        verify(addressController, never()).geocode(any(AddressDto.class));
+        verify(addressController, never()).geocode(any(AddressData.class));
 
         Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
         Assertions.assertEquals(expectedCompany.getOrganisationId(), actualCompany.getOrganisationId());
@@ -97,7 +97,7 @@ class CompanyControllerTest{
 
     @Test
     void getCompanyNonExisting(){
-        AddressDto addressDto = new AddressDto("CZ", "Praha", "16000", "Bratislavska", "65");
+        AddressData addressData = new AddressData("CZ", "Praha", "16000", "Bratislavska", "65");
         Address expetedAddress = new Address("CZ", "Praha", "16000", "Bratislavska", "65");
         Company expectedCompany = new Company("nameCompany", expetedAddress, "organisationId");
         String testUrl = "testUrl";
@@ -107,14 +107,14 @@ class CompanyControllerTest{
         when(fetcher.getCompanyDetail(testUrl)).thenReturn(testDoc);
         when(companyDetailFactory.create(testDoc)).thenReturn(companyDetailScrapper);
         when(companyService.readByName(expectedCompany.getName())).thenReturn(Optional.empty());
-        when(companyDetailScrapper.getCompanyAddress()).thenReturn(addressDto);
+        when(companyDetailScrapper.getCompanyAddress()).thenReturn(addressData);
         when(companyDetailScrapper.getOrganisationId()).thenReturn(expectedCompany.getOrganisationId());
-        when(addressController.geocode(addressDto)).thenReturn(expetedAddress);
+        when(addressController.geocode(addressData)).thenReturn(expetedAddress);
 
         Company actualCompany = companyController.getCompany(testUrl, expectedCompany.getName());
 
         verify(fetcher).getCompanyDetail(testUrl);
-        verify(addressController).geocode(any(AddressDto.class));
+        verify(addressController).geocode(any(AddressData.class));
 
         Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
         Assertions.assertEquals(expectedCompany.getOrganisationId(), actualCompany.getOrganisationId());
@@ -127,7 +127,7 @@ class CompanyControllerTest{
 
     @Test
     void getCompanyAsyncNonExisting(){
-        AddressDto addressDto = new AddressDto("CZ", "Praha", "16000", "Bratislavska", "65");
+        AddressData addressData = new AddressData("CZ", "Praha", "16000", "Bratislavska", "65");
         Address expetedAddress = new Address("CZ", "Praha", "16000", "Bratislavska", "65");
         Company expectedCompany = new Company("nameCompany", expetedAddress, "organisationId");
         String testUrl = "testUrl";
@@ -137,14 +137,14 @@ class CompanyControllerTest{
         when(fetcher.getCompanyDetail(testUrl)).thenReturn(testDoc);
         when(companyDetailFactory.create(testDoc)).thenReturn(companyDetailScrapper);
         when(companyService.readByName(expectedCompany.getName())).thenReturn(Optional.empty());
-        when(companyDetailScrapper.getCompanyAddress()).thenReturn(addressDto);
+        when(companyDetailScrapper.getCompanyAddress()).thenReturn(addressData);
         when(companyDetailScrapper.getOrganisationId()).thenReturn(expectedCompany.getOrganisationId());
-        when(addressController.geocode(addressDto)).thenReturn(expetedAddress);
+        when(addressController.geocode(addressData)).thenReturn(expetedAddress);
 
         Company actualCompany = companyController.getCompanyAsync(testUrl, expectedCompany.getName()).join();
 
         verify(fetcher).getCompanyDetail(testUrl);
-        verify(addressController).geocode(any(AddressDto.class));
+        verify(addressController).geocode(any(AddressData.class));
 
         Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
         Assertions.assertEquals(expectedCompany.getOrganisationId(), actualCompany.getOrganisationId());

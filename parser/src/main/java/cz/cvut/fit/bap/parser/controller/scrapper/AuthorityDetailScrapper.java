@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import org.jsoup.nodes.Document;
 
 /**
@@ -28,13 +28,13 @@ public class AuthorityDetailScrapper extends AbstractScrapper {
      *
      * @return contracting authority's address
      */
-    public AddressDto getContractingAuthorityAddress() {
+    public AddressData getContractingAuthorityAddress() {
         String city = getNullIfEmpty(document.select("[title=\"Municipality\"] p").text());
         String street = getNullIfEmpty(document.select("[title=\"street\"] p").text());
         String postalCode = getNullIfEmpty(document.select("[title=\"postal code\"] p").text());
         String countryCode = getNullIfEmpty(document.select("[title=\"country - code\"] p").text());
         String buildingNumber = getNullIfEmpty(
                 document.select("[title=\"building number\"] p").text());
-        return new AddressDto(countryCode, city, postalCode, street, buildingNumber);
+        return new AddressData(countryCode, city, postalCode, street, buildingNumber);
     }
 }

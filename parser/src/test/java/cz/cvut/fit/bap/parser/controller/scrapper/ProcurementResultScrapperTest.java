@@ -2,8 +2,8 @@ package cz.cvut.fit.bap.parser.controller.scrapper;
 
 
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
-import cz.cvut.fit.bap.parser.controller.dto.ContractData;
-import cz.cvut.fit.bap.parser.controller.dto.OfferDto;
+import cz.cvut.fit.bap.parser.controller.data.ContractData;
+import cz.cvut.fit.bap.parser.controller.data.OfferData;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,14 +29,14 @@ class ProcurementResultScrapperTest {
                 htmlFileCreator.ensureCreatedHtmlFile(url, "ProcurementResult.html"));
         ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(document);
 
-        OfferDto offer1 = new OfferDto(new BigDecimal("266400.00"),
+        OfferData offer1 = new OfferData(new BigDecimal("266400.00"),
                 "/en/profily-zadavatelu-platne/detail-profilu/BSMV/uzavrene-zakazky/detail-zakazky/N006-22-V00010946/vysledek/detail-uverejneni/1371846394",
                 "Nej.cz s.r.o.", Currency.CZK);
-        OfferDto offer2 = new OfferDto(new BigDecimal("378048.00"),
+        OfferData offer2 = new OfferData(new BigDecimal("378048.00"),
                 "/en/profily-zadavatelu-platne/detail-profilu/BSMV/uzavrene-zakazky/detail-zakazky/N006-22-V00010946/vysledek/detail-uverejneni/1371846393",
                 "O2 Czech Republic a.s.", Currency.CZK);
-        List<OfferDto> expectedOffers = Arrays.asList(offer1, offer2);
-        List<OfferDto> actualOffers = procurementResultScrapper.getParticipants();
+        List<OfferData> expectedOffers = Arrays.asList(offer1, offer2);
+        List<OfferData> actualOffers = procurementResultScrapper.getParticipants();
 
         Assertions.assertEquals(2, actualOffers.size());
         for (int i = 0; i < expectedOffers.size(); i++) {
@@ -88,12 +88,12 @@ class ProcurementResultScrapperTest {
                 """;
         Document document = Jsoup.parse(html);
         ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(document);
-        OfferDto expectedOfferDto = new OfferDto(null,
+        OfferData expectedOfferData = new OfferData(null,
                 "/en/profily-zadavatelu-platne/detail-profilu/BSMV/uzavrene-zakazky/detail-zakazky/N006-22-V00010946/vysledek/detail-uverejneni/1371846394",
                 "Nej.cz s.r.o.", Currency.CZK);
-        List<OfferDto> actualOfferDtos = procurementResultScrapper.getParticipants();
-        Assertions.assertEquals(1, actualOfferDtos.size());
-        Assertions.assertEquals(expectedOfferDto, actualOfferDtos.get(0));
+        List<OfferData> actualOfferDataList = procurementResultScrapper.getParticipants();
+        Assertions.assertEquals(1, actualOfferDataList.size());
+        Assertions.assertEquals(expectedOfferData, actualOfferDataList.get(0));
     }
 
     @Test

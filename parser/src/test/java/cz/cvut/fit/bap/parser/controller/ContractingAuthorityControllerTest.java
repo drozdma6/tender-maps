@@ -1,7 +1,7 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.ContractingAuthorityService;
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.AuthorityDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.AuthorityDetailFactory;
@@ -47,7 +47,7 @@ class ContractingAuthorityControllerTest {
 
         ContractingAuthority actualAuthority = contractingAuthorityController.getContractingAuthority(name, url);
         verify(fetcher, never()).getAuthorityDetail(anyString());
-        verify(addressController, never()).geocode(any(AddressDto.class));
+        verify(addressController, never()).geocode(any(AddressData.class));
 
         Assertions.assertEquals(expectedAuthority.getName(), actualAuthority.getName());
         Assertions.assertEquals(expectedAuthority.getUrl(), actualAuthority.getUrl());
@@ -64,7 +64,7 @@ class ContractingAuthorityControllerTest {
         String name = "name";
         String url = "url";
         Address address = new Address("SK", "Bratislava", "00000", "ulica", "51");
-        AddressDto addressDto = new AddressDto("SK", "Bratislava", "00000", "ulica", "51");
+        AddressData addressData = new AddressData("SK", "Bratislava", "00000", "ulica", "51");
 
         ContractingAuthority expectedAuthority = new ContractingAuthority(name, address, url);
 
@@ -74,9 +74,9 @@ class ContractingAuthorityControllerTest {
         when(contractingAuthorityService.readByName(name)).thenReturn(Optional.empty());
         when(fetcher.getAuthorityDetail(url)).thenReturn(document);
         when(authorityDetailFactory.create(document)).thenReturn(authorityDetailScrapper);
-        when(authorityDetailScrapper.getContractingAuthorityAddress()).thenReturn(addressDto);
+        when(authorityDetailScrapper.getContractingAuthorityAddress()).thenReturn(addressData);
         when(authorityDetailScrapper.getContractingAuthorityUrl()).thenReturn(url);
-        when(addressController.geocode(addressDto)).thenReturn(address);
+        when(addressController.geocode(addressData)).thenReturn(address);
 
         ContractingAuthority actualAuthority = contractingAuthorityController.getContractingAuthority(name, url);
 

@@ -1,8 +1,8 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.AddressService;
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
-import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
+import cz.cvut.fit.bap.parser.controller.data.converter.AddressDataToAddress;
 import cz.cvut.fit.bap.parser.controller.geocoder.GoogleGeocoder;
 import cz.cvut.fit.bap.parser.controller.geocoder.ProfinitGeocoder;
 import cz.cvut.fit.bap.parser.domain.Address;
@@ -16,13 +16,13 @@ import java.util.Optional;
  */
 @Component
 public class AddressController extends AbstractController<AddressService,Address,Long>{
-    private final AddressDtoToAddress addressDtoToAddress;
+    private final AddressDataToAddress addressDataToAddress;
     private final ProfinitGeocoder profinitGeocoder;
     private final GoogleGeocoder googleGeocoder;
 
-    public AddressController(AddressService addressService, AddressDtoToAddress addressDtoToAddress, ProfinitGeocoder profinitGeocoder, GoogleGeocoder googleGeocoder){
+    public AddressController(AddressService addressService, AddressDataToAddress addressDataToAddress, ProfinitGeocoder profinitGeocoder, GoogleGeocoder googleGeocoder){
         super(addressService);
-        this.addressDtoToAddress = addressDtoToAddress;
+        this.addressDataToAddress = addressDataToAddress;
         this.profinitGeocoder = profinitGeocoder;
         this.googleGeocoder = googleGeocoder;
     }
@@ -40,28 +40,28 @@ public class AddressController extends AbstractController<AddressService,Address
     }
 
     /**
-     * Geocodes addressDto. Uses profinit geocoding api for czech places. If google api key was defined uses
+     * Geocodes addressData. Uses profinit geocoding api for czech places. If google api key was defined uses
      * it for foreign places.
      *
-     * @param addressDto to be geocoded
+     * @param addressData to be geocoded
      * @return geocoded address
      */
-    public Address geocode(AddressDto addressDto){
-        if(dtoIsIncomplete(addressDto)){
-            return addressDtoToAddress.apply(addressDto);
+    public Address geocode(AddressData addressData){
+        if(dtoIsIncomplete(addressData)){
+            return addressDataToAddress.apply(addressData);
         }
-        String country = addressDto.country().toLowerCase();
+        String country = addressData.country().toLowerCase();
         // Profinit geocoder for Czech places
         if(Objects.equals(country, "cz")){
-            return profinitGeocoder.geocode(addressDto);
+            return profinitGeocoder.geocode(addressData);
         }
         // Google geocoder for foreign countries
-        return googleGeocoder.geocode(addressDto);
+        return googleGeocoder.geocode(addressData);
     }
 
-    private boolean dtoIsIncomplete(AddressDto addressDto){
-        return addressDto.country() == null || addressDto.buildingNumber() == null ||
-                addressDto.city() == null || addressDto.street() == null ||
-                addressDto.postalCode() == null;
+    private boolean dtoIsIncomplete(AddressData addressData){
+        return addressData.country() == null || addressData.buildingNumber() == null ||
+                addressData.city() == null || addressData.street() == null ||
+                addressData.postalCode() == null;
     }
 }

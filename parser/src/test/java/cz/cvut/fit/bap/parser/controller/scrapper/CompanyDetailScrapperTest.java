@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,9 +18,9 @@ public class CompanyDetailScrapperTest{
                 htmlFileCreator.ensureCreatedHtmlFile(url, "CompanyDetail.html"));
         CompanyDetailScrapper companyDetailScrapper = new CompanyDetailScrapper(document);
 
-        AddressDto expectedAddress = new AddressDto("CZ", "Praha", "10000", "Vinohradská", "230");
+        AddressData expectedAddress = new AddressData("CZ", "Praha", "10000", "Vinohradská", "230");
 
-        AddressDto actualAddress = companyDetailScrapper.getCompanyAddress();
+        AddressData actualAddress = companyDetailScrapper.getCompanyAddress();
 
         Assertions.assertEquals(expectedAddress.getCountryCode(),
                 actualAddress.getCountryCode());
@@ -67,9 +67,9 @@ public class CompanyDetailScrapperTest{
         Document document = Jsoup.parse(html);
         CompanyDetailScrapper companyDetailScrapper = new CompanyDetailScrapper(document);
 
-        AddressDto expectedAddress = new AddressDto("Slovensko", "Bratislava", "10000", "Vinohradská", "230");
+        AddressData expectedAddress = new AddressData("Slovensko", "Bratislava", "10000", "Vinohradská", "230");
 
-        AddressDto actualAddress = companyDetailScrapper.getCompanyAddress();
+        AddressData actualAddress = companyDetailScrapper.getCompanyAddress();
         Assertions.assertEquals(expectedAddress.getCountryCode(),
                 actualAddress.getCountryCode());
         Assertions.assertEquals(expectedAddress.getCountryCode(),

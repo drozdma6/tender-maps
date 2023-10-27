@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,8 +17,8 @@ class AuthorityDetailScrapperTest {
         Document document = Jsoup.parse(new HtmlFileCreator().ensureCreatedHtmlFile(url, "AuthorityDetail.html"));
         AuthorityDetailScrapper authorityDetailScrapper = new AuthorityDetailScrapper(document);
 
-        AddressDto expectedAddress = new AddressDto("CZ", "Orlová", "73514", "Osvobození", null);
-        AddressDto actualAddress = authorityDetailScrapper.getContractingAuthorityAddress();
+        AddressData expectedAddress = new AddressData("CZ", "Orlová", "73514", "Osvobození", null);
+        AddressData actualAddress = authorityDetailScrapper.getContractingAuthorityAddress();
         Assertions.assertEquals(actualAddress, expectedAddress);
     }
 

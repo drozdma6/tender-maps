@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.integrated.geocoder;
 
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import cz.cvut.fit.bap.parser.controller.geocoder.ProfinitGeocoder;
 import cz.cvut.fit.bap.parser.domain.Address;
 import org.junit.jupiter.api.Assertions;
@@ -20,10 +20,10 @@ class ProfinitGeocoderTest{
     @Test
     public void test(){
         //Čechova 225/10, 17000, Praha 7
-        AddressDto addressDto = new AddressDto("CZ", "Praha", "17000", "Čechova", "10");
+        AddressData addressData = new AddressData("CZ", "Praha", "17000", "Čechova", "10");
         Address expectedAddress = new Address("CZ", "Praha", "17000", "Čechova", "10",
                 50.10070427864861, 14.42151999409848);
-        Address actualAddress = profinitGeocoderApi.geocode(addressDto);
+        Address actualAddress = profinitGeocoderApi.geocode(addressData);
 
         Assertions.assertEquals(expectedAddress.getCountryCode(), actualAddress.getCountryCode());
         Assertions.assertEquals(expectedAddress.getCity(), actualAddress.getCity());

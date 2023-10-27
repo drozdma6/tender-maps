@@ -1,4 +1,4 @@
-package cz.cvut.fit.bap.parser.controller.dto;
+package cz.cvut.fit.bap.parser.controller.data;
 
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
 

@@ -3,8 +3,8 @@ package cz.cvut.fit.bap.parser.controller;
 import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.CurrencyExchanger;
-import cz.cvut.fit.bap.parser.controller.dto.ContractData;
-import cz.cvut.fit.bap.parser.controller.dto.OfferDto;
+import cz.cvut.fit.bap.parser.controller.data.ContractData;
+import cz.cvut.fit.bap.parser.controller.data.OfferData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementListScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementListFactory;
@@ -132,15 +132,15 @@ class ProcurementControllerTest {
     @Test
     public void testExchangeCurrenciesToCZK() {
         LocalDate testDate = LocalDate.now();
-        OfferDto offerCZK = new OfferDto(BigDecimal.valueOf(100), "someHref1", "someCompany1", Currency.CZK);
-        OfferDto offerUSD = new OfferDto(BigDecimal.valueOf(10), "someHref2", "someCompany2", Currency.USD);
+        OfferData offerCZK = new OfferData(BigDecimal.valueOf(100), "someHref1", "someCompany1", Currency.CZK);
+        OfferData offerUSD = new OfferData(BigDecimal.valueOf(10), "someHref2", "someCompany2", Currency.USD);
 
         when(currencyExchanger.exchange(BigDecimal.valueOf(10), Currency.USD, Currency.CZK, testDate))
                 .thenReturn(Optional.of(BigDecimal.valueOf(250))); // Mocking a conversion rate of 1 USD = 25 CZK
 
-        List<OfferDto> offerDtos = Arrays.asList(offerCZK, offerUSD);
+        List<OfferData> offerDataList = Arrays.asList(offerCZK, offerUSD);
 
-        List<OfferDto> result = procurementController.exchangeCurrenciesToCZK(offerDtos, testDate);
+        List<OfferData> result = procurementController.exchangeCurrenciesToCZK(offerDataList, testDate);
 
         // Then
         Assertions.assertEquals(2, result.size());

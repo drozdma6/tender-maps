@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import org.jsoup.nodes.Document;
 
 import java.util.Objects;
@@ -21,7 +21,7 @@ public class CompanyDetailScrapper extends AbstractScrapper{
      *
      * @return scraped address
      */
-    public AddressDto getCompanyAddress(){
+    public AddressData getCompanyAddress(){
         String city = getNullIfEmpty(document.select("[title=\"Municipality\"] p").text());
         String street = getNullIfEmpty(document.select("[title=\"street\"] p").text());
         String postalCode = getNullIfEmpty(document.select("[title=\"postal code\"] p").text());
@@ -29,9 +29,9 @@ public class CompanyDetailScrapper extends AbstractScrapper{
         String buildingNumber = getNullIfEmpty(
                 document.select("[title=\"building number\"] p").text());
         if(Objects.equals(countryOfficialName.toLowerCase(), "česká republika")){
-            return new AddressDto("CZ", city, postalCode, street, buildingNumber);
+            return new AddressData("CZ", city, postalCode, street, buildingNumber);
         }
-        return new AddressDto(countryOfficialName, city, postalCode, street, buildingNumber);
+        return new AddressData(countryOfficialName, city, postalCode, street, buildingNumber);
     }
 
     public String getOrganisationId(){

@@ -1,6 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
-import cz.cvut.fit.bap.parser.controller.dto.ProcurementDetailPageData;
+import cz.cvut.fit.bap.parser.controller.data.ProcurementDetailPageData;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.data.util.Pair;

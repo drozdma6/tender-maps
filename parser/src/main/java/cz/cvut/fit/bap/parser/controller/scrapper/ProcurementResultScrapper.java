@@ -1,8 +1,8 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
-import cz.cvut.fit.bap.parser.controller.dto.ContractData;
-import cz.cvut.fit.bap.parser.controller.dto.OfferDto;
+import cz.cvut.fit.bap.parser.controller.data.ContractData;
+import cz.cvut.fit.bap.parser.controller.data.OfferData;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -49,8 +49,8 @@ public class ProcurementResultScrapper extends AbstractScrapper{
      *
      * @return data about offers
      */
-    public List<OfferDto> getParticipants(){
-        List<OfferDto> participants = new ArrayList<>();
+    public List<OfferData> getParticipants(){
+        List<OfferData> participants = new ArrayList<>();
         Elements participantsElems = document.select(
                 "[title=\"List of participants\"] .gov-table__row");
         for(Element participantRow : participantsElems){
@@ -58,9 +58,9 @@ public class ProcurementResultScrapper extends AbstractScrapper{
             String strPrice = participantRow.select("[data-title=\"Bid price excl. VAT\"]").text();
             String participantName = participantRow.select("[data-title=\"Official name\"]").text();
             Currency currency = getCurrency(participantRow);
-            OfferDto offerDto = new OfferDto(getBigDecimalFromString(strPrice),
+            OfferData offerData = new OfferData(getBigDecimalFromString(strPrice),
                     url, participantName, currency);
-            participants.add(offerDto);
+            participants.add(offerData);
         }
         return participants;
     }

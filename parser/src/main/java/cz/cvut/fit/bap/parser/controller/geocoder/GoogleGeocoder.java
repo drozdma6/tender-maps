@@ -5,8 +5,8 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.AddressComponent;
 import com.google.maps.model.GeocodingResult;
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
-import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
+import cz.cvut.fit.bap.parser.controller.data.converter.AddressDataToAddress;
 import cz.cvut.fit.bap.parser.domain.Address;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Metrics;
@@ -21,32 +21,32 @@ import java.io.IOException;
 @Component
 public class GoogleGeocoder implements Geocoder, AutoCloseable{
     private GeoApiContext context;
-    private final AddressDtoToAddress addressDtoToAddress;
+    private final AddressDataToAddress addressDataToAddress;
     private final String apiKey;
 
     public GoogleGeocoder(@Value("${GOOGLE_API_KEY:}") String apiKey,
-                          AddressDtoToAddress addressDtoToAddress){
+                          AddressDataToAddress addressDataToAddress){
         if(!apiKey.isEmpty()){
             this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
         }
         this.apiKey = apiKey;
-        this.addressDtoToAddress = addressDtoToAddress;
+        this.addressDataToAddress = addressDataToAddress;
     }
 
     /**
-     * Geocodes addressDto
+     * Geocodes addressData
      *
-     * @param addressDto addressDto which is supposed to be geocoded
+     * @param addressData addressData which is supposed to be geocoded
      * @return address with latitude, longitude and country code
      */
     @Override
     @Timed(value = "scrapper.google.geocode")
-    public Address geocode(AddressDto addressDto){
+    public Address geocode(AddressData addressData){
         if(apiKey.isEmpty()){
-            return addressDtoToAddress.apply(addressDto);
+            return addressDataToAddress.apply(addressData);
         }
-        Address address = addressDtoToAddress.apply(addressDto);
-        GeocodingResult[] geocodingResults = sendRequest(addressDto);
+        Address address = addressDataToAddress.apply(addressData);
+        GeocodingResult[] geocodingResults = sendRequest(addressData);
         if(geocodingResults == null || geocodingResults.length == 0){
             Metrics.counter("scrapper.google.geocode.failed").increment();
             return address;
@@ -59,10 +59,10 @@ public class GoogleGeocoder implements Geocoder, AutoCloseable{
         return address;
     }
 
-    private GeocodingResult[] sendRequest(AddressDto addressDto){
-        String addressStr = addressDto.buildingNumber() + ' ' + addressDto.street() + ' ' +
-                addressDto.city() + ' ' + addressDto.postalCode() + ' ' +
-                addressDto.country();
+    private GeocodingResult[] sendRequest(AddressData addressData){
+        String addressStr = addressData.buildingNumber() + ' ' + addressData.street() + ' ' +
+                addressData.city() + ' ' + addressData.postalCode() + ' ' +
+                addressData.country();
         try{
             return GeocodingApi.geocode(context, addressStr).await();
         }catch(ApiException | IOException e){

@@ -3,10 +3,10 @@ package cz.cvut.fit.bap.parser.controller;
 import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.CurrencyExchanger;
-import cz.cvut.fit.bap.parser.controller.dto.ContractData;
-import cz.cvut.fit.bap.parser.controller.dto.OfferDto;
-import cz.cvut.fit.bap.parser.controller.dto.ProcurementDetailPageData;
-import cz.cvut.fit.bap.parser.controller.dto.ProcurementResultDto;
+import cz.cvut.fit.bap.parser.controller.data.ContractData;
+import cz.cvut.fit.bap.parser.controller.data.OfferData;
+import cz.cvut.fit.bap.parser.controller.data.ProcurementDetailPageData;
+import cz.cvut.fit.bap.parser.controller.data.ProcurementResultPageData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementListScrapper;
@@ -107,14 +107,14 @@ public class ProcurementController extends AbstractController<ProcurementService
 
         Document resultPageDoc = fetcher.getProcurementResult(systemNumber);
         ProcurementResultScrapper procurementResultScrapper = procurementResultFactory.create(resultPageDoc);
-        ProcurementResultDto procurementResultDto = getProcurementResultDto(procurementResultScrapper);
+        ProcurementResultPageData procurementResultPageData = getProcurementResultDto(procurementResultScrapper);
 
-        List<Pair<Company, BigDecimal>> participantList = getParticipants(procurementResultDto.participants());
+        List<Pair<Company, BigDecimal>> participantList = getParticipants(procurementResultPageData.participants());
 
         ProcurementDetailPageData procurementDetailPageData = procurementDetailDtoFuture.join();
         ContractingAuthority contractingAuthority = contractingAuthorityDtoFuture.join();
 
-        saveProcurementData(systemNumber, procurementResultDto, procurementDetailPageData, participantList, contractingAuthority);
+        saveProcurementData(systemNumber, procurementResultPageData, procurementDetailPageData, participantList, contractingAuthority);
     }
 
     /**
@@ -137,23 +137,23 @@ public class ProcurementController extends AbstractController<ProcurementService
      * Exchanges all offers in foreign currencies to CZK. Offers do not have their date, so contractClose date is
      * used as the closest.
      *
-     * @param offerDtos         offers to be exchanged (CZK offers are skipped)
+     * @param offerDataList         offers to be exchanged (CZK offers are skipped)
      * @param contractCloseDate tender contract close date
      * @return List of exchanged offers to CZK
      */
-    public List<OfferDto> exchangeCurrenciesToCZK(List<OfferDto> offerDtos, LocalDate contractCloseDate) {
-        List<OfferDto> exchangedOffers = new ArrayList<>();
-        for (OfferDto offerDto : offerDtos) {
-            exchangedOffers.add(exchangeCurrencyToCzk(offerDto, contractCloseDate));
+    public List<OfferData> exchangeCurrenciesToCZK(List<OfferData> offerDataList, LocalDate contractCloseDate) {
+        List<OfferData> exchangedOffers = new ArrayList<>();
+        for (OfferData offerData : offerDataList) {
+            exchangedOffers.add(exchangeCurrencyToCzk(offerData, contractCloseDate));
         }
         return exchangedOffers;
     }
 
-    private void saveProcurementData(String systemNumber, ProcurementResultDto procurementResultDto,
+    private void saveProcurementData(String systemNumber, ProcurementResultPageData procurementResultPageData,
                                      ProcurementDetailPageData procurementDetailPageData,
                                      List<Pair<Company, BigDecimal>> participants,
                                      ContractingAuthority contractingAuthority) {
-        procurementResultDto.suppliers().forEach(contractData -> {
+        procurementResultPageData.suppliers().forEach(contractData -> {
             Company supplier = saveSupplier(contractData);
             ContractingAuthority savedAuthority = contractingAuthorityController.save(contractingAuthority);
             Procurement procurement = super.save(
@@ -191,10 +191,10 @@ public class ProcurementController extends AbstractController<ProcurementService
     }
 
 
-    private ProcurementResultDto getProcurementResultDto(ProcurementResultScrapper procurementResultScrapper) {
-        List<OfferDto> offers = procurementResultScrapper.getParticipants();
+    private ProcurementResultPageData getProcurementResultDto(ProcurementResultScrapper procurementResultScrapper) {
+        List<OfferData> offers = procurementResultScrapper.getParticipants();
         List<ContractData> contracts = procurementResultScrapper.getSuppliers();
-        return new ProcurementResultDto(exchangeCurrenciesToCZK(offers, contracts.get(0).contractDate()),
+        return new ProcurementResultPageData(exchangeCurrenciesToCZK(offers, contracts.get(0).contractDate()),
                 sumPricesAndFilterByCompanyName(contracts));
     }
 
@@ -209,7 +209,7 @@ public class ProcurementController extends AbstractController<ProcurementService
      * @param participants scrapped data about participants from result page
      * @return List of companies and their offers
      */
-    private List<Pair<Company, BigDecimal>> getParticipants(List<OfferDto> participants) {
+    private List<Pair<Company, BigDecimal>> getParticipants(List<OfferData> participants) {
         List<CompletableFuture<Pair<Company, BigDecimal>>> futures = participants.stream()
                 .map(offerDto -> {
                     CompletableFuture<Company> participantFuture = companyController.getCompanyAsync(
@@ -258,17 +258,17 @@ public class ProcurementController extends AbstractController<ProcurementService
         return totalPrice;
     }
 
-    private OfferDto exchangeCurrencyToCzk(OfferDto offerDto, LocalDate contractCloseDate) {
-        if (offerDto.currency().equals(Currency.CZK)) {
-            return offerDto;
+    private OfferData exchangeCurrencyToCzk(OfferData offerData, LocalDate contractCloseDate) {
+        if (offerData.currency().equals(Currency.CZK)) {
+            return offerData;
         } else {
             BigDecimal convertedPrice = currencyExchanger.exchange(
-                            offerDto.price(),
-                            offerDto.currency(),
+                            offerData.price(),
+                            offerData.currency(),
                             Currency.CZK,
                             contractCloseDate)
                     .orElse(null);
-            return new OfferDto(convertedPrice, offerDto.detailHref(), offerDto.companyName(), Currency.CZK);
+            return new OfferData(convertedPrice, offerData.detailHref(), offerData.companyName(), Currency.CZK);
         }
     }
 }

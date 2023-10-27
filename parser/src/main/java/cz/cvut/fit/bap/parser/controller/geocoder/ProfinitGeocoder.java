@@ -1,7 +1,7 @@
 package cz.cvut.fit.bap.parser.controller.geocoder;
 
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
-import cz.cvut.fit.bap.parser.controller.dto.converter.AddressDtoToAddress;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
+import cz.cvut.fit.bap.parser.controller.data.converter.AddressDataToAddress;
 import cz.cvut.fit.bap.parser.domain.Address;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Metrics;
@@ -33,25 +33,25 @@ public class ProfinitGeocoder implements Geocoder{
 
     @Value("${PROFINIT_API_KEY}")
     private String apiToken;
-    private final AddressDtoToAddress addressDtoToAddress;
+    private final AddressDataToAddress addressDataToAddress;
 
-    public ProfinitGeocoder(AddressDtoToAddress addressDtoToAddress){
-        this.addressDtoToAddress = addressDtoToAddress;
+    public ProfinitGeocoder(AddressDataToAddress addressDataToAddress){
+        this.addressDataToAddress = addressDataToAddress;
     }
 
     /**
      * Geocodes address by calling profinit geocoding api.
      *
-     * @param addressDto which is supposed to be geocoded
+     * @param addressData which is supposed to be geocoded
      * @return address with latitude and longitude
      */
     @Override
     @Timed(value = "scrapper.profinit.geocode")
-    public Address geocode(AddressDto addressDto){
-        Address address = addressDtoToAddress.apply(addressDto);
+    public Address geocode(AddressData addressData){
+        Address address = addressDataToAddress.apply(addressData);
         address.setCountryCode(CZECH_SHORT_COUNTRY_CODE); //profinit geocoder is used only for czech places
         try{
-            String response = sendQueryRequest(addressDto);
+            String response = sendQueryRequest(addressData);
             Pair<Double,Double> coordinates = getWgsCoordinates(response);
             address.setLatitude(coordinates.getFirst()); //wgs_x
             address.setLongitude(coordinates.getSecond()); //wgx_y
@@ -64,12 +64,12 @@ public class ProfinitGeocoder implements Geocoder{
     /**
      * Sends request to geocoder
      *
-     * @param addressDto which is supposed to be geocoded
+     * @param addressData which is supposed to be geocoded
      * @return Json response
      */
-    private String sendQueryRequest(AddressDto addressDto){
-        String addressStr = addressDto.street() + ' ' + addressDto.buildingNumber() + ", " +
-                addressDto.postalCode() + ", " + addressDto.city();
+    private String sendQueryRequest(AddressData addressData){
+        String addressStr = addressData.street() + ' ' + addressData.buildingNumber() + ", " +
+                addressData.postalCode() + ", " + addressData.city();
 
         HttpClient httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))

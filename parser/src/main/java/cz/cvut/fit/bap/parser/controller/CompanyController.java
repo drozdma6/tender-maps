@@ -1,7 +1,7 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.CompanyService;
-import cz.cvut.fit.bap.parser.controller.dto.AddressDto;
+import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.CompanyDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.CompanyDetailFactory;
@@ -77,9 +77,9 @@ public class CompanyController extends AbstractController<CompanyService,Company
     private Company fetchCompanyDetails(String url, String companyName){
         Document doc = fetcher.getCompanyDetail(url);
         CompanyDetailScrapper companyDetailScrapper = companyDetailFactory.create(doc);
-        AddressDto addressDto = companyDetailScrapper.getCompanyAddress();
+        AddressData addressData = companyDetailScrapper.getCompanyAddress();
         String organisationId = companyDetailScrapper.getOrganisationId();
-        Address geocodedAddress = addressController.geocode(addressDto);
+        Address geocodedAddress = addressController.geocode(addressData);
         return new Company(companyName, geocodedAddress, organisationId);
     }
 }
