@@ -36,7 +36,7 @@ public class CurrencyExchanger implements ICurrencyExchanger {
         String urlString = buildApiUrl(from, to, date);
         try {
             HttpResponse<String> response = sendHttpRequest(urlString);
-            LOGGER.info("Exchanging currency from {} to {}.", from.name(), to.name());
+            LOGGER.debug("Exchanging currency from {} to {}.", from.name(), to.name());
             if (!responseIsValid(response)) {
                 return Optional.empty();
             }
