@@ -14,7 +14,7 @@ public abstract class AbstractFetcher{
 
     public abstract Document getProcurementResult(String procurement);
 
-    public abstract Document getCompanyDetail(String uri);
+    public abstract Document getSupplierDetail(String uri);
 
     @Async
     public abstract CompletableFuture<Document> getProcurementDetail(String procurement);
@@ -22,4 +22,7 @@ public abstract class AbstractFetcher{
     public abstract Document getContractingAuthorityList(int page);
 
     public abstract Document getProcurementListPage(int page);
+
+    @Async
+    public abstract CompletableFuture<Document> getOfferDetailPage(String url);
 }

@@ -31,6 +31,9 @@ public class Company implements DomainEntity<Long>{
     @Column(name = "organisation_id")
     private String organisationId;
 
+    @Column(name = "VAT_id_number")
+    private String VATIdNumber;
+
     public Address getAddress(){
         return address;
     }
@@ -42,10 +45,22 @@ public class Company implements DomainEntity<Long>{
     public Company(){
     }
 
-    public Company(String name, Address address, String organisationId){
+    public Company(String name,
+                   Address address,
+                   String organisationId,
+                   String VATIdNumber) {
         this.name = name;
         this.address = address;
         this.organisationId = organisationId;
+        this.VATIdNumber = VATIdNumber;
+    }
+
+    public String getVATIdNumber() {
+        return VATIdNumber;
+    }
+
+    public void setVATIdNumber(String VATIdNumber) {
+        this.VATIdNumber = VATIdNumber;
     }
 
     public String getOrganisationId(){

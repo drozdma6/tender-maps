@@ -23,12 +23,24 @@ public class Procurement implements DomainEntity<Long> {
     @JoinColumn(name = "supplier_id")
     private Company supplier;
 
+    @Column(name = "is_association_of_suppliers")
+    private Boolean isAssociationOfSuppliers;
+
     @ManyToOne
     @JoinColumn(name = "contracting_authority_id")
     private ContractingAuthority contractingAuthority;
 
     @Column(name = "contract_price", precision = 14, scale = 2)
     private BigDecimal contractPrice;
+
+    @Column(name = "contract_price_VAT", precision = 14, scale = 2)
+    private BigDecimal contractPriceVAT;
+
+    @Column(name = "contract_price_with_amendments", precision = 14, scale = 2)
+    private BigDecimal contractPriceWithAmendments;
+
+    @Column(name = "contract_price_with_amendments_VAT", precision = 14, scale = 2)
+    private BigDecimal contractPriceWithAmendmentsVAT;
 
     @Column(name = "place_of_performance")
     private String placeOfPerformance;
@@ -63,14 +75,19 @@ public class Procurement implements DomainEntity<Long> {
     public Procurement() {
     }
 
-    public Procurement(String name, Company supplier, ContractingAuthority contractingAuthority,
-                       BigDecimal contractPrice, String placeOfPerformance, LocalDate dateOfPublication, String systemNumber,
-                       LocalDate dateOfContractClose, String type, String typeOfProcedure, String publicContractRegime,
-                       LocalDate bidsSubmissionDeadline, String codeFromNipezCodeList, String nameFromNipezCodeList) {
+    public Procurement(String name, Company supplier, Boolean isAssociationOfSuppliers, ContractingAuthority contractingAuthority,
+                       BigDecimal contractPrice, BigDecimal contractPriceVAT, BigDecimal contractPriceWithAmendments,
+                       BigDecimal contractPriceWithAmendmentsVAT, String placeOfPerformance, LocalDate dateOfPublication,
+                       String systemNumber, LocalDate dateOfContractClose, String type, String typeOfProcedure,
+                       String publicContractRegime, LocalDate bidsSubmissionDeadline, String codeFromNipezCodeList, String nameFromNipezCodeList) {
         this.name = name;
         this.supplier = supplier;
+        this.isAssociationOfSuppliers = isAssociationOfSuppliers;
         this.contractingAuthority = contractingAuthority;
         this.contractPrice = contractPrice;
+        this.contractPriceVAT = contractPriceVAT;
+        this.contractPriceWithAmendments = contractPriceWithAmendments;
+        this.contractPriceWithAmendmentsVAT = contractPriceWithAmendmentsVAT;
         this.placeOfPerformance = placeOfPerformance;
         this.dateOfPublication = dateOfPublication;
         this.systemNumber = systemNumber;
@@ -81,6 +98,38 @@ public class Procurement implements DomainEntity<Long> {
         this.bidsSubmissionDeadline = bidsSubmissionDeadline;
         this.codeFromNipezCodeList = codeFromNipezCodeList;
         this.nameFromNipezCodeList = nameFromNipezCodeList;
+    }
+
+    public Boolean getAssociationOfSuppliers() {
+        return isAssociationOfSuppliers;
+    }
+
+    public void setAssociationOfSuppliers(Boolean associationOfSuppliers) {
+        isAssociationOfSuppliers = associationOfSuppliers;
+    }
+
+    public BigDecimal getContractPriceVAT() {
+        return contractPriceVAT;
+    }
+
+    public void setContractPriceVAT(BigDecimal contractPriceVAT) {
+        this.contractPriceVAT = contractPriceVAT;
+    }
+
+    public BigDecimal getContractPriceWithAmendments() {
+        return contractPriceWithAmendments;
+    }
+
+    public void setContractPriceWithAmendments(BigDecimal contractPriceWithAmendments) {
+        this.contractPriceWithAmendments = contractPriceWithAmendments;
+    }
+
+    public BigDecimal getContractPriceWithAmendmentsVAT() {
+        return contractPriceWithAmendmentsVAT;
+    }
+
+    public void setContractPriceWithAmendmentsVAT(BigDecimal contractPriceWithAmendmentsVAT) {
+        this.contractPriceWithAmendmentsVAT = contractPriceWithAmendmentsVAT;
     }
 
     public String getTypeOfProcedure() {

@@ -2,17 +2,16 @@ package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.CompanyService;
 import cz.cvut.fit.bap.parser.controller.data.AddressData;
+import cz.cvut.fit.bap.parser.controller.data.SupplierDetailPageData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
-import cz.cvut.fit.bap.parser.controller.scrapper.CompanyDetailScrapper;
+import cz.cvut.fit.bap.parser.controller.scrapper.SupplierDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.factories.CompanyDetailFactory;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.Company;
 import org.jsoup.nodes.Document;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 /*
     Controller for companies
@@ -44,42 +43,30 @@ public class CompanyController extends AbstractController<CompanyService,Company
             return companyOptional.get();
         }
         Address address = addressController.save(company.getAddress());
-        return super.save(new Company(company.getName(), address, company.getOrganisationId()));
+        return super.save(new Company(company.getName(), address, company.getOrganisationId(), company.getVATIdNumber()));
     }
 
     /**
-     * Get company from url with provided name in separate thread
-     *
-     * @param url         where information about company is
-     * @param companyName of wanted company
-     * @return future of scrapped company
+     * Builds Company from provided data
+     * @param name of company
+     * @param addressData of company
+     * @param organisationId of company
+     * @param VATIdNumber of company
+     * @return company with geocoded addressData
      */
-    @Async
-    public CompletableFuture<Company> getCompanyAsync(String url, String companyName){
-        return service.readByName(companyName)
-                .map(CompletableFuture::completedFuture)
-                .orElseGet(() -> CompletableFuture.completedFuture(fetchCompanyDetails(url, companyName)));
+    public Company buildCompany(String name, AddressData addressData, String organisationId, String VATIdNumber) {
+        Address address = addressController.geocode(addressData);
+        return new Company(name, address, organisationId, VATIdNumber);
     }
-
 
     /**
-     * Get company from url with provided name in main thread
-     *
-     * @param url         where information about company is
-     * @param companyName of wanted company
-     * @return scrapped company
+     * Gets supplier detail page data from provided url.
+     * @param url to supplier detail page
+     * @return scrapped data from supplier detail page
      */
-    public Company getCompany(String url, String companyName){
-        return service.readByName(companyName)
-                .orElseGet(() -> fetchCompanyDetails(url, companyName));
-    }
-
-    private Company fetchCompanyDetails(String url, String companyName){
-        Document doc = fetcher.getCompanyDetail(url);
-        CompanyDetailScrapper companyDetailScrapper = companyDetailFactory.create(doc);
-        AddressData addressData = companyDetailScrapper.getCompanyAddress();
-        String organisationId = companyDetailScrapper.getOrganisationId();
-        Address geocodedAddress = addressController.geocode(addressData);
-        return new Company(companyName, geocodedAddress, organisationId);
+    public SupplierDetailPageData getSupplierDetailPageData(String url) {
+        Document doc = fetcher.getSupplierDetail(url);
+        SupplierDetailScrapper supplierDetailScrapper = companyDetailFactory.create(doc);
+        return supplierDetailScrapper.getPageData();
     }
 }

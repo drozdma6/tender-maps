@@ -65,30 +65,6 @@ public class ProcurementResultScrapper extends AbstractScrapper{
         return participants;
     }
 
-    /**
-     * Gets BigDecimal from string.
-     *
-     * @param price which is supposed to be converted
-     * @return BigDecimal or null if string can not be converted
-     */
-    private BigDecimal getBigDecimalFromString(String price){
-        try{
-            return new BigDecimal(formatPrice(price));
-        }catch(NumberFormatException e){
-            return null;
-        }
-    }
-
-    /**
-     * Format string price into format accepted by BigDecimal
-     *
-     * @param strPrice price which is supposed to by formatted
-     * @return formatted price
-     */
-    private String formatPrice(String strPrice){
-        return strPrice.replaceAll("\\s", "").replace(',', '.');
-    }
-
     private Elements getSuppliersRows(){
         Elements suppliersRows = document.select(
                 "[title=\"Supplier with Whom the Contract Has Been Entered into\"] .gov-table__row");

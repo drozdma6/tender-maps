@@ -8,9 +8,8 @@ public record AddressData(
         String city,
         String postalCode,
         String street,
-        String buildingNumber
+        String buildingNumber,
+        String landRegistryNumber,
+        String countryCode
 ){
-    public String getCountryCode(){
-        return country.length() == 2 ? country : null;
-    }
 }

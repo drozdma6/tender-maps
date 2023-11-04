@@ -33,8 +33,9 @@ public class AuthorityDetailScrapper extends AbstractScrapper {
         String street = getNullIfEmpty(document.select("[title=\"street\"] p").text());
         String postalCode = getNullIfEmpty(document.select("[title=\"postal code\"] p").text());
         String countryCode = getNullIfEmpty(document.select("[title=\"country - code\"] p").text());
+        String landRegistryNumber = getNullIfEmpty(document.select("[title=\"Land registry number\"] p").text());
         String buildingNumber = getNullIfEmpty(
                 document.select("[title=\"building number\"] p").text());
-        return new AddressData(countryCode, city, postalCode, street, buildingNumber);
+        return new AddressData(null, city, postalCode, street, buildingNumber, landRegistryNumber, countryCode);
     }
 }

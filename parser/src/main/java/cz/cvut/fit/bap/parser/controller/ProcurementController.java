@@ -1,12 +1,10 @@
 package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.ProcurementService;
+import cz.cvut.fit.bap.parser.controller.builder.OfferBuilder;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.CurrencyExchanger;
-import cz.cvut.fit.bap.parser.controller.data.ContractData;
-import cz.cvut.fit.bap.parser.controller.data.OfferData;
-import cz.cvut.fit.bap.parser.controller.data.ProcurementDetailPageData;
-import cz.cvut.fit.bap.parser.controller.data.ProcurementResultPageData;
+import cz.cvut.fit.bap.parser.controller.data.*;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementListScrapper;
@@ -20,7 +18,6 @@ import cz.cvut.fit.bap.parser.domain.Offer;
 import cz.cvut.fit.bap.parser.domain.Procurement;
 import io.micrometer.core.annotation.Timed;
 import jakarta.transaction.Transactional;
-import kotlin.Pair;
 import org.jsoup.nodes.Document;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -109,12 +106,13 @@ public class ProcurementController extends AbstractController<ProcurementService
         ProcurementResultScrapper procurementResultScrapper = procurementResultFactory.create(resultPageDoc);
         ProcurementResultPageData procurementResultPageData = getProcurementResultDto(procurementResultScrapper);
 
-        List<Pair<Company, BigDecimal>> participantList = getParticipants(procurementResultPageData.participants());
+        List<OfferBuilder> offerBuilders = offerController.getOffers(procurementResultPageData.participants());
+
 
         ProcurementDetailPageData procurementDetailPageData = procurementDetailDtoFuture.join();
         ContractingAuthority contractingAuthority = contractingAuthorityDtoFuture.join();
 
-        saveProcurementData(systemNumber, procurementResultPageData, procurementDetailPageData, participantList, contractingAuthority);
+        saveProcurementData(systemNumber, procurementResultPageData, procurementDetailPageData, offerBuilders, contractingAuthority);
     }
 
     /**
@@ -137,7 +135,7 @@ public class ProcurementController extends AbstractController<ProcurementService
      * Exchanges all offers in foreign currencies to CZK. Offers do not have their date, so contractClose date is
      * used as the closest.
      *
-     * @param offerDataList         offers to be exchanged (CZK offers are skipped)
+     * @param offerDataList     offers to be exchanged (CZK offers are skipped)
      * @param contractCloseDate tender contract close date
      * @return List of exchanged offers to CZK
      */
@@ -151,33 +149,46 @@ public class ProcurementController extends AbstractController<ProcurementService
 
     private void saveProcurementData(String systemNumber, ProcurementResultPageData procurementResultPageData,
                                      ProcurementDetailPageData procurementDetailPageData,
-                                     List<Pair<Company, BigDecimal>> participants,
+                                     List<OfferBuilder> offerBuilders,
                                      ContractingAuthority contractingAuthority) {
         procurementResultPageData.suppliers().forEach(contractData -> {
-            Company supplier = saveSupplier(contractData);
+            SupplierDetailPageData supplierDetailPageData = companyController.getSupplierDetailPageData(contractData.detailHref());
+            Company savedSupplier = saveSupplier(contractData.companyName(), supplierDetailPageData);
             ContractingAuthority savedAuthority = contractingAuthorityController.save(contractingAuthority);
-            Procurement procurement = super.save(
-                    buildProcurement(procurementDetailPageData, savedAuthority, contractData, systemNumber, supplier)
-            );
+            Procurement savedProcurement = saveProcurement(
+                    procurementDetailPageData,
+                    savedAuthority,
+                    contractData,
+                    supplierDetailPageData,
+                    systemNumber,
+                    savedSupplier);
 
-            for (Pair<Company, BigDecimal> participant : participants) {
-                Company savedCompany = companyController.save(participant.getFirst());
-                Offer offer = new Offer(participant.getSecond(), procurement, savedCompany);
-                offerController.save(offer);
+            for (OfferBuilder offerBuilder : offerBuilders) {
+                Company savedParticipant = companyController.save(offerBuilder.getCompany());
+                Offer offerWithSavedData = offerBuilder
+                        .company(savedParticipant)
+                        .procurement(savedProcurement)
+                        .build();
+                offerController.save(offerWithSavedData);
             }
         });
     }
 
-    private Procurement buildProcurement(ProcurementDetailPageData procurementDetailPageData,
+    private Procurement saveProcurement(ProcurementDetailPageData procurementDetailPageData,
                                          ContractingAuthority contractingAuthority,
                                          ContractData contractData,
+                                        SupplierDetailPageData supplierDetailPageData,
                                          String systemNumber,
                                          Company supplier) {
-        return new Procurement(
+        Procurement procurement = new Procurement(
                 procurementDetailPageData.procurementName(),
                 supplier,
+                supplierDetailPageData.isAssociationOfSuppliers(),
                 contractingAuthority,
                 contractData.contractPrice(),
+                supplierDetailPageData.contractPriceVAT(),
+                supplierDetailPageData.contractPriceWithAmendments(),
+                supplierDetailPageData.contractPriceWithAmendmentsVAT(),
                 procurementDetailPageData.placeOfPerformance(),
                 procurementDetailPageData.dateOfPublication(),
                 systemNumber,
@@ -187,9 +198,10 @@ public class ProcurementController extends AbstractController<ProcurementService
                 procurementDetailPageData.publicContractRegime(),
                 procurementDetailPageData.bidsSubmissionDeadline(),
                 procurementDetailPageData.codeFromNipezCodeList(),
-                procurementDetailPageData.nameFromNipezCodeList());
+                procurementDetailPageData.nameFromNipezCodeList()
+        );
+        return super.save(procurement);
     }
-
 
     private ProcurementResultPageData getProcurementResultDto(ProcurementResultScrapper procurementResultScrapper) {
         List<OfferData> offers = procurementResultScrapper.getParticipants();
@@ -198,31 +210,13 @@ public class ProcurementController extends AbstractController<ProcurementService
                 sumPricesAndFilterByCompanyName(contracts));
     }
 
-    private Company saveSupplier(ContractData supplierInfo) {
-        Company company = companyController.getCompany(supplierInfo.detailHref(), supplierInfo.companyName());
-        return companyController.save(company);
-    }
-
-    /**
-     * Gets participant companies, each participant runs in separate thread.
-     *
-     * @param participants scrapped data about participants from result page
-     * @return List of companies and their offers
-     */
-    private List<Pair<Company, BigDecimal>> getParticipants(List<OfferData> participants) {
-        List<CompletableFuture<Pair<Company, BigDecimal>>> futures = participants.stream()
-                .map(offerDto -> {
-                    CompletableFuture<Company> participantFuture = companyController.getCompanyAsync(
-                            offerDto.detailHref(),
-                            offerDto.companyName()
-                    );
-                    return participantFuture.thenApply(company -> new Pair<>(company, offerDto.price()));
-                })
-                .toList();
-        //wait for all to finish
-        return futures.stream()
-                .map(CompletableFuture::join)
-                .toList();
+    private Company saveSupplier(String companyName, SupplierDetailPageData supplierDetailPageData) {
+        Company supplier = companyController.buildCompany(
+                companyName,
+                supplierDetailPageData.addressData(),
+                supplierDetailPageData.organisationId(),
+                supplierDetailPageData.VATIdNumber());
+        return companyController.save(supplier);
     }
 
     private ContractData combineOffers(List<ContractData> contracts) {

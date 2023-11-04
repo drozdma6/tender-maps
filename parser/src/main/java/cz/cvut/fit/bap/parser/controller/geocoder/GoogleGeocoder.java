@@ -5,8 +5,8 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.AddressComponent;
 import com.google.maps.model.GeocodingResult;
+import cz.cvut.fit.bap.parser.controller.builder.AddressBuilder;
 import cz.cvut.fit.bap.parser.controller.data.AddressData;
-import cz.cvut.fit.bap.parser.controller.data.converter.AddressDataToAddress;
 import cz.cvut.fit.bap.parser.domain.Address;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Metrics;
@@ -21,16 +21,13 @@ import java.io.IOException;
 @Component
 public class GoogleGeocoder implements Geocoder, AutoCloseable{
     private GeoApiContext context;
-    private final AddressDataToAddress addressDataToAddress;
     private final String apiKey;
 
-    public GoogleGeocoder(@Value("${GOOGLE_API_KEY:}") String apiKey,
-                          AddressDataToAddress addressDataToAddress){
+    public GoogleGeocoder(@Value("${GOOGLE_API_KEY:}") String apiKey) {
         if(!apiKey.isEmpty()){
             this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
         }
         this.apiKey = apiKey;
-        this.addressDataToAddress = addressDataToAddress;
     }
 
     /**
@@ -42,21 +39,21 @@ public class GoogleGeocoder implements Geocoder, AutoCloseable{
     @Override
     @Timed(value = "scrapper.google.geocode")
     public Address geocode(AddressData addressData){
+        AddressBuilder addressBuilder = new AddressBuilder(addressData);
         if(apiKey.isEmpty()){
-            return addressDataToAddress.apply(addressData);
+            return addressBuilder.build();
         }
-        Address address = addressDataToAddress.apply(addressData);
         GeocodingResult[] geocodingResults = sendRequest(addressData);
         if(geocodingResults == null || geocodingResults.length == 0){
             Metrics.counter("scrapper.google.geocode.failed").increment();
-            return address;
+            return addressBuilder.build();
         }
-        if(address.getCountryCode() == null){
-            address.setCountryCode(getCountryCode(geocodingResults));
+        if (addressData.countryCode() == null) {
+            addressBuilder.countryCode(getCountryCode(geocodingResults));
         }
-        address.setLongitude(getLongitude(geocodingResults));
-        address.setLatitude(getLatitude(geocodingResults));
-        return address;
+        addressBuilder.longitude(getLongitude(geocodingResults));
+        addressBuilder.latitude(getLatitude(geocodingResults));
+        return addressBuilder.build();
     }
 
     private GeocodingResult[] sendRequest(AddressData addressData){

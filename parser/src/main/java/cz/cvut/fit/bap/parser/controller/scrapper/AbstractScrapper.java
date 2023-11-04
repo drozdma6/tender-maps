@@ -2,6 +2,8 @@ package cz.cvut.fit.bap.parser.controller.scrapper;
 
 import org.jsoup.nodes.Document;
 
+import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,5 +45,45 @@ public abstract class AbstractScrapper{
             }
         }
         return modifiedUrl.toString();
+    }
+
+    /**
+     * Converts yes and no string into boolean. Yes is true, no is false.
+     *
+     * @param yesNoVal string value to be converted
+     * @return true if yes, false if no, null otherwise
+     */
+    protected Boolean convertYesNoToBoolean(String yesNoVal) {
+        if (Objects.equals(yesNoVal, "Yes")) {
+            return true;
+        }
+        if (Objects.equals(yesNoVal, "No")) {
+            return false;
+        }
+        return null;
+    }
+
+    /**
+     * Gets BigDecimal from string.
+     *
+     * @param price which is supposed to be converted
+     * @return BigDecimal or null if string can not be converted
+     */
+    protected BigDecimal getBigDecimalFromString(String price) {
+        try {
+            return new BigDecimal(formatPrice(price));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Format string price into format accepted by BigDecimal
+     *
+     * @param strPrice price which is supposed to by formatted
+     * @return formatted price
+     */
+    protected String formatPrice(String strPrice) {
+        return strPrice.replaceAll("\\s", "").replace(',', '.');
     }
 }

@@ -1,7 +1,7 @@
 package cz.cvut.fit.bap.parser.controller.geocoder;
 
+import cz.cvut.fit.bap.parser.controller.builder.AddressBuilder;
 import cz.cvut.fit.bap.parser.controller.data.AddressData;
-import cz.cvut.fit.bap.parser.controller.data.converter.AddressDataToAddress;
 import cz.cvut.fit.bap.parser.domain.Address;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Metrics;
@@ -33,11 +33,6 @@ public class ProfinitGeocoder implements Geocoder{
 
     @Value("${PROFINIT_API_KEY}")
     private String apiToken;
-    private final AddressDataToAddress addressDataToAddress;
-
-    public ProfinitGeocoder(AddressDataToAddress addressDataToAddress){
-        this.addressDataToAddress = addressDataToAddress;
-    }
 
     /**
      * Geocodes address by calling profinit geocoding api.
@@ -48,16 +43,18 @@ public class ProfinitGeocoder implements Geocoder{
     @Override
     @Timed(value = "scrapper.profinit.geocode")
     public Address geocode(AddressData addressData){
-        Address address = addressDataToAddress.apply(addressData);
-        address.setCountryCode(CZECH_SHORT_COUNTRY_CODE); //profinit geocoder is used only for czech places
+        AddressBuilder addressBuilder = new AddressBuilder(addressData);
+        addressBuilder.countryCode(CZECH_SHORT_COUNTRY_CODE); //profinit geocoder is used only for czech places
         try{
             String response = sendQueryRequest(addressData);
             Pair<Double,Double> coordinates = getWgsCoordinates(response);
-            address.setLatitude(coordinates.getFirst()); //wgs_x
-            address.setLongitude(coordinates.getSecond()); //wgx_y
-            return address;
+            addressBuilder.latitude(coordinates.getFirst()); //wgs_x
+            addressBuilder.longitude(coordinates.getSecond()); //wgx_y
+            return addressBuilder.build();
         }catch(GeocodingException e){
-            return address;
+            e.printStackTrace();
+            Metrics.counter("scrapper.profinit.geocoder.failed").increment();
+            return addressBuilder.build();
         }
     }
 
@@ -88,8 +85,6 @@ public class ProfinitGeocoder implements Geocoder{
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             return response.body();
         }catch(IOException e){
-            e.printStackTrace();
-            Metrics.counter("scrapper.profinit.geocoder.failed").increment();
             throw new GeocodingException(e);
         }catch(InterruptedException e){
             e.printStackTrace();
@@ -104,6 +99,7 @@ public class ProfinitGeocoder implements Geocoder{
         JSONArray results = json.getJSONArray("results");
 
         if(results.isEmpty()){
+            Metrics.counter("scrapper.profinit.geocoder.failed").increment();
             return new Pair<>(null, null);
         }
         JSONObject firstResult = results.getJSONObject(0);
@@ -112,6 +108,7 @@ public class ProfinitGeocoder implements Geocoder{
         try{
             return new Pair<>(ruian.getDouble("wgs_x"), ruian.getDouble("wgs_y"));
         }catch(JSONException e){
+            Metrics.counter("scrapper.profinit.geocoder.failed").increment();
             //if wgs_x or wgs_y is null
             return new Pair<>(null, null);
         }

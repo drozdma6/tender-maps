@@ -27,29 +27,30 @@ public class Address implements DomainEntity<Long>{
     private Double latitude;
     @Column
     private Double longitude;
-
+    @Column
+    private String landRegistryNumber;
 
     public Address(){
     }
 
     public Address(String countryCode, String city, String postalCode, String street,
-                   String buildingNumber){
+                   String buildingNumber, String landRegistryNumber, Double latitude, Double longitude) {
         this.buildingNumber = buildingNumber;
         this.city = city;
         this.street = street;
         this.countryCode = countryCode;
         this.postalCode = postalCode;
-    }
-
-    public Address(String countryCode, String city, String postalCode, String street,
-                   String buildingNumber, Double latitude, Double longitude){
-        this.buildingNumber = buildingNumber;
-        this.city = city;
-        this.street = street;
-        this.countryCode = countryCode;
-        this.postalCode = postalCode;
+        this.landRegistryNumber = landRegistryNumber;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public String getLandRegistryNumber() {
+        return landRegistryNumber;
+    }
+
+    public void setLandRegistryNumber(String landRegistryNumber) {
+        this.landRegistryNumber = landRegistryNumber;
     }
 
     public Double getLatitude(){

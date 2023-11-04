@@ -50,14 +50,14 @@ public class NenNipezFetcher extends AbstractFetcher{
 
 
     /**
-     * Fetches company detail site
+     * Fetches supplier detail site
      *
      * @param detailUrl addition to base url for desired company
-     * @return Document containing company detail site
+     * @return Document containing supplier detail site
      */
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
-    public Document getCompanyDetail(String detailUrl){
+    public Document getSupplierDetail(String detailUrl) {
         String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
         String url = BASE_URL + detailUrl.replaceFirst(pattern, "/");
         return getDocumentWithRetry(url);
@@ -103,6 +103,15 @@ public class NenNipezFetcher extends AbstractFetcher{
     public Document getProcurementListPage(int page){
         String url = BASE_URL + "/en/verejne-zakazky/p:vz:stavZP=zadana,plneni&page=" + page;
         return getDocumentWithRetry(url);
+    }
+
+    @Override
+    @Async
+    @Timed(value = "scrapper.nen.nipez.fetch")
+    public CompletableFuture<Document> getOfferDetailPage(String url) {
+        String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
+        String detailUrl = BASE_URL + url.replaceFirst(pattern, "/");
+        return CompletableFuture.completedFuture(getDocumentWithRetry(detailUrl));
     }
 
 
