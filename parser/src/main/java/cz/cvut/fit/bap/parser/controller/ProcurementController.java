@@ -4,10 +4,7 @@ import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.controller.builder.OfferBuilder;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.CurrencyExchanger;
-import cz.cvut.fit.bap.parser.controller.data.ContractData;
-import cz.cvut.fit.bap.parser.controller.data.ProcurementDetailPageData;
-import cz.cvut.fit.bap.parser.controller.data.ProcurementResultPageData;
-import cz.cvut.fit.bap.parser.controller.data.SupplierDetailPageData;
+import cz.cvut.fit.bap.parser.controller.data.*;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementDetailScrapper;
@@ -76,7 +73,8 @@ public class ProcurementController extends AbstractController<ProcurementService
     public CompletableFuture<List<String>> getPageSystemNumbers(int page) {
         Document document = fetcher.getProcurementListPage(page);
         ProcurementListScrapper procurementListScrapper = procurementListFactory.create(document);
-        return CompletableFuture.completedFuture(procurementListScrapper.getProcurementSystemNumbers());
+        ProcurementListPageData procurementListPageData = procurementListScrapper.getPageData();
+        return CompletableFuture.completedFuture(procurementListPageData.systemNumbers());
     }
 
     /**

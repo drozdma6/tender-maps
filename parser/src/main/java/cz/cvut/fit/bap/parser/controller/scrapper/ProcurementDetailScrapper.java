@@ -14,7 +14,7 @@ import java.time.format.DateTimeParseException;
  *
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/mfcr/uzavrene-zakazky/detail-zakazky/N006-23-V00004206">Procurement detail page</a>
  */
-public class ProcurementDetailScrapper extends AbstractScrapper {
+public class ProcurementDetailScrapper extends AbstractScrapper<ProcurementDetailPageData> {
     public ProcurementDetailScrapper(Document document) {
         super(document);
     }
@@ -23,6 +23,7 @@ public class ProcurementDetailScrapper extends AbstractScrapper {
      * Scrapes all data from procurement detail page
      * @return data from procurement detail page
      */
+    @Override
     public ProcurementDetailPageData getPageData() {
         return new ProcurementDetailPageData(
                 getProcurementName(),

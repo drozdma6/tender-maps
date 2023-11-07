@@ -20,11 +20,12 @@ import java.util.List;
  *
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/MVCR/uzavrene-zakazky/detail-zakazky/N006-23-V00005185/vysledek">procurement result page</a>
  */
-public class ProcurementResultScrapper extends AbstractScrapper {
+public class ProcurementResultScrapper extends AbstractScrapper<ProcurementResultPageData> {
     public ProcurementResultScrapper(Document document) {
         super(document);
     }
 
+    @Override
     public ProcurementResultPageData getPageData() {
         return new ProcurementResultPageData(getParticipants(), getSuppliers());
     }

@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document;
  *
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/mfcr/uzavrene-zakazky/detail-zakazky/N006-23-V00004206/vysledek/detail-uverejneni/1596619580">Supplier detail page</a>
  */
-public class SupplierDetailScrapper extends AbstractScrapper {
+public class SupplierDetailScrapper extends AbstractScrapper<SupplierDetailPageData> {
 
     public SupplierDetailScrapper(Document document) {
         super(document);
@@ -20,6 +20,7 @@ public class SupplierDetailScrapper extends AbstractScrapper {
      *
      * @return data from supplier detail page
      */
+    @Override
     public SupplierDetailPageData getPageData() {
         return new SupplierDetailPageData(
                 getCompanyAddress(),

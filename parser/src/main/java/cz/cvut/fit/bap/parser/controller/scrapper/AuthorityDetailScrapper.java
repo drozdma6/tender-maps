@@ -1,6 +1,7 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
 import cz.cvut.fit.bap.parser.controller.data.AddressData;
+import cz.cvut.fit.bap.parser.controller.data.AuthorityDetailPageData;
 import org.jsoup.nodes.Document;
 
 /**
@@ -8,10 +9,15 @@ import org.jsoup.nodes.Document;
  *
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/mfcr">Contracting authority detail page</a>
  */
-public class AuthorityDetailScrapper extends AbstractScrapper {
+public class AuthorityDetailScrapper extends AbstractScrapper<AuthorityDetailPageData> {
 
     public AuthorityDetailScrapper(Document document) {
         super(document);
+    }
+
+    @Override
+    public AuthorityDetailPageData getPageData() {
+        return new AuthorityDetailPageData(getContractingAuthorityUrl(), getContractingAuthorityAddress());
     }
 
     /**
@@ -19,7 +25,7 @@ public class AuthorityDetailScrapper extends AbstractScrapper {
      *
      * @return contracting authority's nen.nipez profile url or null if information is missing
      */
-    public String getContractingAuthorityUrl() {
+    private String getContractingAuthorityUrl() {
         return getNullIfEmpty(document.select("[title=\"Contracting authority's NEN profile\"] p").text());
     }
 
@@ -28,7 +34,7 @@ public class AuthorityDetailScrapper extends AbstractScrapper {
      *
      * @return contracting authority's address
      */
-    public AddressData getContractingAuthorityAddress() {
+    private AddressData getContractingAuthorityAddress() {
         String city = getNullIfEmpty(document.select("[title=\"Municipality\"] p").text());
         String street = getNullIfEmpty(document.select("[title=\"street\"] p").text());
         String postalCode = getNullIfEmpty(document.select("[title=\"postal code\"] p").text());

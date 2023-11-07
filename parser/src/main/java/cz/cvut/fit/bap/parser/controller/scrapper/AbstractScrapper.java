@@ -7,13 +7,24 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-public abstract class AbstractScrapper{
+/**
+ * Abstract class for scrappers
+ *
+ * @param <D> scrapped data from document
+ */
+public abstract class AbstractScrapper<D> {
     protected Document document;
 
     protected AbstractScrapper(Document document){
         this.document = document;
     }
+
+    /**
+     * Gets scrapped page data
+     *
+     * @return page data
+     */
+    public abstract D getPageData();
 
     protected String getNullIfEmpty(String str){
         if(str == null || str.isEmpty()){

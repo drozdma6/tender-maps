@@ -4,8 +4,12 @@ import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import cz.cvut.fit.bap.parser.controller.data.OfferDetailPageData;
 import org.jsoup.nodes.Document;
 
-
-public class OfferDetailScrapper extends AbstractScrapper {
+/**
+ * Class for scrapping offer detail page
+ *
+ * @see <a href="https://nen.nipez.cz/en/verejne-zakazky/detail-zakazky/N006-23-V00011630/vysledek/detail-uverejneni/1878154899">Offer detail page</a>
+ */
+public class OfferDetailScrapper extends AbstractScrapper<OfferDetailPageData> {
     public OfferDetailScrapper(Document document) {
         super(document);
     }
@@ -15,6 +19,7 @@ public class OfferDetailScrapper extends AbstractScrapper {
      *
      * @return data form offer detail page
      */
+    @Override
     public OfferDetailPageData getPageData() {
         return new OfferDetailPageData(getCompanyAddress(),
                 getOrganisationId(),
