@@ -5,9 +5,9 @@ import cz.cvut.fit.bap.parser.controller.builder.OfferBuilder;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.CurrencyExchanger;
 import cz.cvut.fit.bap.parser.controller.data.OfferData;
+import cz.cvut.fit.bap.parser.controller.data.OfferDetailPageData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.OfferDetailScrapper;
-import cz.cvut.fit.bap.parser.controller.scrapper.factories.OfferDetailFactory;
 import cz.cvut.fit.bap.parser.domain.Company;
 import cz.cvut.fit.bap.parser.domain.Offer;
 import org.springframework.stereotype.Component;
@@ -24,14 +24,15 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class OfferController extends AbstractController<OfferService, Offer, Long> {
     private final AbstractFetcher fetcher;
-    private final OfferDetailFactory offerDetailFactory;
     private final CompanyController companyController;
     private final CurrencyExchanger currencyExchanger;
 
-    public OfferController(OfferService offerService, AbstractFetcher fetcher, OfferDetailFactory offerDetailFactory, CompanyController companyController, CurrencyExchanger currencyExchanger) {
+    public OfferController(OfferService offerService,
+                           AbstractFetcher fetcher,
+                           CompanyController companyController,
+                           CurrencyExchanger currencyExchanger) {
         super(offerService);
         this.fetcher = fetcher;
-        this.offerDetailFactory = offerDetailFactory;
         this.companyController = companyController;
         this.currencyExchanger = currencyExchanger;
     }
@@ -47,9 +48,9 @@ public class OfferController extends AbstractController<OfferService, Offer, Lon
         for (OfferData offerDataRow : participantRows) {
             CompletableFuture<OfferBuilder> offerBuilderFut =
                     fetcher.getOfferDetailPage(offerDataRow.detailHref())
-                            .thenApply(offerDetailFactory::create)
-                            .thenApply(OfferDetailScrapper::getPageData)
-                            .thenApply(offerDetailPageData -> {
+                            .thenApply(document -> {
+                                OfferDetailScrapper offerDetailScrapper = new OfferDetailScrapper(document);
+                                OfferDetailPageData offerDetailPageData = offerDetailScrapper.getPageData();
                                 Company company = companyController.buildCompany(
                                         offerDataRow.companyName(),
                                         offerDetailPageData.addressData(),

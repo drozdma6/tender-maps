@@ -4,7 +4,6 @@ import cz.cvut.fit.bap.parser.business.ContractingAuthorityService;
 import cz.cvut.fit.bap.parser.controller.data.AuthorityDetailPageData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.AuthorityDetailScrapper;
-import cz.cvut.fit.bap.parser.controller.scrapper.factories.AuthorityDetailFactory;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractingAuthority;
 import org.jsoup.nodes.Document;
@@ -17,15 +16,13 @@ import java.util.Optional;
  */
 @Component
 public class ContractingAuthorityController extends AbstractController<ContractingAuthorityService, ContractingAuthority, Long> {
-    private final AuthorityDetailFactory authorityDetailFactory;
     private final AddressController addressController;
     private final AbstractFetcher fetcher;
 
     public ContractingAuthorityController(ContractingAuthorityService contractingAuthorityService,
-                                          AuthorityDetailFactory authorityDetailFactory,
-                                          AddressController addressController, AbstractFetcher fetcher) {
+                                          AddressController addressController,
+                                          AbstractFetcher fetcher) {
         super(contractingAuthorityService);
-        this.authorityDetailFactory = authorityDetailFactory;
         this.addressController = addressController;
         this.fetcher = fetcher;
     }
@@ -60,7 +57,7 @@ public class ContractingAuthorityController extends AbstractController<Contracti
             return optionalAuthority.get();
         }
         Document document = fetcher.getAuthorityDetail(url);
-        AuthorityDetailScrapper authorityDetailScrapper = authorityDetailFactory.create(document);
+        AuthorityDetailScrapper authorityDetailScrapper = new AuthorityDetailScrapper(document);
         AuthorityDetailPageData authorityDetailPageData = authorityDetailScrapper.getPageData();
         Address address = addressController.geocode(authorityDetailPageData.addressData());
         return new ContractingAuthority(name, address, authorityDetailPageData.nenProfileUrl());

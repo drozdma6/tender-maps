@@ -10,9 +10,6 @@ import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementListScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementResultScrapper;
-import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementDetailFactory;
-import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementListFactory;
-import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementResultFactory;
 import cz.cvut.fit.bap.parser.domain.Company;
 import cz.cvut.fit.bap.parser.domain.ContractingAuthority;
 import cz.cvut.fit.bap.parser.domain.Offer;
@@ -34,28 +31,19 @@ import java.util.stream.Collectors;
  */
 @Component
 public class ProcurementController extends AbstractController<ProcurementService, Procurement, Long> {
-    private final ProcurementResultFactory procurementResultFactory;
-    private final ProcurementDetailFactory procurementDetailFactory;
-    private final ProcurementListFactory procurementListFactory;
     private final OfferController offerController;
     private final CompanyController companyController;
     private final ContractingAuthorityController contractingAuthorityController;
     private final AbstractFetcher fetcher;
     private final CurrencyExchanger currencyExchanger;
 
-    public ProcurementController(ProcurementResultFactory procurementResultFactory,
-                                 ProcurementDetailFactory procurementDetailFactory,
-                                 ProcurementService procurementService,
-                                 ProcurementListFactory procurementListFactory,
+    public ProcurementController(ProcurementService procurementService,
                                  OfferController offerController,
                                  CompanyController companyController,
                                  ContractingAuthorityController contractingAuthorityController,
                                  AbstractFetcher fetcher,
                                  CurrencyExchanger currencyExchanger) {
         super(procurementService);
-        this.procurementResultFactory = procurementResultFactory;
-        this.procurementDetailFactory = procurementDetailFactory;
-        this.procurementListFactory = procurementListFactory;
         this.offerController = offerController;
         this.companyController = companyController;
         this.contractingAuthorityController = contractingAuthorityController;
@@ -72,7 +60,7 @@ public class ProcurementController extends AbstractController<ProcurementService
     @Async
     public CompletableFuture<List<String>> getPageSystemNumbers(int page) {
         Document document = fetcher.getProcurementListPage(page);
-        ProcurementListScrapper procurementListScrapper = procurementListFactory.create(document);
+        ProcurementListScrapper procurementListScrapper = new ProcurementListScrapper(document);
         ProcurementListPageData procurementListPageData = procurementListScrapper.getPageData();
         return CompletableFuture.completedFuture(procurementListPageData.systemNumbers());
     }
@@ -92,9 +80,10 @@ public class ProcurementController extends AbstractController<ProcurementService
         }
         //run procurement detail scrapping in separate thread
         CompletableFuture<ProcurementDetailPageData> procurementDetailDtoFuture =
-                fetcher.getProcurementDetail(systemNumber)
-                        .thenApply(procurementDetailFactory::create)
-                        .thenApply(ProcurementDetailScrapper::getPageData);
+                fetcher.getProcurementDetail(systemNumber).thenApply(document -> {
+                    ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
+                    return procurementDetailScrapper.getPageData();
+                });
         CompletableFuture<ContractingAuthority> contractingAuthorityDtoFuture =
                 procurementDetailDtoFuture.thenApply(procurementDetailPageData ->
                         contractingAuthorityController.getContractingAuthority(
@@ -103,7 +92,7 @@ public class ProcurementController extends AbstractController<ProcurementService
                 );
 
         Document resultPageDoc = fetcher.getProcurementResult(systemNumber);
-        ProcurementResultScrapper procurementResultScrapper = procurementResultFactory.create(resultPageDoc);
+        ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(resultPageDoc);
         ProcurementResultPageData procurementResultPageData = procurementResultScrapper.getPageData();
         List<ContractData> summedContracts = groupByCompanyAndSum(procurementResultPageData.suppliers());
 

@@ -5,7 +5,6 @@ import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import cz.cvut.fit.bap.parser.controller.data.SupplierDetailPageData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.SupplierDetailScrapper;
-import cz.cvut.fit.bap.parser.controller.scrapper.factories.CompanyDetailFactory;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.Company;
 import org.jsoup.nodes.Document;
@@ -18,14 +17,13 @@ import java.util.Optional;
  */
 @Component
 public class CompanyController extends AbstractController<CompanyService,Company,Long>{
-    private final CompanyDetailFactory companyDetailFactory;
     private final AddressController addressController;
     private final AbstractFetcher fetcher;
 
-    public CompanyController(CompanyDetailFactory companyDetailFactory,
-                             CompanyService companyService, AddressController addressController, AbstractFetcher abstractFetcher){
+    public CompanyController(CompanyService companyService,
+                             AddressController addressController,
+                             AbstractFetcher abstractFetcher) {
         super(companyService);
-        this.companyDetailFactory = companyDetailFactory;
         this.addressController = addressController;
         this.fetcher = abstractFetcher;
     }
@@ -66,7 +64,7 @@ public class CompanyController extends AbstractController<CompanyService,Company
      */
     public SupplierDetailPageData getSupplierDetailPageData(String url) {
         Document doc = fetcher.getSupplierDetail(url);
-        SupplierDetailScrapper supplierDetailScrapper = companyDetailFactory.create(doc);
+        SupplierDetailScrapper supplierDetailScrapper = new SupplierDetailScrapper(doc);
         return supplierDetailScrapper.getPageData();
     }
 }
