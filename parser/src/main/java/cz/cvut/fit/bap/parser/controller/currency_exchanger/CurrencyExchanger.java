@@ -15,7 +15,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Exchanges currencies with <a href="https://fixer.io/">fixer.io</a>
@@ -32,27 +33,28 @@ public class CurrencyExchanger implements ICurrencyExchanger {
 
     @Override
     @Timed(value = "scrapper.currency.exchange")
-    public Optional<BigDecimal> exchange(BigDecimal value, Currency from, Currency to, LocalDate date) {
+    public List<BigDecimal> exchange(List<BigDecimal> values, Currency from, Currency to, LocalDate date) {
         String urlString = buildApiUrl(from, to, date);
         try {
             HttpResponse<String> response = sendHttpRequest(urlString);
             LOGGER.debug("Exchanging currency from {} to {}.", from.name(), to.name());
             if (!responseIsValid(response)) {
-                return Optional.empty();
+                return new ArrayList<>();
             }
 
             JSONObject jsonObject = new JSONObject(response.body());
-
             JSONObject rates = jsonObject.getJSONObject("rates");
-
             BigDecimal rateFrom = getExchangeRate(from, rates);
             BigDecimal rateTo = getExchangeRate(to, rates);
+            List<BigDecimal> convertedValues = new ArrayList<>();
 
-            // If converting from a non-EUR currency, first convert the value to EUR
-            BigDecimal valueInEur = convertToEur(value, from, rateFrom);
-
-            // Convert the EUR value to the target currency
-            return convertToTargetCurrency(valueInEur, rateTo);
+            for (BigDecimal value : values) {
+                // Convert the value to EUR
+                BigDecimal valueInEur = convertToEur(value, from, rateFrom);
+                // Convert the EUR value to the target currency
+                convertedValues.add(convertToTargetCurrency(valueInEur, rateTo));
+            }
+            return convertedValues;
 
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -101,8 +103,7 @@ public class CurrencyExchanger implements ICurrencyExchanger {
         return from.equals(Currency.EUR) ? value : value.divide(rateFrom, 7, RoundingMode.HALF_UP);
     }
 
-    private Optional<BigDecimal> convertToTargetCurrency(BigDecimal valueInEur, BigDecimal rateTo) {
-        BigDecimal result = valueInEur.multiply(rateTo).setScale(2, RoundingMode.HALF_UP);
-        return Optional.of(result);
+    private BigDecimal convertToTargetCurrency(BigDecimal valueInEur, BigDecimal rateTo) {
+        return valueInEur.multiply(rateTo).setScale(2, RoundingMode.HALF_UP);
     }
 }

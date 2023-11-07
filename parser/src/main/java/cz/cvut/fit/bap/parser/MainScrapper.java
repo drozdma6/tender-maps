@@ -53,11 +53,11 @@ public class MainScrapper implements ApplicationRunner{
                 break;
             }
             systemNumbersFuture = procurementController.getPageSystemNumbers(++page);
-            scrapeProcurementPage(systemNumbers);
+            scrapeProcurementList(systemNumbers);
         }
     }
 
-    private void scrapeProcurementPage(List<String> systemNumbers){
+    private void scrapeProcurementList(List<String> systemNumbers) {
         for(String procurementSystemNum : systemNumbers){
             try{
                 procurementController.save(procurementSystemNum);

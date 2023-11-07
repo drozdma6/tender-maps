@@ -4,8 +4,12 @@ import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.controller.builder.OfferBuilder;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.CurrencyExchanger;
-import cz.cvut.fit.bap.parser.controller.data.*;
+import cz.cvut.fit.bap.parser.controller.data.ContractData;
+import cz.cvut.fit.bap.parser.controller.data.ProcurementDetailPageData;
+import cz.cvut.fit.bap.parser.controller.data.ProcurementResultPageData;
+import cz.cvut.fit.bap.parser.controller.data.SupplierDetailPageData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
+import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementListScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementResultScrapper;
@@ -23,10 +27,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -104,15 +106,16 @@ public class ProcurementController extends AbstractController<ProcurementService
 
         Document resultPageDoc = fetcher.getProcurementResult(systemNumber);
         ProcurementResultScrapper procurementResultScrapper = procurementResultFactory.create(resultPageDoc);
-        ProcurementResultPageData procurementResultPageData = getProcurementResultDto(procurementResultScrapper);
+        ProcurementResultPageData procurementResultPageData = procurementResultScrapper.getPageData();
+        List<ContractData> summedContracts = groupByCompanyAndSum(procurementResultPageData.suppliers());
 
-        List<OfferBuilder> offerBuilders = offerController.getOffers(procurementResultPageData.participants());
-
+        List<OfferBuilder> offerBuilders = offerController.getOffers(procurementResultPageData.participants(),
+                summedContracts.get(0).contractDate());
 
         ProcurementDetailPageData procurementDetailPageData = procurementDetailDtoFuture.join();
         ContractingAuthority contractingAuthority = contractingAuthorityDtoFuture.join();
 
-        saveProcurementData(systemNumber, procurementResultPageData, procurementDetailPageData, offerBuilders, contractingAuthority);
+        saveProcurementData(systemNumber, summedContracts, procurementDetailPageData, offerBuilders, contractingAuthority);
     }
 
     /**
@@ -122,46 +125,24 @@ public class ProcurementController extends AbstractController<ProcurementService
      * @param contracts from procurement result page
      * @return list of contracts, with summed contract prices of same companies
      */
-    public List<ContractData> sumPricesAndFilterByCompanyName(List<ContractData> contracts) {
+    public List<ContractData> groupByCompanyAndSum(List<ContractData> contracts) {
         return new ArrayList<>(contracts.stream()
                 .collect(Collectors.groupingBy(ContractData::companyName))
                 .values()
                 .stream()
-                .map(this::combineOffers)
+                .map(this::combineContracts)
                 .toList());
     }
 
-    /**
-     * Exchanges all offers in foreign currencies to CZK. Offers do not have their date, so contractClose date is
-     * used as the closest.
-     *
-     * @param offerDataList     offers to be exchanged (CZK offers are skipped)
-     * @param contractCloseDate tender contract close date
-     * @return List of exchanged offers to CZK
-     */
-    public List<OfferData> exchangeCurrenciesToCZK(List<OfferData> offerDataList, LocalDate contractCloseDate) {
-        List<OfferData> exchangedOffers = new ArrayList<>();
-        for (OfferData offerData : offerDataList) {
-            exchangedOffers.add(exchangeCurrencyToCzk(offerData, contractCloseDate));
-        }
-        return exchangedOffers;
-    }
-
-    private void saveProcurementData(String systemNumber, ProcurementResultPageData procurementResultPageData,
+    private void saveProcurementData(String systemNumber, List<ContractData> contracts,
                                      ProcurementDetailPageData procurementDetailPageData,
-                                     List<OfferBuilder> offerBuilders,
-                                     ContractingAuthority contractingAuthority) {
-        procurementResultPageData.suppliers().forEach(contractData -> {
+                                     List<OfferBuilder> offerBuilders, ContractingAuthority contractingAuthority) {
+        contracts.forEach(contractData -> {
             SupplierDetailPageData supplierDetailPageData = companyController.getSupplierDetailPageData(contractData.detailHref());
             Company savedSupplier = saveSupplier(contractData.companyName(), supplierDetailPageData);
             ContractingAuthority savedAuthority = contractingAuthorityController.save(contractingAuthority);
-            Procurement savedProcurement = saveProcurement(
-                    procurementDetailPageData,
-                    savedAuthority,
-                    contractData,
-                    supplierDetailPageData,
-                    systemNumber,
-                    savedSupplier);
+            Procurement savedProcurement = saveProcurement(procurementDetailPageData, savedAuthority, contractData,
+                    supplierDetailPageData.isAssociationOfSuppliers(), systemNumber, savedSupplier);
 
             for (OfferBuilder offerBuilder : offerBuilders) {
                 Company savedParticipant = companyController.save(offerBuilder.getCompany());
@@ -175,20 +156,20 @@ public class ProcurementController extends AbstractController<ProcurementService
     }
 
     private Procurement saveProcurement(ProcurementDetailPageData procurementDetailPageData,
-                                         ContractingAuthority contractingAuthority,
-                                         ContractData contractData,
-                                        SupplierDetailPageData supplierDetailPageData,
-                                         String systemNumber,
-                                         Company supplier) {
+                                        ContractingAuthority contractingAuthority,
+                                        ContractData contractData,
+                                        Boolean isAssociationOfSuppliers,
+                                        String systemNumber,
+                                        Company supplier) {
         Procurement procurement = new Procurement(
                 procurementDetailPageData.procurementName(),
                 supplier,
-                supplierDetailPageData.isAssociationOfSuppliers(),
+                isAssociationOfSuppliers,
                 contractingAuthority,
-                contractData.contractPrice(),
-                supplierDetailPageData.contractPriceVAT(),
-                supplierDetailPageData.contractPriceWithAmendments(),
-                supplierDetailPageData.contractPriceWithAmendmentsVAT(),
+                contractData.price(),
+                contractData.priceVAT(),
+                contractData.priceWithAmend(),
+                contractData.priceWithAmendVAT(),
                 procurementDetailPageData.placeOfPerformance(),
                 procurementDetailPageData.dateOfPublication(),
                 systemNumber,
@@ -203,13 +184,6 @@ public class ProcurementController extends AbstractController<ProcurementService
         return super.save(procurement);
     }
 
-    private ProcurementResultPageData getProcurementResultDto(ProcurementResultScrapper procurementResultScrapper) {
-        List<OfferData> offers = procurementResultScrapper.getParticipants();
-        List<ContractData> contracts = procurementResultScrapper.getSuppliers();
-        return new ProcurementResultPageData(exchangeCurrenciesToCZK(offers, contracts.get(0).contractDate()),
-                sumPricesAndFilterByCompanyName(contracts));
-    }
-
     private Company saveSupplier(String companyName, SupplierDetailPageData supplierDetailPageData) {
         Company supplier = companyController.buildCompany(
                 companyName,
@@ -219,50 +193,49 @@ public class ProcurementController extends AbstractController<ProcurementService
         return companyController.save(supplier);
     }
 
-    private ContractData combineOffers(List<ContractData> contracts) {
-        BigDecimal totalPrice = computeTotalPrice(contracts);
-        ContractData firstOffer = contracts.get(0);
-        return new ContractData(
-                totalPrice,
-                firstOffer.detailHref(),
-                firstOffer.companyName(),
-                firstOffer.currency(),
-                firstOffer.contractDate());
-    }
-
-    private BigDecimal computeTotalPrice(List<ContractData> contracts) {
-        BigDecimal totalPrice = BigDecimal.ZERO;
-        for (ContractData contractData : contracts) {
-            if (contractData.contractPrice() != null) {
-                if (contractData.currency().equals(Currency.CZK)) {
-                    totalPrice = totalPrice.add(contractData.contractPrice());
+    private ContractData combineContracts(List<ContractData> contracts) {
+        if (contracts.isEmpty()) {
+            // this should not occur
+            throw new MissingHtmlElementException("List of contracts can not be empty.");
+        }
+        ContractData firstContract = contracts.get(0);
+        ContractData summedPriceData = new ContractData(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                firstContract.detailHref(), firstContract.companyName(), firstContract.currency(), firstContract.contractDate());
+        for (ContractData cd : contracts) {
+            if (!hasEmptyPrice(cd)) {
+                if (cd.currency().equals(Currency.CZK)) {
+                    summedPriceData = sumContractDataPrices(summedPriceData, cd.price(), cd.priceVAT(),
+                            cd.priceWithAmend(), cd.priceWithAmendVAT());
                 } else {
-                    Optional<BigDecimal> priceInCZK = currencyExchanger.exchange(
-                            contractData.contractPrice(),
-                            contractData.currency(),
-                            Currency.CZK,
-                            contractData.contractDate());
-                    if (priceInCZK.isEmpty()) {
-                        return null; //if exchange failed, store null value in database
+                    List<BigDecimal> prices = List.of(cd.price(), cd.priceVAT(), cd.priceWithAmend(), cd.priceWithAmendVAT());
+                    List<BigDecimal> pricesInCZK = currencyExchanger.exchange(prices, cd.currency(), Currency.CZK, cd.contractDate());
+                    if (pricesInCZK.isEmpty()) {
+                        //if exchange failed, store null value in database
+                        return new ContractData(null, null, null, null,
+                                cd.detailHref(), cd.companyName(), cd.currency(), cd.contractDate());
                     }
-                    totalPrice = totalPrice.add(priceInCZK.get());
+                    summedPriceData = sumContractDataPrices(summedPriceData, pricesInCZK.get(0), pricesInCZK.get(1),
+                            pricesInCZK.get(2), pricesInCZK.get(3));
                 }
             }
         }
-        return totalPrice;
+        return summedPriceData;
     }
 
-    private OfferData exchangeCurrencyToCzk(OfferData offerData, LocalDate contractCloseDate) {
-        if (offerData.currency().equals(Currency.CZK)) {
-            return offerData;
-        } else {
-            BigDecimal convertedPrice = currencyExchanger.exchange(
-                            offerData.price(),
-                            offerData.currency(),
-                            Currency.CZK,
-                            contractCloseDate)
-                    .orElse(null);
-            return new OfferData(convertedPrice, offerData.detailHref(), offerData.companyName(), Currency.CZK);
-        }
+    private ContractData sumContractDataPrices(ContractData cd1, BigDecimal price, BigDecimal priceVAT, BigDecimal priceAmend, BigDecimal priceAmendVAT) {
+        return new ContractData(cd1.price().add(price),
+                cd1.priceVAT().add(priceVAT),
+                cd1.priceWithAmend().add(priceAmend),
+                cd1.priceWithAmendVAT().add(priceAmendVAT),
+                cd1.detailHref(),
+                cd1.companyName(),
+                cd1.currency(),
+                cd1.contractDate()
+        );
+    }
+
+    private boolean hasEmptyPrice(ContractData contractData) {
+        return contractData.price() == null || contractData.priceVAT() == null
+                || contractData.priceWithAmend() == null || contractData.priceWithAmendVAT() == null;
     }
 }

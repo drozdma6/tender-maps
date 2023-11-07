@@ -22,7 +22,7 @@ public class OfferBuilder {
 
     public OfferBuilder(OfferData offerData, OfferDetailPageData offerDetailPageData) {
         this.price = offerData.price();
-        this.priceVAT = offerDetailPageData.priceVAT();
+        this.priceVAT = offerData.priceVAT();
         this.isRejectedDueTooLow = offerDetailPageData.isRejectedDueTooLow();
         this.isWithdrawn = offerDetailPageData.isWithdrawn();
         this.isAssociationOfSuppliers = offerDetailPageData.isAssociationOfSuppliers();

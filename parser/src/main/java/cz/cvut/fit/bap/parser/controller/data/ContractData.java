@@ -9,7 +9,10 @@ import java.time.LocalDate;
     Row from supplier's table on procurement result page.
  */
 public record ContractData(
-        BigDecimal contractPrice,
+        BigDecimal price,
+        BigDecimal priceVAT,
+        BigDecimal priceWithAmend,
+        BigDecimal priceWithAmendVAT,
         String detailHref,
         String companyName,
         Currency currency,

@@ -9,6 +9,7 @@ import java.math.BigDecimal;
  */
 public record OfferData(
         BigDecimal price,
+        BigDecimal priceVAT,
         String detailHref,
         String companyName,
         Currency currency

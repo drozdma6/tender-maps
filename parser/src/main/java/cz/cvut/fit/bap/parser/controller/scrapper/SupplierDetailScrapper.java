@@ -4,8 +4,6 @@ import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import cz.cvut.fit.bap.parser.controller.data.SupplierDetailPageData;
 import org.jsoup.nodes.Document;
 
-import java.math.BigDecimal;
-
 /**
  * Class for scrapping supplier detail page
  *
@@ -25,9 +23,6 @@ public class SupplierDetailScrapper extends AbstractScrapper {
     public SupplierDetailPageData getPageData() {
         return new SupplierDetailPageData(
                 getCompanyAddress(),
-                getContractPriceVAT(),
-                getContractPriceWithAmendments(),
-                getContractPriceWithAmendmentsVAT(),
                 getOrganisationId(),
                 getVATIdNumber(),
                 getIsAssociationOfSuppliers()
@@ -61,17 +56,5 @@ public class SupplierDetailScrapper extends AbstractScrapper {
     private Boolean getIsAssociationOfSuppliers() {
         return convertYesNoToBoolean(
                 document.select("div.gov-grid-tile:has(h3:contains(Selected supplier is an association of suppliers)) p").text());
-    }
-
-    private BigDecimal getContractPriceVAT() {
-        return getBigDecimalFromString(document.select("[title=\"Contractual price incl. VAT\"] p").text());
-    }
-
-    private BigDecimal getContractPriceWithAmendments() {
-        return getBigDecimalFromString(document.select("[title=\"Aktualized contractual price excl. VAT\"] p").text());
-    }
-
-    private BigDecimal getContractPriceWithAmendmentsVAT() {
-        return getBigDecimalFromString(document.select("[title=\"Aktualized contractual price incl. VAT\"] p").text());
     }
 }

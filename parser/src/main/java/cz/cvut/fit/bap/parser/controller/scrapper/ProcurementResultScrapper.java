@@ -3,6 +3,7 @@ package cz.cvut.fit.bap.parser.controller.scrapper;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
 import cz.cvut.fit.bap.parser.controller.data.ContractData;
 import cz.cvut.fit.bap.parser.controller.data.OfferData;
+import cz.cvut.fit.bap.parser.controller.data.ProcurementResultPageData;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -19,9 +20,13 @@ import java.util.List;
  *
  * @see <a href="https://nen.nipez.cz/en/profily-zadavatelu-platne/detail-profilu/MVCR/uzavrene-zakazky/detail-zakazky/N006-23-V00005185/vysledek">procurement result page</a>
  */
-public class ProcurementResultScrapper extends AbstractScrapper{
-    public ProcurementResultScrapper(Document document){
+public class ProcurementResultScrapper extends AbstractScrapper {
+    public ProcurementResultScrapper(Document document) {
         super(document);
+    }
+
+    public ProcurementResultPageData getPageData() {
+        return new ProcurementResultPageData(getParticipants(), getSuppliers());
     }
 
     /**
@@ -29,17 +34,11 @@ public class ProcurementResultScrapper extends AbstractScrapper{
      *
      * @return list containing data of contracts representing each row in supplier's table
      */
-    public List<ContractData> getSuppliers() {
+    private List<ContractData> getSuppliers() {
         List<ContractData> suppliers = new ArrayList<>();
         Elements suppliersRows = getSuppliersRows();
-        for(Element supplierRow : suppliersRows){
-            suppliers.add(new ContractData(
-                    getPrice(supplierRow),
-                    getDetailHref(supplierRow),
-                    getSupplierName(supplierRow),
-                    getCurrency(supplierRow),
-                    getContractDate(supplierRow)
-            ));
+        for (Element supplierRow : suppliersRows) {
+            suppliers.add(parseContractRow(supplierRow));
         }
         return suppliers;
     }
@@ -49,45 +48,61 @@ public class ProcurementResultScrapper extends AbstractScrapper{
      *
      * @return data about offers
      */
-    public List<OfferData> getParticipants(){
+    private List<OfferData> getParticipants() {
         List<OfferData> participants = new ArrayList<>();
-        Elements participantsElems = document.select(
+        Elements offerRows = document.select(
                 "[title=\"List of participants\"] .gov-table__row");
-        for(Element participantRow : participantsElems){
-            String url = getDetailHref(participantRow);
-            String strPrice = participantRow.select("[data-title=\"Bid price excl. VAT\"]").text();
-            String participantName = participantRow.select("[data-title=\"Official name\"]").text();
-            Currency currency = getCurrency(participantRow);
-            OfferData offerData = new OfferData(getBigDecimalFromString(strPrice),
-                    url, participantName, currency);
-            participants.add(offerData);
+        for (Element offerRow : offerRows) {
+            participants.add(parseOfferRow(offerRow));
         }
         return participants;
     }
 
-    private Elements getSuppliersRows(){
+    private Elements getSuppliersRows() {
         Elements suppliersRows = document.select(
                 "[title=\"Supplier with Whom the Contract Has Been Entered into\"] .gov-table__row");
-        if(suppliersRows.isEmpty()){
+        if (suppliersRows.isEmpty()) {
             throw new MissingHtmlElementException(document.location() + "is missing supplier row.");
         }
         return suppliersRows;
     }
 
-    private String getSupplierName(Element supplierRow){
-        Elements nameElem = supplierRow.select("[data-title=\"Official name\"]");
-        if(nameElem.isEmpty() || !nameElem.hasText()){
-            throw new MissingHtmlElementException(document.location() + "is missing supplier name.");
+    private ContractData parseContractRow(Element supplierRow) {
+        BigDecimal price = getPrice(supplierRow, "[data-title=\"Contractual price excl. VAT\"]");
+        BigDecimal priceVAT = getPrice(supplierRow, "[data-title=\"Contractual price incl. VAT\"]");
+        BigDecimal contractPriceWithAmendments = getPrice(supplierRow, "[data-title=\"Aktualized contractual price excl. VAT\"]");
+        BigDecimal contractPriceWithAmendmentsVAT = getPrice(supplierRow, "[data-title=\"Aktualized contractual price incl. VAT\"]");
+        return new ContractData(price,
+                priceVAT,
+                contractPriceWithAmendments,
+                contractPriceWithAmendmentsVAT,
+                getDetailHref(supplierRow),
+                getCompanyName(supplierRow),
+                getCurrency(supplierRow),
+                getContractDate(supplierRow));
+    }
+
+    private OfferData parseOfferRow(Element offerRow) {
+        BigDecimal price = getPrice(offerRow, "[data-title=\"Bid price excl. VAT\"]");
+        BigDecimal priceVAT = getPrice(offerRow, "[data-title=\"Bid price incl. VAT\"]");
+        return new OfferData(price, priceVAT, getDetailHref(offerRow), getCompanyName(offerRow), getCurrency(offerRow));
+
+    }
+
+    private String getCompanyName(Element row) {
+        Elements nameElem = row.select("[data-title=\"Official name\"]");
+        if (nameElem.isEmpty() || !nameElem.hasText()) {
+            throw new MissingHtmlElementException(document.location() + "is missing company name.");
         }
         return nameElem.text();
     }
 
-    private BigDecimal getPrice(Element supplierRow) {
-        Elements priceElem = supplierRow.select("[data-title=\"Contractual price excl. VAT\"]");
-        if(priceElem.isEmpty() || !priceElem.hasText()){
+    private BigDecimal getPrice(Element row, String cssQuery) {
+        Elements priceElem = row.select(cssQuery);
+        if (priceElem.isEmpty() || !priceElem.hasText()) {
             return null;
         }
-        return new BigDecimal(formatPrice(priceElem.text()));
+        return getBigDecimalFromString(priceElem.text());
     }
 
     private Currency getCurrency(Element row) {
@@ -112,10 +127,10 @@ public class ProcurementResultScrapper extends AbstractScrapper{
         }
     }
 
-    private String getDetailHref(Element companyRow){
+    private String getDetailHref(Element companyRow) {
         Elements detailLinkElem = companyRow.select(".gov-link.gov-link--has-arrow");
 
-        if(detailLinkElem.isEmpty() || !detailLinkElem.hasAttr("href")){
+        if (detailLinkElem.isEmpty() || !detailLinkElem.hasAttr("href")) {
             throw new MissingHtmlElementException(document.location() + "is missing detail link.");
         }
         return removeUrlParameters(detailLinkElem.attr("href"));

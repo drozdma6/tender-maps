@@ -4,7 +4,6 @@ import cz.cvut.fit.bap.parser.controller.data.AddressData;
 import cz.cvut.fit.bap.parser.controller.data.OfferDetailPageData;
 import org.jsoup.nodes.Document;
 
-import java.math.BigDecimal;
 
 public class OfferDetailScrapper extends AbstractScrapper {
     public OfferDetailScrapper(Document document) {
@@ -18,7 +17,6 @@ public class OfferDetailScrapper extends AbstractScrapper {
      */
     public OfferDetailPageData getPageData() {
         return new OfferDetailPageData(getCompanyAddress(),
-                getPriceVAT(),
                 getOrganisationId(),
                 getVATIdNumber(),
                 getIsRejectedDueTooLow(),
@@ -40,10 +38,6 @@ public class OfferDetailScrapper extends AbstractScrapper {
         String buildingNumber = getNullIfEmpty(
                 document.select("[title=\"building number\"] p").text());
         return new AddressData(countryOfficialName, city, postalCode, street, buildingNumber, landRegistryNumber, null);
-    }
-
-    private BigDecimal getPriceVAT() {
-        return getBigDecimalFromString(document.select("[title=\"Bid price incl. VAT\"] p").text());
     }
 
     private String getOrganisationId() {
