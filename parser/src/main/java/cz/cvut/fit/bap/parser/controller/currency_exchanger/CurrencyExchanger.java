@@ -39,7 +39,7 @@ public class CurrencyExchanger implements ICurrencyExchanger {
             HttpResponse<String> response = sendHttpRequest(urlString);
             LOGGER.debug("Exchanging currency from {} to {}.", from.name(), to.name());
             if (!responseIsValid(response)) {
-                return new ArrayList<>();
+                throw new FailedExchangeException();
             }
 
             JSONObject jsonObject = new JSONObject(response.body());
