@@ -6,7 +6,7 @@ import cz.cvut.fit.bap.parser.domain.Address;
 /*
     Builder class for address
  */
-public class AddressBuilder {
+public class AddressBuilder implements Builder<Long, Address> {
     private final String buildingNumber;
     private final String city;
     private final String street;

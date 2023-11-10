@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 /*
     Builder for offers
  */
-public class OfferBuilder {
+public class OfferBuilder implements Builder<Long, Offer> {
     private final BigDecimal price;
     private final BigDecimal priceVAT;
     private final Boolean isRejectedDueTooLow;
