@@ -3,7 +3,6 @@ package cz.cvut.fit.bap.parser.controller.scrapper;
 import org.jsoup.nodes.Document;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,16 +58,20 @@ public abstract class AbstractScrapper<D> {
     }
 
     /**
-     * Converts yes and no string into boolean. Yes is true, no is false.
+     * Converts yes and no string into boolean. Yes is true, No is false.
      *
      * @param yesNoVal string value to be converted
      * @return true if yes, false if no, null otherwise
      */
     protected Boolean convertYesNoToBoolean(String yesNoVal) {
-        if (Objects.equals(yesNoVal, "Yes")) {
+        if (yesNoVal == null) {
+            return null;
+        }
+        String lowerCase = yesNoVal.toLowerCase();
+        if (lowerCase.equals("yes")) {
             return true;
         }
-        if (Objects.equals(yesNoVal, "No")) {
+        if (lowerCase.equals("no")) {
             return false;
         }
         return null;
