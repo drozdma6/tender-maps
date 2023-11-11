@@ -1,28 +1,26 @@
 package cz.cvut.fit.bap.parser.controller.fetcher;
 
 
-import org.jsoup.nodes.Document;
+import cz.cvut.fit.bap.parser.controller.scrapper.*;
 import org.springframework.scheduling.annotation.Async;
 
 import java.util.concurrent.CompletableFuture;
 
 /*
-    Abstract class for methods returning jsoup documents of sites
+    Abstract fetcher returning scrappers for each scrapped page
  */
 public abstract class AbstractFetcher{
-    public abstract Document getAuthorityDetail(String href);
+    public abstract AuthorityDetailScrapper getAuthorityDetailScrapper(String href);
 
-    public abstract Document getProcurementResult(String procurement);
+    public abstract ProcurementResultScrapper getProcurementResultScrapper(String procurement);
 
-    public abstract Document getSupplierDetail(String uri);
-
-    @Async
-    public abstract CompletableFuture<Document> getProcurementDetail(String procurement);
-
-    public abstract Document getContractingAuthorityList(int page);
-
-    public abstract Document getProcurementListPage(int page);
+    public abstract SupplierDetailScrapper getSupplierDetailScrapper(String uri);
 
     @Async
-    public abstract CompletableFuture<Document> getOfferDetailPage(String url);
+    public abstract CompletableFuture<ProcurementDetailScrapper> getProcurementDetailScrapper(String procurement);
+
+    public abstract ProcurementListScrapper getProcurementListScrapper(int page);
+
+    @Async
+    public abstract CompletableFuture<OfferDetailScrapper> getOfferDetailScrapper(String url);
 }

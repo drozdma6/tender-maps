@@ -6,7 +6,6 @@ import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.AuthorityDetailScrapper;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractingAuthority;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -56,8 +55,7 @@ public class ContractingAuthorityController extends AbstractController<Contracti
         if (optionalAuthority.isPresent()) {
             return optionalAuthority.get();
         }
-        Document document = fetcher.getAuthorityDetail(url);
-        AuthorityDetailScrapper authorityDetailScrapper = new AuthorityDetailScrapper(document);
+        AuthorityDetailScrapper authorityDetailScrapper = fetcher.getAuthorityDetailScrapper(url);
         AuthorityDetailPageData authorityDetailPageData = authorityDetailScrapper.getPageData();
         Address address = addressController.geocode(authorityDetailPageData.addressData());
         return new ContractingAuthority(name, address, authorityDetailPageData.nenProfileUrl());

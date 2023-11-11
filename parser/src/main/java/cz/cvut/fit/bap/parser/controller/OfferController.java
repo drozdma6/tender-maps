@@ -7,7 +7,6 @@ import cz.cvut.fit.bap.parser.controller.currency_exchanger.CurrencyExchanger;
 import cz.cvut.fit.bap.parser.controller.data.OfferData;
 import cz.cvut.fit.bap.parser.controller.data.OfferDetailPageData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
-import cz.cvut.fit.bap.parser.controller.scrapper.OfferDetailScrapper;
 import cz.cvut.fit.bap.parser.domain.Company;
 import cz.cvut.fit.bap.parser.domain.Offer;
 import org.springframework.stereotype.Component;
@@ -47,9 +46,8 @@ public class OfferController extends AbstractController<OfferService, Offer, Lon
         List<CompletableFuture<OfferBuilder>> offerBuilderFutures = new ArrayList<>();
         for (OfferData offerDataRow : participantRows) {
             CompletableFuture<OfferBuilder> offerBuilderFut =
-                    fetcher.getOfferDetailPage(offerDataRow.detailHref())
-                            .thenApply(document -> {
-                                OfferDetailScrapper offerDetailScrapper = new OfferDetailScrapper(document);
+                    fetcher.getOfferDetailScrapper(offerDataRow.detailHref())
+                            .thenApply(offerDetailScrapper -> {
                                 OfferDetailPageData offerDetailPageData = offerDetailScrapper.getPageData();
                                 Company company = companyController.buildCompany(
                                         offerDataRow.companyName(),

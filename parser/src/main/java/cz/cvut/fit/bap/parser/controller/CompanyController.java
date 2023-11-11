@@ -7,7 +7,6 @@ import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.SupplierDetailScrapper;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.Company;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -63,8 +62,7 @@ public class CompanyController extends AbstractController<CompanyService,Company
      * @return scrapped data from supplier detail page
      */
     public SupplierDetailPageData getSupplierDetailPageData(String url) {
-        Document doc = fetcher.getSupplierDetail(url);
-        SupplierDetailScrapper supplierDetailScrapper = new SupplierDetailScrapper(doc);
+        SupplierDetailScrapper supplierDetailScrapper = fetcher.getSupplierDetailScrapper(url);
         return supplierDetailScrapper.getPageData();
     }
 }

@@ -1,5 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.fetcher;
 
+import cz.cvut.fit.bap.parser.controller.scrapper.*;
 import io.micrometer.core.annotation.Timed;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,97 +22,90 @@ public class NenNipezFetcher extends AbstractFetcher{
     private static final Logger LOGGER = LoggerFactory.getLogger(NenNipezFetcher.class);
 
     /**
-     * Fetches contracting detail site.
+     * Gets scrapper for authority detail page
      *
-     * @param href of contracting authority
-     * @return Document containing contracting detail site
+     * @param href to contracting authority detail page
+     * @return authorityDetailScrapper
      */
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
-    public Document getAuthorityDetail(String href) {
+    public AuthorityDetailScrapper getAuthorityDetailScrapper(String href) {
         final String url = BASE_URL + href;
-        return getDocumentWithRetry(url);
+        return new AuthorityDetailScrapper(getDocumentWithRetry(url));
     }
 
     /**
-     * Fetches procurement result site.
+     * Gets scrapper for procurement result page.
      *
      * @param systemNumber of procurement
-     * @return Document containing procurement result site
+     * @return procurementResultScrapper
      */
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
-    public Document getProcurementResult(String systemNumber){
+    public ProcurementResultScrapper getProcurementResultScrapper(String systemNumber) {
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = BASE_URL + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
                 "/vysledek/p:vys:page=1-50;uca:page=1-50"; //show all participants and suppliers without paging
-        return getDocumentWithRetry(url);
+        return new ProcurementResultScrapper(getDocumentWithRetry(url));
     }
 
 
     /**
-     * Fetches supplier detail site
+     * Gets scrapper for supplier detail page
      *
-     * @param detailUrl addition to base url for desired company
-     * @return Document containing supplier detail site
+     * @param detailUrl addition to base url for desired supplier
+     * @return supplierDetailScrapper
      */
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
-    public Document getSupplierDetail(String detailUrl) {
+    public SupplierDetailScrapper getSupplierDetailScrapper(String detailUrl) {
         String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
         String url = BASE_URL + detailUrl.replaceFirst(pattern, "/");
-        return getDocumentWithRetry(url);
+        return new SupplierDetailScrapper(getDocumentWithRetry(url));
     }
 
 
     /**
-     * Fetches procurement detail site.
+     * Gets procurementDetailScrapper for  procurement detail site.
      *
-     * @param systemNumber procurement
-     * @return Document containing procurement detail site
+     * @param systemNumber of procurement
+     * @return future of procurementDetailScrapper
      */
     @Override
     @Async
     @Timed(value = "scrapper.nen.nipez.fetch")
-    public CompletableFuture<Document> getProcurementDetail(String systemNumber){
+    public CompletableFuture<ProcurementDetailScrapper> getProcurementDetailScrapper(String systemNumber) {
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = BASE_URL + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen;
-        return CompletableFuture.completedFuture(getDocumentWithRetry(url));
+        return CompletableFuture.completedFuture(new ProcurementDetailScrapper(getDocumentWithRetry(url)));
     }
 
     /**
-     * Fetches contracting authority list
+     * Gets procurementListScrapper for procurement list page
      *
-     * @param page which is supposed to get fetched
-     * @return document containing contracting authorities
+     * @param pageNumber which is supposed to get fetched
+     * @return procurementListScrapper
      */
     @Override
     @Timed(value = "scrapper.nen.nipez.fetch")
-    public Document getContractingAuthorityList(int page) {
-        String url = BASE_URL + "/profily-zadavatelu-platne/p:pzp:page=" + page;
-        return getDocumentWithRetry(url);
+    public ProcurementListScrapper getProcurementListScrapper(int pageNumber) {
+        String url = BASE_URL + "/en/verejne-zakazky/p:vz:stavZP=zadana,plneni&page=" + pageNumber;
+        return new ProcurementListScrapper(getDocumentWithRetry(url));
     }
 
     /**
-     * Fetches procurement list page
+     * Gets offerDetailScrapper for offer detail page
      *
-     * @param page which is supposed to get fetched
-     * @return document containing wanted page of procurements
+     * @param url addition to base url for desired offer
+     * @return offerDetailScrapper
      */
-    @Override
-    @Timed(value = "scrapper.nen.nipez.fetch")
-    public Document getProcurementListPage(int page){
-        String url = BASE_URL + "/en/verejne-zakazky/p:vz:stavZP=zadana,plneni&page=" + page;
-        return getDocumentWithRetry(url);
-    }
-
     @Override
     @Async
     @Timed(value = "scrapper.nen.nipez.fetch")
-    public CompletableFuture<Document> getOfferDetailPage(String url) {
+    public CompletableFuture<OfferDetailScrapper> getOfferDetailScrapper(String url) {
         String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
         String detailUrl = BASE_URL + url.replaceFirst(pattern, "/");
-        return CompletableFuture.completedFuture(getDocumentWithRetry(detailUrl));
+        return CompletableFuture.completedFuture(new OfferDetailScrapper(getDocumentWithRetry(detailUrl)));
     }
 
 

@@ -18,7 +18,6 @@ import cz.cvut.fit.bap.parser.domain.Offer;
 import cz.cvut.fit.bap.parser.domain.Procurement;
 import io.micrometer.core.annotation.Timed;
 import jakarta.transaction.Transactional;
-import org.jsoup.nodes.Document;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -61,8 +60,7 @@ public class ProcurementController extends AbstractController<ProcurementService
      */
     @Async
     public CompletableFuture<List<String>> getPageSystemNumbers(int page) {
-        Document document = fetcher.getProcurementListPage(page);
-        ProcurementListScrapper procurementListScrapper = new ProcurementListScrapper(document);
+        ProcurementListScrapper procurementListScrapper = fetcher.getProcurementListScrapper(page);
         ProcurementListPageData procurementListPageData = procurementListScrapper.getPageData();
         return CompletableFuture.completedFuture(procurementListPageData.systemNumbers());
     }
@@ -82,10 +80,7 @@ public class ProcurementController extends AbstractController<ProcurementService
         }
         //run procurement detail scrapping in separate thread
         CompletableFuture<ProcurementDetailPageData> procurementDetailDtoFuture =
-                fetcher.getProcurementDetail(systemNumber).thenApply(document -> {
-                    ProcurementDetailScrapper procurementDetailScrapper = new ProcurementDetailScrapper(document);
-                    return procurementDetailScrapper.getPageData();
-                });
+                fetcher.getProcurementDetailScrapper(systemNumber).thenApply(ProcurementDetailScrapper::getPageData);
         CompletableFuture<ContractingAuthority> contractingAuthorityDtoFuture =
                 procurementDetailDtoFuture.thenApply(procurementDetailPageData ->
                         contractingAuthorityController.getContractingAuthority(
@@ -93,8 +88,7 @@ public class ProcurementController extends AbstractController<ProcurementService
                                 procurementDetailPageData.contractingAuthorityUrl())
                 );
 
-        Document resultPageDoc = fetcher.getProcurementResult(systemNumber);
-        ProcurementResultScrapper procurementResultScrapper = new ProcurementResultScrapper(resultPageDoc);
+        ProcurementResultScrapper procurementResultScrapper = fetcher.getProcurementResultScrapper(systemNumber);
         ProcurementResultPageData procurementResultPageData = procurementResultScrapper.getPageData();
         List<ContractData> summedContracts = groupByCompanyAndSum(procurementResultPageData.suppliers());
 
