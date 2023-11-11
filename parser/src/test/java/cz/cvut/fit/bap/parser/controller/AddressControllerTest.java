@@ -2,7 +2,6 @@ package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.AddressService;
 import cz.cvut.fit.bap.parser.controller.data.AddressData;
-import cz.cvut.fit.bap.parser.controller.data.converter.AddressDataToAddress;
 import cz.cvut.fit.bap.parser.controller.geocoder.GoogleGeocoder;
 import cz.cvut.fit.bap.parser.controller.geocoder.ProfinitGeocoder;
 import cz.cvut.fit.bap.parser.domain.Address;
@@ -32,13 +31,10 @@ class AddressControllerTest{
     @Mock
     private AddressService addressService;
 
-    @Mock
-    private AddressDataToAddress addressDataToAddress;
-
     @Test
     void saveAddressExistingAddress(){
         Address address = new Address("SK", "Bratislava", "16000", "Bratislavska",
-                "65", 50.0799251615831, 14.394026044199839);
+                "65", "1", 50.0799251615831, 14.394026044199839);
         when(addressService.readAddress(address)).thenReturn(Optional.of(address));
         Address actualAddress = addressController.save(address);
         verify(addressService, never()).create(any(Address.class));
@@ -47,13 +43,16 @@ class AddressControllerTest{
         Assertions.assertEquals(address.getPostalCode(), actualAddress.getPostalCode());
         Assertions.assertEquals(address.getStreet(), actualAddress.getStreet());
         Assertions.assertEquals(address.getBuildingNumber(), actualAddress.getBuildingNumber());
+        Assertions.assertEquals(address.getLandRegistryNumber(), actualAddress.getLandRegistryNumber());
+        Assertions.assertEquals(address.getLandRegistryNumber(), actualAddress.getLandRegistryNumber());
+        Assertions.assertEquals(address.getLatitude(), actualAddress.getLatitude());
+        Assertions.assertEquals(address.getLongitude(), actualAddress.getLongitude());
     }
 
     @Test
     void saveAddressNewAddress(){
-
         Address address = new Address("SK", "Bratislava", "16000", "Bratislavska",
-                "65", 50.0799251615831, 14.394026044199839);
+                "65", "1", 50.0799251615831, 14.394026044199839);
         when(addressService.readAddress(address)).thenReturn(Optional.empty());
         when(addressService.create(any(Address.class))).thenAnswer(i -> i.getArgument(0));
         Address actualAddress = addressController.save(address);
@@ -63,11 +62,15 @@ class AddressControllerTest{
         Assertions.assertEquals(address.getPostalCode(), actualAddress.getPostalCode());
         Assertions.assertEquals(address.getStreet(), actualAddress.getStreet());
         Assertions.assertEquals(address.getBuildingNumber(), actualAddress.getBuildingNumber());
+        Assertions.assertEquals(address.getLandRegistryNumber(), actualAddress.getLandRegistryNumber());
+        Assertions.assertEquals(address.getLandRegistryNumber(), actualAddress.getLandRegistryNumber());
+        Assertions.assertEquals(address.getLatitude(), actualAddress.getLatitude());
+        Assertions.assertEquals(address.getLongitude(), actualAddress.getLongitude());
     }
 
     @Test
     void geocodeForeign(){
-        AddressData addressData = new AddressData("SK", "Bratislava", "16000", "Bratislavska", "65");
+        AddressData addressData = new AddressData("Slovensko", "Bratislava", "16000", "Bratislavska", "65", "1", null);
         addressController.geocode(addressData);
         verify(profinitGeocoder, never()).geocode(addressData);
         verify(googleGeocoder).geocode(addressData);
@@ -75,7 +78,7 @@ class AddressControllerTest{
 
     @Test
     void geocode(){
-        AddressData addressData = new AddressData("CZ", "Praha", "16000", "Bratislavska", "65");
+        AddressData addressData = new AddressData("Česká republika", "Praha", "16000", "Bratislavska", "65", "1", null);
         addressController.geocode(addressData);
         verify(googleGeocoder, never()).geocode(addressData);
         verify(profinitGeocoder).geocode(addressData);
@@ -83,10 +86,25 @@ class AddressControllerTest{
 
     @Test
     void geocodeIncomplete(){
-        AddressData addressData = new AddressData("CZ", "Praha", null, "Bratislavska", "65");
-        addressController.geocode(addressData);
+        AddressData addressData = new AddressData(null, null, "16000", "Bratislavska", "65", "1", "SK");
+        Address expectedAddres = new Address("SK", null, "16000", "Bratislavska",
+                "65", "1", null, null);
+        Address actualAddress = addressController.geocode(addressData);
         verify(googleGeocoder, never()).geocode(addressData);
         verify(profinitGeocoder, never()).geocode(addressData);
-        verify(addressDataToAddress).apply(addressData);
+        Assertions.assertEquals(expectedAddres, actualAddress);
+    }
+
+
+    @Test
+    void geocodeSavedAddress() {
+        AddressData addressData = new AddressData("Česká republika", "Praha", "16000", "Bratislavska", "65", "1", null);
+        Address expectedAddress = new Address("CZ", "Praha", "16000", "Bratislavska",
+                "65", "1", 50.0799251615831, 14.394026044199839);
+        when(addressService.readAddress(any())).thenAnswer(i -> Optional.of(i.getArgument(0)));
+        Address actualAddress = addressController.geocode(addressData);
+        verify(googleGeocoder, never()).geocode(addressData);
+        verify(profinitGeocoder, never()).geocode(addressData);
+        Assertions.assertEquals(expectedAddress, actualAddress);
     }
 }

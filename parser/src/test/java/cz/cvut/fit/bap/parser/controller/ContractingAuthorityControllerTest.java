@@ -2,12 +2,11 @@ package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.ContractingAuthorityService;
 import cz.cvut.fit.bap.parser.controller.data.AddressData;
+import cz.cvut.fit.bap.parser.controller.data.AuthorityDetailPageData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.AuthorityDetailScrapper;
-import cz.cvut.fit.bap.parser.controller.scrapper.factories.AuthorityDetailFactory;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.ContractingAuthority;
-import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,9 +33,6 @@ class ContractingAuthorityControllerTest {
     @Mock
     private AbstractFetcher fetcher;
 
-    @Mock
-    private AuthorityDetailFactory authorityDetailFactory;
-
     @Test
     void getContractingAuthorityExisting() {
         String name = "name";
@@ -46,7 +42,7 @@ class ContractingAuthorityControllerTest {
         when(contractingAuthorityService.readByName(name)).thenReturn(Optional.of(expectedAuthority));
 
         ContractingAuthority actualAuthority = contractingAuthorityController.getContractingAuthority(name, url);
-        verify(fetcher, never()).getAuthorityDetail(anyString());
+        verify(fetcher, never()).getAuthorityDetailScrapper(anyString());
         verify(addressController, never()).geocode(any(AddressData.class));
 
         Assertions.assertEquals(expectedAuthority.getName(), actualAuthority.getName());
@@ -63,19 +59,16 @@ class ContractingAuthorityControllerTest {
     void getContractingAuthorityNonExisting() {
         String name = "name";
         String url = "url";
-        Address address = new Address("SK", "Bratislava", "00000", "ulica", "51");
-        AddressData addressData = new AddressData("SK", "Bratislava", "00000", "ulica", "51");
-
+        Address address = new Address("SK", "Bratislava", "00000", "ulica", "51", "1", 1.0, 1.0);
+        AddressData addressData = new AddressData("SK", "Bratislava", "00000", "ulica", "51", "1", null);
+        AuthorityDetailPageData authorityDetailPageData = new AuthorityDetailPageData(url, addressData);
         ContractingAuthority expectedAuthority = new ContractingAuthority(name, address, url);
 
         AuthorityDetailScrapper authorityDetailScrapper = mock(AuthorityDetailScrapper.class);
-        Document document = new Document(url);
 
         when(contractingAuthorityService.readByName(name)).thenReturn(Optional.empty());
-        when(fetcher.getAuthorityDetail(url)).thenReturn(document);
-        when(authorityDetailFactory.create(document)).thenReturn(authorityDetailScrapper);
-        when(authorityDetailScrapper.getContractingAuthorityAddress()).thenReturn(addressData);
-        when(authorityDetailScrapper.getContractingAuthorityUrl()).thenReturn(url);
+        when(fetcher.getAuthorityDetailScrapper(url)).thenReturn(authorityDetailScrapper);
+        when(authorityDetailScrapper.getPageData()).thenReturn(authorityDetailPageData);
         when(addressController.geocode(addressData)).thenReturn(address);
 
         ContractingAuthority actualAuthority = contractingAuthorityController.getContractingAuthority(name, url);

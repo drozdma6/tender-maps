@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Optional;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -20,24 +20,25 @@ public class CurrencyExchangerTest {
 
     @Test
     public void testExchangeEurToCzk() {
-        Optional<BigDecimal> result = currencyExchanger.exchange(
-                BigDecimal.valueOf(10),
+        List<BigDecimal> result = currencyExchanger.exchange(
+                List.of(BigDecimal.valueOf(10)),
                 Currency.EUR,
                 Currency.CZK,
                 LocalDate.of(2023, Month.SEPTEMBER, 29));
-        Assertions.assertTrue(result.isPresent());
-        assertEquals(BigDecimal.valueOf(244.54), result.get());
+        assertEquals(1, result.size());
+        assertEquals(BigDecimal.valueOf(244.54), result.get(0));
     }
 
     @Test
-    public void testExchangeUsdToCzk() {
-        Optional<BigDecimal> result = currencyExchanger.exchange(
-                BigDecimal.valueOf(10),
+    public void testExchangeMultipleUsdToCzk() {
+        List<BigDecimal> result = currencyExchanger.exchange(
+                List.of(BigDecimal.TEN, BigDecimal.ONE),
                 Currency.USD,
                 Currency.CZK,
                 LocalDate.of(2023, Month.SEPTEMBER, 29));
-        Assertions.assertTrue(result.isPresent());
-        assertEquals(BigDecimal.valueOf(230.99), result.get());
+        assertEquals(2, result.size());
+        assertEquals(BigDecimal.valueOf(230.99), result.get(0));
+        assertEquals(BigDecimal.valueOf(2310, 2), result.get(1));
     }
 
     @Test

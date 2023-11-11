@@ -19,8 +19,8 @@ class ProcurementJpaRepositoryTest{
     @Test
     void existBySystemNumber(){
         String systemNumber = "systemNumber";
-        Procurement procurement = new Procurement("testName", null, null, null,
-                "testPlaceOfPerformance", null, systemNumber, null, null, null, null, null, null, null);
+        Procurement procurement = new Procurement();
+        procurement.setSystemNumber(systemNumber);
         assertFalse(procurementJpaRepository.existsProcurementBySystemNumber(systemNumber));
         procurementJpaRepository.save(procurement);
         assertTrue(procurementJpaRepository.existsProcurementBySystemNumber(systemNumber));

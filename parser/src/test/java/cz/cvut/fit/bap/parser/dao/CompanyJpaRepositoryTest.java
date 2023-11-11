@@ -21,7 +21,7 @@ public class CompanyJpaRepositoryTest{
     @Test
     public void testFindCompanyByName(){
         String companyName = "testName";
-        Company company = new Company(companyName, null, "organisationId");
+        Company company = new Company(companyName, null, "organisationId", "vatIdNumber");
 
         companyJpaRepository.save(company);
 

@@ -20,8 +20,9 @@ class ProfinitGeocoderTest{
     @Test
     public void test(){
         //Čechova 225/10, 17000, Praha 7
-        AddressData addressData = new AddressData("CZ", "Praha", "17000", "Čechova", "10");
-        Address expectedAddress = new Address("CZ", "Praha", "17000", "Čechova", "10",
+        AddressData addressData = new AddressData("Česká republika", "Praha", "17000", "Čechova",
+                "10", "1", null);
+        Address expectedAddress = new Address("CZ", "Praha", "17000", "Čechova", "10", "1",
                 50.10070427864861, 14.42151999409848);
         Address actualAddress = profinitGeocoderApi.geocode(addressData);
 

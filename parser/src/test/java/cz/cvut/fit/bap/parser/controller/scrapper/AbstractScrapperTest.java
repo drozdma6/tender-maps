@@ -4,8 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.math.BigDecimal;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class AbstractScrapperTest{
     private AbstractScrapper abstractScrapper;
@@ -44,5 +45,28 @@ class AbstractScrapperTest{
         String modifiedUrl = abstractScrapper.removeUrlParameters(url);
 
         assertEquals(expectedModifiedUrl, modifiedUrl);
+    }
+
+    @Test
+    void testConvertYesNoToBoolean() {
+        String yes = "yes";
+        String no = "no";
+        String capitalYes = "YES";
+        String randomCapitalNo = "nO";
+        String random = "fasfa";
+        assertTrue(abstractScrapper.convertYesNoToBoolean(yes));
+        assertTrue(abstractScrapper.convertYesNoToBoolean(capitalYes));
+        assertFalse(abstractScrapper.convertYesNoToBoolean(no));
+        assertFalse(abstractScrapper.convertYesNoToBoolean(randomCapitalNo));
+        assertNull(abstractScrapper.convertYesNoToBoolean(random));
+        assertNull(abstractScrapper.convertYesNoToBoolean(null));
+    }
+
+    @Test
+    void testGetBigDecimalFromString() {
+        assertEquals(new BigDecimal(1000), abstractScrapper.getBigDecimalFromString("1000"));
+        assertEquals(new BigDecimal(1000000), abstractScrapper.getBigDecimalFromString("1 000 000"));
+        assertEquals(new BigDecimal("1000.156"), abstractScrapper.getBigDecimalFromString("1 000,156"));
+        assertNull(abstractScrapper.getBigDecimalFromString("test"));
     }
 }

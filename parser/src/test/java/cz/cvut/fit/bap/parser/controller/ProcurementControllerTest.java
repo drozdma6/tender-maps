@@ -4,11 +4,9 @@ import cz.cvut.fit.bap.parser.business.ProcurementService;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.Currency;
 import cz.cvut.fit.bap.parser.controller.currency_exchanger.CurrencyExchanger;
 import cz.cvut.fit.bap.parser.controller.data.ContractData;
-import cz.cvut.fit.bap.parser.controller.data.OfferData;
+import cz.cvut.fit.bap.parser.controller.data.ProcurementListPageData;
 import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementListScrapper;
-import cz.cvut.fit.bap.parser.controller.scrapper.factories.ProcurementListFactory;
-import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +18,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -36,19 +33,15 @@ class ProcurementControllerTest {
     private AbstractFetcher abstractFetcher;
 
     @Mock
-    private ProcurementListFactory procurementListFactory;
-
-    @Mock
     private CurrencyExchanger currencyExchanger;
 
     @Test
     void getPageSystemNumbers() {
         List<String> expectedSystemNumbers = List.of("systemNumber1", "systemNumber1");
-        Document doc = new Document("url");
         ProcurementListScrapper procurementListScrapper = mock(ProcurementListScrapper.class);
-        when(abstractFetcher.getProcurementListPage(anyInt())).thenReturn(doc);
-        when(procurementListFactory.create(doc)).thenReturn(procurementListScrapper);
-        when(procurementListScrapper.getProcurementSystemNumbers()).thenReturn(expectedSystemNumbers);
+        ProcurementListPageData procurementListPageData = new ProcurementListPageData(expectedSystemNumbers);
+        when(abstractFetcher.getProcurementListScrapper(anyInt())).thenReturn(procurementListScrapper);
+        when(procurementListScrapper.getPageData()).thenReturn(procurementListPageData);
 
         List<String> actualSystemNumbers = procurementController.getPageSystemNumbers(1).join();
         Assertions.assertEquals(expectedSystemNumbers, actualSystemNumbers);
@@ -59,19 +52,14 @@ class ProcurementControllerTest {
         String existingSystemNumber = "existingSystemNumber";
         when(service.existsBySystemNumber(existingSystemNumber)).thenReturn(true);
         procurementController.save(existingSystemNumber);
-        verify(abstractFetcher, never()).getProcurementDetail(existingSystemNumber);
+        verify(abstractFetcher, never()).getProcurementDetailScrapper(existingSystemNumber);
     }
 
     @Test
     void testSumPricesAndFilterByCompanyNameCZK() {
-        List<ContractData> offers = Arrays.asList(
-                new ContractData(BigDecimal.valueOf(10), "href1", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
-                new ContractData(BigDecimal.valueOf(20), "href2", "CompanyB", Currency.CZK, LocalDate.of(2000, 1, 1)),
-                new ContractData(BigDecimal.valueOf(30), "href3", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
-                new ContractData(BigDecimal.valueOf(10), "href4", "CompanyB", Currency.CZK, LocalDate.of(2000, 1, 1))
-        );
+        List<ContractData> offers = getMockContracts(List.of(Currency.CZK, Currency.CZK, Currency.CZK, Currency.CZK));
 
-        List<ContractData> result = procurementController.sumPricesAndFilterByCompanyName(offers);
+        List<ContractData> result = procurementController.groupByCompanyAndSum(offers);
 
         // Assert that we have 2 unique company names in the result
         Assertions.assertEquals(2, result.size());
@@ -81,7 +69,7 @@ class ProcurementControllerTest {
                 .filter(o -> o.companyName().equals("CompanyA"))
                 .findFirst()
                 .orElse(null);
-        Assertions.assertEquals(BigDecimal.valueOf(40), companyAOffer.contractPrice()); //10 + 30
+        Assertions.assertEquals(BigDecimal.valueOf(40), companyAOffer.price()); //10 + 30
         Assertions.assertEquals("href1", companyAOffer.detailHref());
 
         // Assert the combined price for CompanyB
@@ -89,25 +77,23 @@ class ProcurementControllerTest {
                 .filter(o -> o.companyName().equals("CompanyB"))
                 .findFirst()
                 .orElse(null);
-        Assertions.assertEquals(BigDecimal.valueOf(30), companyBOffer.contractPrice()); // 20 + 10
+        Assertions.assertEquals(BigDecimal.valueOf(30), companyBOffer.price()); // 20 + 10
         Assertions.assertEquals("href2", companyBOffer.detailHref());
     }
 
     @Test
     void testSumPricesAndFilterByCompanyNameExchange() {
-        List<ContractData> offers = Arrays.asList(
-                new ContractData(BigDecimal.valueOf(10), "href1", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
-                new ContractData(BigDecimal.valueOf(20), "href2", "CompanyB", Currency.EUR, LocalDate.of(2000, 1, 1)),
-                new ContractData(BigDecimal.valueOf(30), "href3", "CompanyA", Currency.CZK, LocalDate.of(2000, 1, 1)),
-                new ContractData(BigDecimal.valueOf(10), "href4", "CompanyB", Currency.EUR, LocalDate.of(2000, 1, 1))
+        List<ContractData> offers = getMockContracts(List.of(Currency.CZK, Currency.EUR, Currency.CZK, Currency.EUR));
+
+        when(currencyExchanger.exchange(anyList(), eq(Currency.EUR), eq(Currency.CZK), any())).thenAnswer(invocation -> {
+                    List<BigDecimal> args = invocation.getArgument(0);
+                    return args.stream()
+                            .map(e -> e.multiply(BigDecimal.valueOf(25)))
+                            .toList();
+                }
         );
 
-        when(currencyExchanger.exchange(any(), any(), eq(Currency.CZK), any())).thenAnswer(invocation -> {
-            BigDecimal argValue = invocation.getArgument(0);
-            return Optional.of(argValue.multiply(BigDecimal.valueOf(25)));
-        });
-
-        List<ContractData> result = procurementController.sumPricesAndFilterByCompanyName(offers);
+        List<ContractData> result = procurementController.groupByCompanyAndSum(offers);
 
         // Assert that we have 2 unique company names in the result
         Assertions.assertEquals(2, result.size());
@@ -117,7 +103,7 @@ class ProcurementControllerTest {
                 .filter(o -> o.companyName().equals("CompanyA"))
                 .findFirst()
                 .orElse(null);
-        Assertions.assertEquals(BigDecimal.valueOf(40), companyAOffer.contractPrice()); //10 + 30
+        Assertions.assertEquals(BigDecimal.valueOf(40), companyAOffer.price()); //10 + 30
         Assertions.assertEquals("href1", companyAOffer.detailHref());
 
         // Assert the combined price for CompanyB
@@ -125,28 +111,21 @@ class ProcurementControllerTest {
                 .filter(o -> o.companyName().equals("CompanyB"))
                 .findFirst()
                 .orElse(null);
-        Assertions.assertEquals(BigDecimal.valueOf(750), companyBOffer.contractPrice()); // 20 + 10
+        Assertions.assertEquals(BigDecimal.valueOf(750), companyBOffer.price()); // 20 + 10
         Assertions.assertEquals("href2", companyBOffer.detailHref());
     }
 
-    @Test
-    public void testExchangeCurrenciesToCZK() {
-        LocalDate testDate = LocalDate.now();
-        OfferData offerCZK = new OfferData(BigDecimal.valueOf(100), "someHref1", "someCompany1", Currency.CZK);
-        OfferData offerUSD = new OfferData(BigDecimal.valueOf(10), "someHref2", "someCompany2", Currency.USD);
+    private List<ContractData> getMockContracts(List<Currency> currencies) {
+        return Arrays.asList(
+                new ContractData(BigDecimal.valueOf(10), BigDecimal.valueOf(10), BigDecimal.valueOf(10), BigDecimal.valueOf(10),
+                        "href1", "CompanyA", currencies.get(0), LocalDate.of(2000, 1, 1)),
+                new ContractData(BigDecimal.valueOf(20), BigDecimal.valueOf(20), BigDecimal.valueOf(20), BigDecimal.valueOf(20),
+                        "href2", "CompanyB", currencies.get(1), LocalDate.of(2000, 1, 1)),
+                new ContractData(BigDecimal.valueOf(30), BigDecimal.valueOf(30), BigDecimal.valueOf(30), BigDecimal.valueOf(30),
+                        "href3", "CompanyA", currencies.get(2), LocalDate.of(2000, 1, 1)),
+                new ContractData(BigDecimal.valueOf(10), BigDecimal.valueOf(10), BigDecimal.valueOf(10), BigDecimal.valueOf(10),
+                        "href4", "CompanyB", currencies.get(3), LocalDate.of(2000, 1, 1))
+        );
 
-        when(currencyExchanger.exchange(BigDecimal.valueOf(10), Currency.USD, Currency.CZK, testDate))
-                .thenReturn(Optional.of(BigDecimal.valueOf(250))); // Mocking a conversion rate of 1 USD = 25 CZK
-
-        List<OfferData> offerDataList = Arrays.asList(offerCZK, offerUSD);
-
-        List<OfferData> result = procurementController.exchangeCurrenciesToCZK(offerDataList, testDate);
-
-        // Then
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals(BigDecimal.valueOf(100), result.get(0).price());
-        Assertions.assertEquals(Currency.CZK, result.get(0).currency());
-        Assertions.assertEquals(BigDecimal.valueOf(250), result.get(1).price());
-        Assertions.assertEquals(Currency.CZK, result.get(1).currency());
     }
 }

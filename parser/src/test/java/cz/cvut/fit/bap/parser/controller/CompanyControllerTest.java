@@ -2,12 +2,8 @@ package cz.cvut.fit.bap.parser.controller;
 
 import cz.cvut.fit.bap.parser.business.CompanyService;
 import cz.cvut.fit.bap.parser.controller.data.AddressData;
-import cz.cvut.fit.bap.parser.controller.fetcher.AbstractFetcher;
-import cz.cvut.fit.bap.parser.controller.scrapper.CompanyDetailScrapper;
-import cz.cvut.fit.bap.parser.controller.scrapper.factories.CompanyDetailFactory;
 import cz.cvut.fit.bap.parser.domain.Address;
 import cz.cvut.fit.bap.parser.domain.Company;
-import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,20 +26,14 @@ class CompanyControllerTest{
     private AddressController addressController;
 
     @Mock
-    private AbstractFetcher fetcher;
-
-    @Mock
     private CompanyService companyService;
-
-    @Mock
-    private CompanyDetailFactory companyDetailFactory;
 
     @Test
     void saveCompanyNewCompany(){
-        Address address = new Address("CZ", "Praha", "16000", "Bratislavska", "65");
-        Company company = new Company("Test company", address, "organisationId");
+        Company company = new Company("Test company", new Address(), "organisationId", "VATIdNumber");
         when(companyService.readByName(company.getName())).thenReturn(Optional.empty());
         when(companyService.create(company)).thenAnswer(i -> i.getArgument(0));
+        when(addressController.save(any(Address.class))).thenAnswer(i -> i.getArgument(0));
 
         Company savedCompany = companyController.save(company);
         verify(addressController).save(any(Address.class));
@@ -54,8 +44,7 @@ class CompanyControllerTest{
 
     @Test
     void saveCompanyExisting(){
-        Address address = new Address("CZ", "Praha", "16000", "Bratislavska", "65");
-        Company company = new Company("Test company", address, "organisationId");
+        Company company = new Company("Test company", new Address(), "organisationId", "VATIdNumber");
         when(companyService.readByName(company.getName())).thenReturn(Optional.of(company));
 
         Company savedCompany = companyController.save(company);
@@ -66,92 +55,20 @@ class CompanyControllerTest{
     }
 
     @Test
-    void getCompanyExisting(){
-        Address address = new Address("CZ", "Praha", "16000", "Bratislavska", "65");
-        Company expectedCompany = new Company("Test company", address, "organisationId");
-        String testUrl = "testUrl";
-        when(companyService.readByName(expectedCompany.getName())).thenReturn(Optional.of(expectedCompany));
-        Company actualCompany = companyController.getCompany(testUrl, expectedCompany.getName());
-
-        verify(fetcher, never()).getCompanyDetail(testUrl);
-        verify(addressController, never()).geocode(any(AddressData.class));
-
+    void getCompany() {
+        AddressData addressData = new AddressData("SK", null, "16000", "Bratislavska", "65", "1", null);
+        Address address = new Address("SK", null, "16000", "Bratislavska",
+                "65", "1", null, null);
+        String name = "name";
+        String organisationId = "organisationId";
+        String VATIdNumber = "VATIdNumber";
+        Company expectedCompany = new Company(name, address, organisationId, VATIdNumber);
+        when(addressController.geocode(any())).thenReturn(address);
+        Company actualCompany = companyController.buildCompany(name, addressData, organisationId, VATIdNumber);
         Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
         Assertions.assertEquals(expectedCompany.getOrganisationId(), actualCompany.getOrganisationId());
-    }
-
-    @Test
-    void getCompanyAsyncExisting(){
-        Address address = new Address("CZ", "Praha", "16000", "Bratislavska", "65");
-        Company expectedCompany = new Company("Test company", address, "organisationId");
-        String testUrl = "testUrl";
-        when(companyService.readByName(expectedCompany.getName())).thenReturn(Optional.of(expectedCompany));
-        Company actualCompany = companyController.getCompanyAsync(testUrl, expectedCompany.getName()).join();
-
-        verify(fetcher, never()).getCompanyDetail(testUrl);
-        verify(addressController, never()).geocode(any(AddressData.class));
-
-        Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
-        Assertions.assertEquals(expectedCompany.getOrganisationId(), actualCompany.getOrganisationId());
-    }
-
-    @Test
-    void getCompanyNonExisting(){
-        AddressData addressData = new AddressData("CZ", "Praha", "16000", "Bratislavska", "65");
-        Address expetedAddress = new Address("CZ", "Praha", "16000", "Bratislavska", "65");
-        Company expectedCompany = new Company("nameCompany", expetedAddress, "organisationId");
-        String testUrl = "testUrl";
-        Document testDoc = new Document(testUrl);
-        CompanyDetailScrapper companyDetailScrapper = mock(CompanyDetailScrapper.class);
-
-        when(fetcher.getCompanyDetail(testUrl)).thenReturn(testDoc);
-        when(companyDetailFactory.create(testDoc)).thenReturn(companyDetailScrapper);
-        when(companyService.readByName(expectedCompany.getName())).thenReturn(Optional.empty());
-        when(companyDetailScrapper.getCompanyAddress()).thenReturn(addressData);
-        when(companyDetailScrapper.getOrganisationId()).thenReturn(expectedCompany.getOrganisationId());
-        when(addressController.geocode(addressData)).thenReturn(expetedAddress);
-
-        Company actualCompany = companyController.getCompany(testUrl, expectedCompany.getName());
-
-        verify(fetcher).getCompanyDetail(testUrl);
-        verify(addressController).geocode(any(AddressData.class));
-
-        Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
-        Assertions.assertEquals(expectedCompany.getOrganisationId(), actualCompany.getOrganisationId());
-        Assertions.assertEquals(expectedCompany.getAddress().getCountryCode(), actualCompany.getAddress().getCountryCode());
-        Assertions.assertEquals(expectedCompany.getAddress().getCity(), actualCompany.getAddress().getCity());
-        Assertions.assertEquals(expectedCompany.getAddress().getPostalCode(), actualCompany.getAddress().getPostalCode());
-        Assertions.assertEquals(expectedCompany.getAddress().getStreet(), actualCompany.getAddress().getStreet());
-        Assertions.assertEquals(expectedCompany.getAddress().getBuildingNumber(), actualCompany.getAddress().getBuildingNumber());
-    }
-
-    @Test
-    void getCompanyAsyncNonExisting(){
-        AddressData addressData = new AddressData("CZ", "Praha", "16000", "Bratislavska", "65");
-        Address expetedAddress = new Address("CZ", "Praha", "16000", "Bratislavska", "65");
-        Company expectedCompany = new Company("nameCompany", expetedAddress, "organisationId");
-        String testUrl = "testUrl";
-        Document testDoc = new Document(testUrl);
-        CompanyDetailScrapper companyDetailScrapper = mock(CompanyDetailScrapper.class);
-
-        when(fetcher.getCompanyDetail(testUrl)).thenReturn(testDoc);
-        when(companyDetailFactory.create(testDoc)).thenReturn(companyDetailScrapper);
-        when(companyService.readByName(expectedCompany.getName())).thenReturn(Optional.empty());
-        when(companyDetailScrapper.getCompanyAddress()).thenReturn(addressData);
-        when(companyDetailScrapper.getOrganisationId()).thenReturn(expectedCompany.getOrganisationId());
-        when(addressController.geocode(addressData)).thenReturn(expetedAddress);
-
-        Company actualCompany = companyController.getCompanyAsync(testUrl, expectedCompany.getName()).join();
-
-        verify(fetcher).getCompanyDetail(testUrl);
-        verify(addressController).geocode(any(AddressData.class));
-
-        Assertions.assertEquals(expectedCompany.getName(), actualCompany.getName());
-        Assertions.assertEquals(expectedCompany.getOrganisationId(), actualCompany.getOrganisationId());
-        Assertions.assertEquals(expectedCompany.getAddress().getCountryCode(), actualCompany.getAddress().getCountryCode());
-        Assertions.assertEquals(expectedCompany.getAddress().getCity(), actualCompany.getAddress().getCity());
-        Assertions.assertEquals(expectedCompany.getAddress().getPostalCode(), actualCompany.getAddress().getPostalCode());
-        Assertions.assertEquals(expectedCompany.getAddress().getStreet(), actualCompany.getAddress().getStreet());
-        Assertions.assertEquals(expectedCompany.getAddress().getBuildingNumber(), actualCompany.getAddress().getBuildingNumber());
+        Assertions.assertEquals(expectedCompany.getVATIdNumber(), actualCompany.getVATIdNumber());
+        Assertions.assertEquals(expectedCompany.getAddress().getLatitude(), actualCompany.getAddress().getLatitude());
+        Assertions.assertEquals(expectedCompany.getAddress().getLongitude(), actualCompany.getAddress().getLongitude());
     }
 }

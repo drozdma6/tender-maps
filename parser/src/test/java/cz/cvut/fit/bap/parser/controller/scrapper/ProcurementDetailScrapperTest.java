@@ -40,7 +40,7 @@ class ProcurementDetailScrapperTest{
     private final HtmlFileCreator htmlFileCreator = new HtmlFileCreator();
 
     @Test
-    void getProcurementDetailPageData() throws IOException {
+    void getPageData() throws IOException {
         final String url = "https://nen.nipez.cz/en/verejne-zakazky/detail-zakazky/N006-23-V00002372";
         Document document = Jsoup.parse(
                 htmlFileCreator.ensureCreatedHtmlFile(url, "ProcurementDetail.html"));

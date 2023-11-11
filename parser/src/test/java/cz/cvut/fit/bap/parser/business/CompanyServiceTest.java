@@ -26,7 +26,7 @@ class CompanyServiceTest{
 
     @Test
     void createNonExistingCompany(){
-        Company company = new Company("testCompany", new Address(), "organisationId");
+        Company company = new Company("companyName", new Address(), "organisationId", "VATIDNumber");
         company.setId(1L);
         when(companyJpaRepository.save(any(Company.class))).thenAnswer(i -> i.getArgument(0));
         Company savedCompany = companyService.create(company);
@@ -38,7 +38,7 @@ class CompanyServiceTest{
     @Test
     void readByNameExisting(){
         String companyName = "testCompany";
-        Company company = new Company(companyName, new Address(), "organisationId");
+        Company company = new Company(companyName, new Address(), "organisationId", "VATIDNumber");
         when(companyJpaRepository.findCompanyByName(companyName)).thenReturn(Optional.of(company));
         Optional<Company> receivedCompany = companyService.readByName(companyName);
         assertTrue(receivedCompany.isPresent());
