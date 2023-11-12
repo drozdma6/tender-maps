@@ -29,7 +29,7 @@ function FilterSideBar({
                            opened,
                            setShowFilterMenu
                        }) {
-    const [authoritiesData, setAuthoritiesData] = useState();
+    const [authoritiesData, setAuthoritiesData] = useState([]);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -37,7 +37,7 @@ function FilterSideBar({
 
     useEffect(() => {
         fetchAuthorities();
-    });
+    }, []);
 
     const handleCheckboxToggle = (text) => () => {
         const currentIndex = filterLocations.indexOf(text);

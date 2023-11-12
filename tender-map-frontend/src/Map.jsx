@@ -24,14 +24,6 @@ function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
     const [filterLocations, setFilterLocations] = useState([]);
     const [filterAuthorities, setFilterAuthorities] = useState(new Set());
     const [showFilterMenu, setShowFilterMenu] = useState(false);
-    const [viewState, setViewState] = useState({
-        longitude: 15.301806,
-        latitude: 49.868280,
-        zoom: 6.6,
-        maxZoom: 17,
-        pitch: 0,
-        bearing: 0
-    });
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -47,14 +39,12 @@ function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
         switch (activeMap) {
             case 'HEATMAP':
                 return <HeatMap {...props}
-                                mapStyle={isDarkMode ? MAP_STYLES.withLabels.dark : MAP_STYLES.withLabels.light}
-                                viewState={viewState} setViewState={setViewState}/>;
+                                mapStyle={isDarkMode ? MAP_STYLES.withLabels.dark : MAP_STYLES.withLabels.light}/>;
             case 'HEXAGONMAP':
                 return <HexagonMap {...props} mapStyle={MAP_STYLES.noLabels.dark}/>;
             case 'ICONMAP':
                 return <IconMap {...props}
-                                mapStyle={isDarkMode ? MAP_STYLES.withLabels.dark : MAP_STYLES.withLabels.light}
-                                viewState={viewState} setViewState={setViewState}/>;
+                                mapStyle={isDarkMode ? MAP_STYLES.withLabels.dark : MAP_STYLES.withLabels.light}/>;
             default:
                 return null;
         }

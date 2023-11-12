@@ -17,6 +17,16 @@ const MAP_VIEW = new MapView({repeat: true});
 const LEGEND_TEXT = "This map shows the participants in tenders and distinguishes between suppliers and non-suppliers " +
     "(companies that have participated but not yet won). To view information about the tenders related to each participant, simply click on the icon.";
 
+const INITIAL_VIEW_STATE = {
+    longitude: 15.301806,
+    latitude: 49.868280,
+    zoom: 6.6,
+    maxZoom: 17,
+    pitch: 0,
+    bearing: 0
+};
+
+
 function IconMap({
                      fetchData,
                      addFiltersToPath,
@@ -25,8 +35,6 @@ function IconMap({
                      iconMapping = '/data/location-icon-mapping.json',
                      mapStyle,
                      changePageToInfo,
-                     viewState,
-                     setViewState
                  }) {
     const [suppliersData, setSuppliersData] = useState([]);
     const [nonSuppliersData, setNonSuppliersData] = useState([]);
@@ -34,7 +42,7 @@ function IconMap({
     const [curCompanyIndex, setCurCompanyIndex] = useState(0); //index of current company in tooltip
     const [showLayers, setShowLayers] = useState({suppliers: true, nonSuppliers: true});
     const [hoveredLayerId, setHoveredLayerId] = useState(null);
-    const[iconClicked, setIconClicked] = useState(false);
+    const [iconClicked, setIconClicked] = useState(false);
 
     useEffect(() => {
         fetchData(addFiltersToPath(COMPANIES_PATH, {"hasExactAddress": true, "isSupplier": true}), setSuppliersData);
@@ -42,7 +50,7 @@ function IconMap({
             "hasExactAddress": true,
             "isSupplier": false
         }), setNonSuppliersData);
-    }, [filterLocations, filterAuthorities, addFiltersToPath, fetchData])
+    }, [filterLocations, filterAuthorities])
 
     const renderTooltip = info => {
         const {object, x, y} = info
@@ -152,11 +160,10 @@ function IconMap({
                 layers={layers}
                 views={MAP_VIEW}
                 controller={{dragRotate: false}}
-                onViewStateChange={(e) => {
+                onViewStateChange={() => {
                     setIconClicked(false); //hide tooltip on view state change
-                    setViewState(e.viewState);
                 }}
-                viewState={viewState}
+                initialViewState={INITIAL_VIEW_STATE}
                 onClick={expandTooltip}
                 onHover={iconClicked ? null : handleHover}
             >

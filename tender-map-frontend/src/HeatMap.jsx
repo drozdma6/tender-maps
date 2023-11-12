@@ -9,6 +9,16 @@ import {PROCUREMENTS_PATH} from "./constants.js";
 const LEGEND_TEXT = "This map shows the geographical distribution of suppliers in tenders and uses colours to indicate\n" +
     "                     the total value of contracts won. Darker colours indicate areas of significant economic growth."
 
+const INITIAL_VIEW_STATE = {
+    longitude: 15.301806,
+    latitude: 49.868280,
+    zoom: 6.6,
+    maxZoom: 17,
+    pitch: 0,
+    bearing: 0
+};
+
+
 function HeatMap({
                      fetchData,
                      addFiltersToPath,
@@ -19,14 +29,12 @@ function HeatMap({
                      threshold = 0.03,
                      radiusPixels = 30,
                      changePageToInfo,
-                     viewState,
-                     setViewState,
                  }) {
     const [data, setData] = useState([]);
 
     useEffect(() => {
         fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierHasExactAddress": true}), setData);
-    }, [filterLocations, filterAuthorities, addFiltersToPath, fetchData]);
+    }, [filterLocations, filterAuthorities]);
 
     const layers = [
         new HeatmapLayer({
@@ -44,11 +52,10 @@ function HeatMap({
     return (
         <div>
             <DeckGL
-                viewState={viewState}
-                onViewStateChange={e => setViewState(e.viewState)}
+                initialViewState={INITIAL_VIEW_STATE}
                 controller={true}
                 layers={layers}>
-                <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle}/>
+                <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true}/>
             </DeckGL>
             <Legend title="Heat map"
                     text={LEGEND_TEXT}
