@@ -12,10 +12,7 @@ import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementDetailScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementListScrapper;
 import cz.cvut.fit.bap.parser.controller.scrapper.ProcurementResultScrapper;
-import cz.cvut.fit.bap.parser.domain.Company;
-import cz.cvut.fit.bap.parser.domain.ContractingAuthority;
-import cz.cvut.fit.bap.parser.domain.Offer;
-import cz.cvut.fit.bap.parser.domain.Procurement;
+import cz.cvut.fit.bap.parser.domain.*;
 import io.micrometer.core.annotation.Timed;
 import jakarta.transaction.Transactional;
 import org.springframework.scheduling.annotation.Async;
@@ -35,6 +32,7 @@ public class ProcurementController extends AbstractController<ProcurementService
     private final OfferController offerController;
     private final CompanyController companyController;
     private final ContractingAuthorityController contractingAuthorityController;
+    private final ContactPersonController contactPersonController;
     private final AbstractFetcher fetcher;
     private final CurrencyExchanger currencyExchanger;
 
@@ -42,12 +40,13 @@ public class ProcurementController extends AbstractController<ProcurementService
                                  OfferController offerController,
                                  CompanyController companyController,
                                  ContractingAuthorityController contractingAuthorityController,
-                                 AbstractFetcher fetcher,
+                                 ContactPersonController contactPersonController, AbstractFetcher fetcher,
                                  CurrencyExchanger currencyExchanger) {
         super(procurementService);
         this.offerController = offerController;
         this.companyController = companyController;
         this.contractingAuthorityController = contractingAuthorityController;
+        this.contactPersonController = contactPersonController;
         this.fetcher = fetcher;
         this.currencyExchanger = currencyExchanger;
     }
@@ -124,8 +123,9 @@ public class ProcurementController extends AbstractController<ProcurementService
             SupplierDetailPageData supplierDetailPageData = companyController.getSupplierDetailPageData(contract.detailHref());
             Company savedSupplier = saveSupplier(contract.companyName(), supplierDetailPageData);
             ContractingAuthority savedAuthority = contractingAuthorityController.save(contractingAuthority);
+            ContactPerson savedContactPerson = saveContactPerson(procurementDetailPageData.contactPersonData(), savedAuthority);
             Procurement procurement = new ProcurementBuilder(procurementDetailPageData, contract, savedSupplier,
-                    savedAuthority, supplierDetailPageData.isAssociationOfSuppliers(), systemNumber)
+                    savedAuthority, supplierDetailPageData.isAssociationOfSuppliers(), systemNumber, savedContactPerson)
                     .build();
             Procurement savedProcurement = super.save(procurement);
 
@@ -138,6 +138,14 @@ public class ProcurementController extends AbstractController<ProcurementService
                 offerController.save(offerWithSavedData);
             }
         });
+    }
+
+    private ContactPerson saveContactPerson(ContactPersonData contactPersonData, ContractingAuthority contractingAuthority) {
+        ContactPerson contactPerson = new ContactPerson(contactPersonData.name(),
+                contactPersonData.surname(),
+                contactPersonData.email(),
+                contractingAuthority);
+        return contactPersonController.save(contactPerson);
     }
 
     private Company saveSupplier(String companyName, SupplierDetailPageData supplierDetailPageData) {

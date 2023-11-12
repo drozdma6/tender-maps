@@ -3,6 +3,7 @@ package cz.cvut.fit.bap.parser.controller.builder;
 import cz.cvut.fit.bap.parser.controller.data.ContractData;
 import cz.cvut.fit.bap.parser.controller.data.ProcurementDetailPageData;
 import cz.cvut.fit.bap.parser.domain.Company;
+import cz.cvut.fit.bap.parser.domain.ContactPerson;
 import cz.cvut.fit.bap.parser.domain.ContractingAuthority;
 import cz.cvut.fit.bap.parser.domain.Procurement;
 
@@ -31,13 +32,15 @@ public class ProcurementBuilder implements Builder<Long, Procurement> {
     private final LocalDate bidsSubmissionDeadline;
     private final String codeFromNipezCodeList;
     private final String nameFromNipezCodeList;
+    private final ContactPerson contactPerson;
 
     public ProcurementBuilder(ProcurementDetailPageData procurementDetailPageData,
                               ContractData contractData,
                               Company supplier,
                               ContractingAuthority contractingAuthority,
                               Boolean isAssociationOfSuppliers,
-                              String systemNumber) {
+                              String systemNumber,
+                              ContactPerson contactPerson) {
         this.name = procurementDetailPageData.procurementName();
         this.supplier = supplier;
         this.isAssociationOfSuppliers = isAssociationOfSuppliers;
@@ -56,6 +59,7 @@ public class ProcurementBuilder implements Builder<Long, Procurement> {
         this.bidsSubmissionDeadline = procurementDetailPageData.bidsSubmissionDeadline();
         this.codeFromNipezCodeList = procurementDetailPageData.codeFromNipezCodeList();
         this.nameFromNipezCodeList = procurementDetailPageData.nameFromNipezCodeList();
+        this.contactPerson = contactPerson;
     }
 
     public Procurement build() {
@@ -76,7 +80,8 @@ public class ProcurementBuilder implements Builder<Long, Procurement> {
                 publicContractRegime,
                 bidsSubmissionDeadline,
                 codeFromNipezCodeList,
-                nameFromNipezCodeList
+                nameFromNipezCodeList,
+                contactPerson
         );
     }
 }

@@ -1,5 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
+import cz.cvut.fit.bap.parser.controller.data.ContactPersonData;
 import cz.cvut.fit.bap.parser.controller.data.ProcurementDetailPageData;
 import cz.cvut.fit.bap.parser.helpers.HtmlFileCreator;
 import org.jsoup.Jsoup;
@@ -23,6 +24,7 @@ class ProcurementDetailScrapperTest{
     private final LocalDate bidsSubmissionDeadline = LocalDate.of(2023, 2, 13);
     private final String codeFromNipezCodeList = "72267100-0";
     private final String nameFromNipezCodeList = "Údržba programového vybavení pro informační technologie";
+    private final ContactPersonData contactPersonData = new ContactPersonData("Jan", "Hančl", "jan.hancl@czechtrade.cz");
 
     private final ProcurementDetailPageData expectedDetailPageData = new ProcurementDetailPageData(
             procurementName,
@@ -35,7 +37,8 @@ class ProcurementDetailScrapperTest{
             publicContractRegime,
             bidsSubmissionDeadline,
             codeFromNipezCodeList,
-            nameFromNipezCodeList);
+            nameFromNipezCodeList,
+            contactPersonData);
 
     private final HtmlFileCreator htmlFileCreator = new HtmlFileCreator();
 

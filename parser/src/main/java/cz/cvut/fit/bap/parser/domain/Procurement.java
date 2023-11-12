@@ -72,6 +72,10 @@ public class Procurement implements DomainEntity<Long> {
     @Column(name = "name_from_nipez_codelist")
     private String nameFromNipezCodeList;
 
+    @ManyToOne
+    @JoinColumn(name = "contact_person_id")
+    private ContactPerson contactPerson;
+
     public Procurement() {
     }
 
@@ -79,7 +83,8 @@ public class Procurement implements DomainEntity<Long> {
                        BigDecimal contractPrice, BigDecimal contractPriceVAT, BigDecimal contractPriceWithAmendments,
                        BigDecimal contractPriceWithAmendmentsVAT, String placeOfPerformance, LocalDate dateOfPublication,
                        String systemNumber, LocalDate dateOfContractClose, String type, String typeOfProcedure,
-                       String publicContractRegime, LocalDate bidsSubmissionDeadline, String codeFromNipezCodeList, String nameFromNipezCodeList) {
+                       String publicContractRegime, LocalDate bidsSubmissionDeadline, String codeFromNipezCodeList,
+                       String nameFromNipezCodeList, ContactPerson contactPerson) {
         this.name = name;
         this.supplier = supplier;
         this.isAssociationOfSuppliers = isAssociationOfSuppliers;
@@ -98,6 +103,15 @@ public class Procurement implements DomainEntity<Long> {
         this.bidsSubmissionDeadline = bidsSubmissionDeadline;
         this.codeFromNipezCodeList = codeFromNipezCodeList;
         this.nameFromNipezCodeList = nameFromNipezCodeList;
+        this.contactPerson = contactPerson;
+    }
+
+    public ContactPerson getContactPerson() {
+        return contactPerson;
+    }
+
+    public void setContactPerson(ContactPerson contactPerson) {
+        this.contactPerson = contactPerson;
     }
 
     public Boolean getAssociationOfSuppliers() {

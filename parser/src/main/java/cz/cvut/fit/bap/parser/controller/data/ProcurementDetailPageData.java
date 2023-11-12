@@ -16,6 +16,7 @@ public record ProcurementDetailPageData(
         String publicContractRegime,
         LocalDate bidsSubmissionDeadline,
         String codeFromNipezCodeList,
-        String nameFromNipezCodeList
+        String nameFromNipezCodeList,
+        ContactPersonData contactPersonData
 ){
 }

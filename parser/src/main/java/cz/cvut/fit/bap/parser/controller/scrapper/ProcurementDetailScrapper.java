@@ -1,5 +1,6 @@
 package cz.cvut.fit.bap.parser.controller.scrapper;
 
+import cz.cvut.fit.bap.parser.controller.data.ContactPersonData;
 import cz.cvut.fit.bap.parser.controller.data.ProcurementDetailPageData;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -36,7 +37,8 @@ public class ProcurementDetailScrapper extends AbstractScrapper<ProcurementDetai
                 getPublicContractRegime(),
                 getBidsSubmissionDeadline(),
                 getCodeFromNipezCodeList(),
-                getNameFromNipezCodeList());
+                getNameFromNipezCodeList(),
+                getContactPerson());
     }
 
     /**
@@ -150,5 +152,12 @@ public class ProcurementDetailScrapper extends AbstractScrapper<ProcurementDetai
      */
     private String getNameFromNipezCodeList() {
         return getNullIfEmpty(document.select("[title=\"Name from the NIPEZ code list\"] p").text());
+    }
+
+    private ContactPersonData getContactPerson() {
+        String name = getNullIfEmpty(document.select("[title=\"Name\"] p").text());
+        String surname = getNullIfEmpty(document.select("[title=\"Surname\"] p").text());
+        String email = getNullIfEmpty(document.select("[title=\"E-mail\"] p").text());
+        return new ContactPersonData(name, surname, email);
     }
 }
