@@ -16,6 +16,7 @@
     "@deck.gl/react": "^8.9.31",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@jonkoops/matomo-tracker-react": "^0.7.0",
     "@mui/icons-material": "^5.14.9",
     "@mui/material": "^5.14.13",
     "axios": "^1.4.0",

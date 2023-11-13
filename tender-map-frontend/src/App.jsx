@@ -4,6 +4,7 @@ import {Box, CssBaseline, ThemeProvider} from "@mui/material";
 import {useEffect, useState} from 'react'
 import Info from "./Info.jsx";
 import { createTheme } from '@mui/material/styles';
+import {useMatomo} from "@jonkoops/matomo-tracker-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,6 +19,11 @@ function App() {
         const storedTheme = localStorage.getItem('darkTheme');
         return storedTheme !== null ? JSON.parse(storedTheme) : false;
     });
+    const { trackPageView } = useMatomo();
+
+    useEffect(() => {
+        trackPageView({});
+    }, []);
 
     useEffect(() => {
         localStorage.setItem('darkTheme', JSON.stringify(isDarkMode));
