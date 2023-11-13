@@ -71,7 +71,8 @@ public class AddressController extends AbstractController<AddressService, Addres
         String czechCountryCode = "cz";
         String czechFullName = "česká republika";
         String countryLowerCase = addressData.country() != null ? addressData.country().toLowerCase() : null;
-        return Objects.equals(addressData.countryCode(), czechCountryCode) ||
+        String contryCodeLowerCase = addressData.countryCode() != null ? addressData.countryCode().toLowerCase() : null;
+        return Objects.equals(contryCodeLowerCase, czechCountryCode) ||
                 Objects.equals(countryLowerCase, czechFullName);
     }
 }

@@ -85,6 +85,14 @@ class AddressControllerTest{
     }
 
     @Test
+    void geocodeCountryCode() {
+        AddressData addressData = new AddressData(null, "Praha", "16000", "Bratislavska", "65", "1", "CZ");
+        addressController.geocode(addressData);
+        verify(googleGeocoder, never()).geocode(addressData);
+        verify(profinitGeocoder).geocode(addressData);
+    }
+
+    @Test
     void geocodeIncomplete(){
         AddressData addressData = new AddressData(null, null, "16000", "Bratislavska", "65", "1", "SK");
         Address expectedAddres = new Address("SK", null, "16000", "Bratislavska",
