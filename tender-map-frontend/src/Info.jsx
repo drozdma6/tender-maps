@@ -47,7 +47,7 @@ function Info({apiBaseUrl}) {
 
     return (
         <Paper style={{
-            paddingBottom: "var(--app-bar-height)",
+            paddingBottom: 200,
             maxHeight: "100vh",
             overflow: 'auto',
             paddingLeft: 30,
