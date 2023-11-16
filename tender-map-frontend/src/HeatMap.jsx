@@ -42,7 +42,7 @@ function HeatMap({
             id: 'heatmp-layer',
             pickable: false,
             getPosition: d => [d.supplier.address.longitude, d.supplier.address.latitude],
-            getWeight: d => d.contractPrice,
+            getWeight: d => d.contractPrice / 1_000_000_00, //adjust accordingly to data (for mobile ios usage)
             aggregation: 'SUM',
             radiusPixels,
             intensity,
