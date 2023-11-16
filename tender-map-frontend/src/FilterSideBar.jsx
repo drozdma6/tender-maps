@@ -95,7 +95,7 @@ function FilterSideBar({
                             onChange={handleAuthorityChange}
                             value={filterAuthorities.name}
                             isOptionEqualToValue={(option, value) => option.id === value.id}
-                            style={{paddingTop: 5, width: 500, overflow: 'hidden' }}
+                            style={{paddingTop: 8, width: 500, overflow: 'hidden' }}
                         >
                         </Autocomplete>
                         <IconButton onClick={handleCloseFilterMenuButton} style={{paddingTop: 15, marginLeft: 2}}>

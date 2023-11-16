@@ -1,4 +1,3 @@
-import {Paper} from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import Box from "@mui/material/Box";
@@ -46,19 +45,17 @@ function Info({apiBaseUrl}) {
     const apiDocs = apiBaseUrl + "-docs";
 
     return (
-        <Paper style={{
-            paddingBottom: 200,
-            maxHeight: "100vh",
-            overflow: 'auto',
-            paddingLeft: 30,
-            paddingRight: 30
-        }}>
-            <Box sx={{ a: { color: "dodgerblue" }, "a:visited": { color: "#2196f3"} }}>
+            <Box  style={{
+                paddingBottom: 200,
+                maxHeight: "100vh",
+                overflow: 'auto',
+                paddingLeft: 30,
+                paddingRight: 30
+            }} sx={{ a: { color: "dodgerblue" }, "a:visited": { color: "#2196f3"} }}>
                 <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                     {renderInfo(apiDocs)}
                 </ReactMarkdown>
             </Box>
-        </Paper>
     );
 }
 
