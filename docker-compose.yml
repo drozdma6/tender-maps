@@ -41,6 +41,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://public-procurements-db/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_PROFILES_ACTIVE=prod
 
   frontend:
     build:
