@@ -22,7 +22,7 @@ const MAP_STYLES = {
 
 function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
     const [filterLocations, setFilterLocations] = useState([]);
-    const [filterAuthorities, setFilterAuthorities] = useState(new Set());
+    const [filterAuthorities, setFilterAuthorities] = useState([]);
     const [showFilterMenu, setShowFilterMenu] = useState(false);
 
     const theme = useTheme();

@@ -15,7 +15,6 @@ import {
     IconButton,
 } from "@mui/material";
 import axios from "axios";
-import CloseIcon from "@mui/icons-material/Clear";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import {CONTRACTING_AUTHORITIES_PATH, CZECH_REGIONS} from "./constants.js";
 import Typography from "@mui/material/Typography";
@@ -58,20 +57,8 @@ function FilterSideBar({
         setAuthoritiesData(response.data);
     }
 
-    const handleAuthorityChange = (event, newValue) => {
-        if (newValue) {
-            setFilterAuthorities((prevSelectedAuthorities) =>
-                new Set([...prevSelectedAuthorities, newValue])
-            );
-        }
-    };
-
-    const handleAuthorityRemove = (authority) => {
-        setFilterAuthorities((prevSelectedAuthorities) => {
-            const newSelectedAuthorities = new Set(prevSelectedAuthorities);
-            newSelectedAuthorities.delete(authority);
-            return newSelectedAuthorities;
-        });
+    const handleAuthorityChange = (_, newValue) => {
+        setFilterAuthorities(newValue);
     };
 
     const handleCloseFilterMenuButton = () => {
@@ -96,40 +83,25 @@ function FilterSideBar({
                     <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
                         <Autocomplete
                             disablePortal
+                            disableClearable
+                            multiple
                             id="combo-box-demo"
                             options={authoritiesData ? authoritiesData : []}
                             getOptionLabel={(option) => option.name || ""}
-                            sx={{flexGrow: 1, marginRight: 2}}
                             renderInput={(params) => (
                                 <TextField {...params} label="Contracting Authority"/>
                             )}
+                            filterSelectedOptions
                             onChange={handleAuthorityChange}
                             value={filterAuthorities.name}
                             isOptionEqualToValue={(option, value) => option.id === value.id}
-                        />
-                        <IconButton onClick={handleCloseFilterMenuButton}>
+                            style={{paddingTop: 5, width: 500, overflow: 'hidden' }}
+                        >
+                        </Autocomplete>
+                        <IconButton onClick={handleCloseFilterMenuButton} style={{paddingTop: 15, marginLeft: 2}}>
                             <ArrowBackIosNewIcon/>
                         </IconButton>
                     </Box>
-
-                    {Array.from(filterAuthorities).map((authority) => (
-                        <Box
-                            key={authority.name}
-                            sx={{
-                                alignItems: "center",
-                            }}
-                        >
-                            <IconButton
-                                onClick={() => handleAuthorityRemove(authority)}
-                            >
-                                <CloseIcon fontSize="medium"/>
-                            </IconButton>
-                            <span style={{wordBreak: "break-all"}}>
-                                {authority.name}
-                            </span>
-                        </Box>
-                    ))}
-
                     <Divider/>
                     <Typography
                         sx={{ml: 2}}
