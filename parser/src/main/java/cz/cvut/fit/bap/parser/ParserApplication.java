@@ -21,8 +21,7 @@ public class ParserApplication{
     private Integer corePoolSize;
 
     public static void main(String[] args){
-        // close the application context to shut down the custom ExecutorService
-        SpringApplication.run(ParserApplication.class, args).close();
+        SpringApplication.run(ParserApplication.class, args);
     }
 
     /*

@@ -22,15 +22,6 @@ FIXER_API_KEY=fixer_api_key
 5. Frontend is running on `http://localhost:3001/`
 
 ### Scrapper Modifiers
-- `SCHEDULING_CRON={cron_expression}`
-    - Determines when and how often should scrapper run,
-      as [cron expression](https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm)
-    - Default value: `0 0 0 1 * *` (first day of each month at midnight)
-
-- `RUN_ON_STARTUP={boolean}`
-    - Determines whether scrapping should start with application run or wait for scheduled run
-    - Default value: true
-
 - `CORE_POOL_SIZE={integer}`
     - Number of allocated threads
     - Should be somewhere between 1 - 10

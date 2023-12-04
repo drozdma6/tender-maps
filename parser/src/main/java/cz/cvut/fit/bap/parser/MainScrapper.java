@@ -6,44 +6,29 @@ import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import io.micrometer.core.instrument.Metrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Main loop of program
+ * Class for starting and scheduling scrapping
  */
 @Component
-public class MainScrapper implements ApplicationRunner{
+public class MainScrapper {
     private final ProcurementController procurementController;
     private final Logger logger = LoggerFactory.getLogger(MainScrapper.class);
-
-    @Value("${run.on.startup}") //default value is set to false
-    private boolean runOnStartup;
 
     public MainScrapper(ProcurementController procurementController){
         this.procurementController = procurementController;
     }
 
-    /*
-        Run method.
-     */
-    @Override
-    public void run(ApplicationArguments args){
-        if(runOnStartup){
-            run();
-        }
-    }
-
     /**
-     * Scheduled start of scrapping.
+     * Scheduled start of scrapping. Scheduled scrapping begins 30 days after the end of the previous scrapping.
      */
-    @Scheduled(cron = "${scheduling.cron}")
+    @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.DAYS)
     public void run(){
         int page = 1;
         CompletableFuture<List<String>> systemNumbersFuture = procurementController.getPageSystemNumbers(page);
