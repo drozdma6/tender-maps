@@ -16,7 +16,7 @@ public class Offer implements DomainEntity<Long>{
     @GeneratedValue
     private Long id;
 
-    @Column(precision = 14, scale = 2)
+    @Column(precision = 18, scale = 2)
     private BigDecimal price;
 
     @ManyToOne(fetch = FetchType.LAZY)

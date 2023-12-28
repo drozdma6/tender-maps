@@ -32,7 +32,7 @@ public class Procurement implements DomainEntity<Long> {
     @JoinColumn(name = "contracting_authority_id")
     private ContractingAuthority contractingAuthority;
 
-    @Column(name = "contract_price", precision = 14, scale = 2)
+    @Column(name = "contract_price", precision = 18, scale = 2)
     private BigDecimal contractPrice;
 
     @Column(name = "place_of_performance")
