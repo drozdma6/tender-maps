@@ -54,6 +54,8 @@ function Tooltip({
     useEffect(() => {
         if (layerId === "suppliers") {
             fetchData(addFiltersToPath(PROCUREMENTS_PATH, {"supplierId": companyId}), setSuppliedProcurements);
+        }else{
+            setSuppliedProcurements([]);
         }
         fetchData(addFiltersToPath(OFFERS_PATH, {"companyId": companyId}), setCompanyOffers);
     }, [companyId, layerId, fetchData, addFiltersToPath]);
