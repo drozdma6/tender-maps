@@ -6,6 +6,7 @@ import cz.cvut.fit.bap.parser.controller.scrapper.MissingHtmlElementException;
 import io.micrometer.core.instrument.Metrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
  * Class for starting and scheduling scrapping
  */
 @Component
+@Profile("!test")
 public class MainScrapper {
     private final ProcurementController procurementController;
     private final Logger logger = LoggerFactory.getLogger(MainScrapper.class);
