@@ -9,6 +9,10 @@ public class FailedFetchException extends RuntimeException{
     }
 
     public FailedFetchException(Exception e){
-        super(e.getMessage());
+        super(e);
+    }
+
+    public FailedFetchException(Exception e, String url) {
+        super("Failed to fetch url: " + url + "  " + e.getMessage());
     }
 }

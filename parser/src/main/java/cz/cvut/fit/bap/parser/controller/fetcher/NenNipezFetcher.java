@@ -1,25 +1,25 @@
 package cz.cvut.fit.bap.parser.controller.fetcher;
 
+import cz.cvut.fit.bap.parser.controller.fetcher.utility.ExponentialBackoffFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.*;
 import io.micrometer.core.annotation.Timed;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of abstract fetcher, used for fetching "<a href="https://nen.nipez.cz">nen.nipez</a>"
  */
 @Component
-public class NenNipezFetcher extends AbstractFetcher{
+public class NenNipezFetcher extends AbstractFetcher {
     private static final String BASE_URL = "https://nen.nipez.cz";
-    private static final Logger LOGGER = LoggerFactory.getLogger(NenNipezFetcher.class);
+    private final ExponentialBackoffFetcher exponentialBackoffFetcher;
+
+    public NenNipezFetcher(ExponentialBackoffFetcher exponentialBackoffFetcher) {
+        this.exponentialBackoffFetcher = exponentialBackoffFetcher;
+    }
 
     /**
      * Gets scrapper for authority detail page
@@ -31,7 +31,8 @@ public class NenNipezFetcher extends AbstractFetcher{
     @Timed(value = "scrapper.nen.nipez.fetch")
     public AuthorityDetailScrapper getAuthorityDetailScrapper(String href) {
         final String url = BASE_URL + href;
-        return new AuthorityDetailScrapper(getDocumentWithRetry(url));
+        Document doc = exponentialBackoffFetcher.getDocumentWithRetry(url);
+        return new AuthorityDetailScrapper(doc);
     }
 
     /**
@@ -46,7 +47,8 @@ public class NenNipezFetcher extends AbstractFetcher{
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = BASE_URL + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
                 "/vysledek/p:vys:page=1-50;uca:page=1-50"; //show all participants and suppliers without paging
-        return new ProcurementResultScrapper(getDocumentWithRetry(url));
+        Document doc = exponentialBackoffFetcher.getDocumentWithRetry(url);
+        return new ProcurementResultScrapper(doc);
     }
 
 
@@ -61,7 +63,8 @@ public class NenNipezFetcher extends AbstractFetcher{
     public SupplierDetailScrapper getSupplierDetailScrapper(String detailUrl) {
         String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
         String url = BASE_URL + detailUrl.replaceFirst(pattern, "/");
-        return new SupplierDetailScrapper(getDocumentWithRetry(url));
+        Document doc = exponentialBackoffFetcher.getDocumentWithRetry(url);
+        return new SupplierDetailScrapper(doc);
     }
 
 
@@ -77,7 +80,8 @@ public class NenNipezFetcher extends AbstractFetcher{
     public CompletableFuture<ProcurementDetailScrapper> getProcurementDetailScrapper(String systemNumber) {
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = BASE_URL + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen;
-        return CompletableFuture.completedFuture(new ProcurementDetailScrapper(getDocumentWithRetry(url)));
+        Document doc = exponentialBackoffFetcher.getDocumentWithRetry(url);
+        return CompletableFuture.completedFuture(new ProcurementDetailScrapper(doc));
     }
 
     /**
@@ -90,7 +94,8 @@ public class NenNipezFetcher extends AbstractFetcher{
     @Timed(value = "scrapper.nen.nipez.fetch")
     public ProcurementListScrapper getProcurementListScrapper(int pageNumber) {
         String url = BASE_URL + "/en/verejne-zakazky/p:vz:stavZP=zadana,plneni&page=" + pageNumber;
-        return new ProcurementListScrapper(getDocumentWithRetry(url));
+        Document doc = exponentialBackoffFetcher.getDocumentWithRetry(url);
+        return new ProcurementListScrapper(doc);
     }
 
     /**
@@ -105,41 +110,7 @@ public class NenNipezFetcher extends AbstractFetcher{
     public CompletableFuture<OfferDetailScrapper> getOfferDetailScrapper(String url) {
         String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
         String detailUrl = BASE_URL + url.replaceFirst(pattern, "/");
-        return CompletableFuture.completedFuture(new OfferDetailScrapper(getDocumentWithRetry(detailUrl)));
-    }
-
-
-    /**
-     * Fetches document from url with exponential backoff
-     *
-     * @param url which is supposed to be fetched
-     * @return document
-     */
-    private Document getDocumentWithRetry(String url){
-        int backoffSeconds = 1; //initial backoff time
-        int maxRetries = 8;
-
-        long startTime, endTime, duration;
-        startTime = System.currentTimeMillis();
-
-        for(int i = 0; i < maxRetries; i++){
-            try{
-                Document doc = Jsoup.connect(url).get();
-                endTime = System.currentTimeMillis();
-                duration = endTime - startTime;
-                LOGGER.debug("Fetch in {} ms with {} retries for {}", duration, i, url);
-                return doc;
-            }catch(IOException e){
-                try{
-                    TimeUnit.SECONDS.sleep(backoffSeconds);
-                    backoffSeconds = backoffSeconds * 2;
-                }catch(InterruptedException ex){
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException(ex);
-                }
-            }
-        }
-        LOGGER.debug("Failed to fetch url: {}", url);
-        throw new FailedFetchException("Failed to fetch url: " + url);
+        Document doc = exponentialBackoffFetcher.getDocumentWithRetry(detailUrl);
+        return CompletableFuture.completedFuture(new OfferDetailScrapper(doc));
     }
 }
