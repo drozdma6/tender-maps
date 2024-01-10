@@ -8,6 +8,8 @@ import io.micrometer.core.instrument.Metrics;
 import kotlin.Pair;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -29,8 +31,9 @@ public class ProfinitGeocoder implements Geocoder{
     private static final String BASE_URL = "https://geolokator.profinit.cz";
     private static final String CZECH_SHORT_COUNTRY_CODE = "CZ";
     private static final String LANGUAGE_PARAM = "en";
-    private static final long CONNECTION_TIMEOUT_SEC = 10;
-    private static final long REQUEST_TIMEOUT_SEC = 20;
+    private static final long CONNECTION_TIMEOUT_SEC = 30;
+    private static final long REQUEST_TIMEOUT_SEC = 30;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfinitGeocoder.class);
 
     private final HttpClient httpClient;
 
@@ -55,13 +58,15 @@ public class ProfinitGeocoder implements Geocoder{
         AddressBuilder addressBuilder = new AddressBuilder(addressData);
         addressBuilder.countryCode(CZECH_SHORT_COUNTRY_CODE); //profinit geocoder is used only for czech places
         try{
+            long initialTime = System.currentTimeMillis();
             JSONObject response = sendQueryRequest(addressData);
             Pair<Double,Double> coordinates = getWgsCoordinates(response);
             addressBuilder.latitude(coordinates.getFirst()); //wgs_x
             addressBuilder.longitude(coordinates.getSecond()); //wgx_y
+            LOGGER.debug("Profinit geocoding took {}", System.currentTimeMillis() - initialTime);
             return addressBuilder.build();
         }catch(GeocodingException e){
-            e.printStackTrace();
+            LOGGER.debug("Profinit geocoding failed: {}", e.getMessage());
             Metrics.counter("scrapper.profinit.geocoder.failed").increment();
             return addressBuilder.build();
         }

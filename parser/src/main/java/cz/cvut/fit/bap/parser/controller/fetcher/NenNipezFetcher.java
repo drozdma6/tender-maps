@@ -2,7 +2,6 @@ package cz.cvut.fit.bap.parser.controller.fetcher;
 
 import cz.cvut.fit.bap.parser.controller.fetcher.utility.ExponentialBackoffFetcher;
 import cz.cvut.fit.bap.parser.controller.scrapper.*;
-import io.micrometer.core.annotation.Timed;
 import org.jsoup.nodes.Document;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -28,7 +27,6 @@ public class NenNipezFetcher extends AbstractFetcher {
      * @return authorityDetailScrapper
      */
     @Override
-    @Timed(value = "scrapper.nen.nipez.fetch")
     public AuthorityDetailScrapper getAuthorityDetailScrapper(String href) {
         final String url = BASE_URL + href;
         Document doc = exponentialBackoffFetcher.getDocumentWithRetry(url);
@@ -42,7 +40,6 @@ public class NenNipezFetcher extends AbstractFetcher {
      * @return procurementResultScrapper
      */
     @Override
-    @Timed(value = "scrapper.nen.nipez.fetch")
     public ProcurementResultScrapper getProcurementResultScrapper(String systemNumber) {
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = BASE_URL + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen +
@@ -59,7 +56,6 @@ public class NenNipezFetcher extends AbstractFetcher {
      * @return supplierDetailScrapper
      */
     @Override
-    @Timed(value = "scrapper.nen.nipez.fetch")
     public SupplierDetailScrapper getSupplierDetailScrapper(String detailUrl) {
         String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
         String url = BASE_URL + detailUrl.replaceFirst(pattern, "/");
@@ -76,7 +72,6 @@ public class NenNipezFetcher extends AbstractFetcher {
      */
     @Override
     @Async
-    @Timed(value = "scrapper.nen.nipez.fetch")
     public CompletableFuture<ProcurementDetailScrapper> getProcurementDetailScrapper(String systemNumber) {
         String systemNumberHyphen = systemNumber.replace('/', '-');
         final String url = BASE_URL + "/en/verejne-zakazky/detail-zakazky/" + systemNumberHyphen;
@@ -91,7 +86,6 @@ public class NenNipezFetcher extends AbstractFetcher {
      * @return procurementListScrapper
      */
     @Override
-    @Timed(value = "scrapper.nen.nipez.fetch")
     public ProcurementListScrapper getProcurementListScrapper(int pageNumber) {
         String url = BASE_URL + "/en/verejne-zakazky/p:vz:stavZP=zadana,plneni&page=" + pageNumber;
         Document doc = exponentialBackoffFetcher.getDocumentWithRetry(url);
@@ -106,7 +100,6 @@ public class NenNipezFetcher extends AbstractFetcher {
      */
     @Override
     @Async
-    @Timed(value = "scrapper.nen.nipez.fetch")
     public CompletableFuture<OfferDetailScrapper> getOfferDetailScrapper(String url) {
         String pattern = "/p:[^/]*/"; //matches /p:vys:page=1-10;uca:page=1-10
         String detailUrl = BASE_URL + url.replaceFirst(pattern, "/");

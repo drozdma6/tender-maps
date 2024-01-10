@@ -1,6 +1,7 @@
 package cz.cvut.fit.bap.parser.controller.fetcher.utility;
 
 import cz.cvut.fit.bap.parser.controller.fetcher.FailedFetchException;
+import io.micrometer.core.annotation.Timed;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ public class ExponentialBackoffFetcher {
     @Retryable(retryFor = FailedFetchException.class,
             maxAttempts = 10,
             backoff = @Backoff(delay = 1000, multiplier = 2, maxDelay = 1_024_000, random = true))
+    @Timed(value = "scrapper.nen.nipez.fetch")
     public Document getDocumentWithRetry(String url) {
         try {
             long initialTime = System.currentTimeMillis();
