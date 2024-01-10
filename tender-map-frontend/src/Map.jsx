@@ -1,7 +1,7 @@
 import HeatMap from './HeatMap.jsx';
 import IconMap from './IconMap.jsx';
 import HexagonMap from './HexagonMap.jsx';
-import {useState} from 'react'
+import {useCallback, useState} from 'react'
 import FilterSideBar from "./FilterSideBar.jsx";
 import IconButton from "@mui/material/IconButton";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -24,9 +24,43 @@ function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
     const [filterLocations, setFilterLocations] = useState([]);
     const [filterAuthorities, setFilterAuthorities] = useState([]);
     const [showFilterMenu, setShowFilterMenu] = useState(false);
-
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const fetchData = useCallback(async (path, setFetchedData) => {
+        try {
+            const url = apiBaseUrl + path;
+            const response = await axios.get(url);
+            setFetchedData(response.data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            toast.error("Failed to fetch data.", {
+                toastId: "toastId", //
+                position: "top-center",
+                autoClose: 1500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+    }, [apiBaseUrl]);
+
+    const addFiltersToPath = useCallback((path, additionalParams) => {
+        const params = new URLSearchParams({
+            ...additionalParams,
+        });
+        if (filterLocations.length !== 0) {
+            const placesOfPerformanceParam = filterLocations.join(',');
+            params.append("placesOfPerformance", placesOfPerformanceParam);
+        }
+        if (filterAuthorities.size !== 0) {
+            const filterAuthoritiesIDsParam = [...filterAuthorities].map((authority) => authority.id).join(',');
+            params.append("contractingAuthorityIds", filterAuthoritiesIDsParam);
+        }
+        return `${path}?${params.toString()}`;
+    }, [filterLocations, filterAuthorities]);
 
     const renderActiveMap = () => {
         const props = {
@@ -52,42 +86,6 @@ function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
 
     const handleFilterMenuIconClick = () => {
         setShowFilterMenu(!showFilterMenu);
-    }
-
-    async function fetchData(path, setFetchedData) {
-        try {
-            const url = apiBaseUrl + path;
-            const response = await axios.get(url);
-            setFetchedData(response.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            toast.error("Failed to fetch data.", {
-                toastId: "toastId", //
-                position: "top-center",
-                autoClose: 1500,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
-    }
-
-    function addFiltersToPath(path, additionalParams) {
-        const params = new URLSearchParams({
-            ...additionalParams,
-        });
-        if (filterLocations.length !== 0) {
-            const placesOfPerformanceParam = filterLocations.join(',');
-            params.append("placesOfPerformance", placesOfPerformanceParam);
-        }
-        if (filterAuthorities.size !== 0) {
-            const filterAuthoritiesIDsParam = [...filterAuthorities].map((authority) => authority.id).join(',');
-            params.append("contractingAuthorityIds", filterAuthoritiesIDsParam);
-        }
-        return `${path}?${params.toString()}`;
     }
 
     return (
