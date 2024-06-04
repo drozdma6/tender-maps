@@ -20,10 +20,20 @@ const MAP_STYLES = {
     }
 };
 
+const INITIAL_VIEW_STATE = {
+    longitude: 15.301806,
+    latitude: 49.868280,
+    zoom: 6.6,
+    maxZoom: 17,
+    pitch: 0,
+    bearing: 0
+};
+
 function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
     const [filterLocations, setFilterLocations] = useState([]);
     const [filterAuthorities, setFilterAuthorities] = useState([]);
     const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const fetchData = useCallback(async (path, setFetchedData) => {
@@ -69,6 +79,8 @@ function Map({activeMap, apiBaseUrl, isDarkMode, changePageToInfo}) {
             filterLocations: filterLocations,
             filterAuthorities: filterAuthorities,
             changePageToInfo,
+            viewState: viewState,
+            setViewState: setViewState,
         };
         switch (activeMap) {
             case 'HEATMAP':
