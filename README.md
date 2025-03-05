@@ -1,7 +1,7 @@
 # Public procurements analyzer
 
 This project was developed as a bachelor's thesis for [CTU FIT](https://fit.cvut.cz/en) in collaboration with [OpenDataLab](https://opendatalab.cz/).
-The primary objective was to create an application capable of web scraping, storing, providing, and visualizing data related to public procurements in the Czech Republic.
+The primary objective was to create an application capable of web scraping, persisting and visualizing data related to public procurements in the Czech Republic using interactive maps.
 
 ## Set up
 1. Download project
@@ -28,7 +28,7 @@ FIXER_API_KEY=fixer_api_key
     - Default value: 5
 
 
-## Data Information
+## Data
 The tender data for this research was gathered from the Czech Republic's public procurement portal, [nen.nipez.cz](https://nen.nipez.cz/en/). The project included the development of a REST API to seamlessly integrate the dataset into various applications and projects. A publicly accessible
 API Swagger documentation (VITE_API_URL + /api-docs) is provided in order to simplify integration for other developers.
 
@@ -55,5 +55,4 @@ to access detailed data about the companies located within that specific area (h
 
 ## Contact Information
 - Author Name: Marek Drozdik
-- [Github](https://github.com/opendatalabcz/analyzer_public_contracts)
 - [LinkedIn](https://www.linkedin.com/in/marek-drozd%C3%ADk-07828b218)
