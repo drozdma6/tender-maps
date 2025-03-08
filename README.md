@@ -41,10 +41,14 @@ addresses of companies for geolocation and assigning colors based on the cumulat
 the heat map provides an intuitive insight into identifying significant areas of economic engagement within the realm of public procurement
 in the Czech Republic.
 
+![heat_map_example.png](examples/heat_map_example.png)
+
 ### Icon Map
 The icon map is designed to showcase companies participating in public procurement. Suppliers are marked with orange icons, while
 non-suppliers are indicated by blue icons. Users can interact with these icons to access lists of both won and supplied procurements,
 as well as view all offers submitted by each company.
+
+![icon_map_example.png](examples/icon_map_example.png)
 
 ### Hexagon Map
 The hexagon map serves as a visual representation of the geographical distribution of suppliers involved in public procurement.
@@ -53,6 +57,4 @@ Unlike the heat map, the hexagon map has the advantage of displaying more inform
 one set of information, while its color may represent another. Furthermore, users have the option to click on individual hexagons
 to access detailed data about the companies located within that specific area (hexagon).
 
-## Contact Information
-- Author Name: Marek Drozdik
-- [LinkedIn](https://www.linkedin.com/in/marek-drozd%C3%ADk-07828b218)
+![hexagon_map_example.png](examples/hexagon_map_example.png)
