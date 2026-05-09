@@ -32,6 +32,8 @@ jobs:
 
       - name: Build
         working-directory: tender-map-frontend
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL_PROD }}
         run: npm run build
 
       - name: Azure login (OIDC)
