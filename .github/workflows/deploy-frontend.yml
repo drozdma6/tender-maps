@@ -1,0 +1,72 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tender-map-frontend/**'
+      - '.env.production'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  STORAGE_ACCOUNT: hw2staticxdrozdi1
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install
+        working-directory: tender-map-frontend
+        run: npm install
+
+      - name: Build
+        working-directory: tender-map-frontend
+        run: npm run build
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Upload all to $web
+        run: |
+          az storage blob upload-batch \
+            --account-name "$STORAGE_ACCOUNT" \
+            --auth-mode login \
+            -d '$web' \
+            -s tender-map-frontend/dist \
+            --overwrite
+
+      - name: Long-cache hashed assets
+        run: |
+          az storage blob upload-batch \
+            --account-name "$STORAGE_ACCOUNT" \
+            --auth-mode login \
+            -d '$web/assets' \
+            -s tender-map-frontend/dist/assets \
+            --overwrite \
+            --content-cache "public, max-age=31536000, immutable"
+
+      - name: No-cache index.html
+        run: |
+          az storage blob upload \
+            --account-name "$STORAGE_ACCOUNT" \
+            --auth-mode login \
+            -c '$web' \
+            -f tender-map-frontend/dist/index.html \
+            -n index.html \
+            --overwrite \
+            --content-cache "no-cache, no-store, must-revalidate"
